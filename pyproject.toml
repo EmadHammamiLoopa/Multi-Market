@@ -20,6 +20,7 @@ classifiers = [
 [project.scripts]
 multimarket-replay = "multimarket.cli:main"
 multimarket-fetch = "multimarket.fetcher:main"
+multimarket-time-machine = "multimarket.time_machine:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

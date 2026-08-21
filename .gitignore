@@ -12,3 +12,6 @@ htmlcov/
 *.feather
 models/
 artifacts/
+data/*.csv
+reports/
+results/

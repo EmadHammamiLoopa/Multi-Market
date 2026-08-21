@@ -53,6 +53,69 @@ class BackfillTests(unittest.TestCase):
             )
             lines = Path(path).read_text(encoding="utf-8").splitlines()
             self.assertEqual(len(lines), 4)  # header + three unique rows
+            state = Path(tmp) / ".backfill_state" / "EURUSD_5m.json"
+            self.assertTrue(state.exists())
+
+    def test_resume_skips_completed_chunks(self):
+        first_payload = {
+            "status": "ok",
+            "values": [
+                {"datetime": "2026-01-01 00:00:00", "open": "1", "high": "2", "low": "0.5", "close": "1.5"},
+            ],
+        }
+        second_payload = {
+            "status": "ok",
+            "values": [
+                {"datetime": "2026-01-02 00:00:00", "open": "1.5", "high": "2", "low": "1", "close": "1.6"},
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = []
+
+            def failing_getter(url):
+                calls.append(url)
+                if len(calls) == 1:
+                    return first_payload
+                raise RuntimeError("simulated credit interruption")
+
+            with self.assertRaises(RuntimeError):
+                backfill_symbol(
+                    "EURUSD",
+                    interval="5m",
+                    start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+                    end=datetime(2026, 1, 3, tzinfo=timezone.utc),
+                    chunk_days=1,
+                    output_dir=tmp,
+                    api_key="secret",
+                    getter=failing_getter,
+                )
+
+            # The successful first chunk must already be durable on disk.
+            data_path = Path(tmp) / "EURUSD_5m.csv"
+            self.assertTrue(data_path.exists())
+            self.assertIn("2026-01-01T00:00:00Z", data_path.read_text(encoding="utf-8"))
+
+            resume_calls = []
+
+            def resume_getter(url):
+                resume_calls.append(url)
+                return second_payload
+
+            backfill_symbol(
+                "EURUSD",
+                interval="5m",
+                start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+                end=datetime(2026, 1, 3, tzinfo=timezone.utc),
+                chunk_days=1,
+                output_dir=tmp,
+                api_key="secret",
+                getter=resume_getter,
+            )
+            self.assertEqual(len(resume_calls), 1)  # first chunk was skipped from checkpoint
+            text = data_path.read_text(encoding="utf-8")
+            self.assertIn("2026-01-01T00:00:00Z", text)
+            self.assertIn("2026-01-02T00:00:00Z", text)
 
 
 if __name__ == "__main__":

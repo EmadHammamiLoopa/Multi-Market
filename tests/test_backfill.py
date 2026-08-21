@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from multimarket.backfill import backfill_symbol, build_backfill_url
+from multimarket.backfill import RequestPacer, backfill_symbol, build_backfill_url
 
 
 class BackfillTests(unittest.TestCase):
@@ -18,6 +18,24 @@ class BackfillTests(unittest.TestCase):
         self.assertIn("start_date=2026-01-01T00%3A00%3A00", url)
         self.assertIn("end_date=2026-01-15T00%3A00%3A00", url)
         self.assertNotIn("outputsize", url)
+
+    def test_request_pacer_spaces_requests(self):
+        clock = [100.0]
+        sleeps = []
+
+        def monotonic():
+            return clock[0]
+
+        def sleep(seconds):
+            sleeps.append(seconds)
+            clock[0] += seconds
+
+        pacer = RequestPacer(8, monotonic_fn=monotonic, sleep_fn=sleep)
+        pacer.before_request()
+        clock[0] += 1.0
+        pacer.before_request()
+        self.assertEqual(len(sleeps), 1)
+        self.assertAlmostEqual(sleeps[0], 6.5)
 
     def test_chunks_are_merged_and_deduplicated(self):
         payloads = [
@@ -52,7 +70,7 @@ class BackfillTests(unittest.TestCase):
                 getter=getter,
             )
             lines = Path(path).read_text(encoding="utf-8").splitlines()
-            self.assertEqual(len(lines), 4)  # header + three unique rows
+            self.assertEqual(len(lines), 4)
             state = Path(tmp) / ".backfill_state" / "EURUSD_5m.json"
             self.assertTrue(state.exists())
 
@@ -91,7 +109,6 @@ class BackfillTests(unittest.TestCase):
                     getter=failing_getter,
                 )
 
-            # The successful first chunk must already be durable on disk.
             data_path = Path(tmp) / "EURUSD_5m.csv"
             self.assertTrue(data_path.exists())
             self.assertIn("2026-01-01T00:00:00Z", data_path.read_text(encoding="utf-8"))
@@ -112,7 +129,7 @@ class BackfillTests(unittest.TestCase):
                 api_key="secret",
                 getter=resume_getter,
             )
-            self.assertEqual(len(resume_calls), 1)  # first chunk was skipped from checkpoint
+            self.assertEqual(len(resume_calls), 1)
             text = data_path.read_text(encoding="utf-8")
             self.assertIn("2026-01-01T00:00:00Z", text)
             self.assertIn("2026-01-02T00:00:00Z", text)

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multi-market-replay"
-version = "0.0.0"
+version = "0.1.0"
 description = "Point-in-time historical replay framework for multi-market trading research"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,9 +21,15 @@ classifiers = [
 multimarket-replay = "multimarket.cli:main"
 multimarket-fetch = "multimarket.fetcher:main"
 multimarket-time-machine = "multimarket.time_machine:main"
+multimarket-backfill = "multimarket.backfill:main"
+multimarket-v1 = "multimarket.v1_cli:main"
+multimarket-v1-suite = "multimarket.v1_suite:main"
+multimarket-v1-time-machine = "multimarket.v1_time_machine:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
+ml = ["xgboost>=2.1,<4"]
+all = ["matplotlib>=3.8", "xgboost>=2.1,<4"]

@@ -23,6 +23,7 @@ multimarket-fetch = "multimarket.fetcher:main"
 multimarket-time-machine = "multimarket.time_machine:main"
 multimarket-backfill = "multimarket.backfill:main"
 multimarket-v1 = "multimarket.v1_cli:main"
+multimarket-v1-suite = "multimarket.v1_suite:main"
 multimarket-v1-time-machine = "multimarket.v1_time_machine:main"
 
 [tool.setuptools.packages.find]

@@ -19,6 +19,7 @@ classifiers = [
 
 [project.scripts]
 multimarket-replay = "multimarket.cli:main"
+multimarket-fetch = "multimarket.fetcher:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

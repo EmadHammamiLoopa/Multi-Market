@@ -4,8 +4,11 @@ import argparse
 import csv
 import json
 import os
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Callable
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -58,6 +61,87 @@ def _get(url: str) -> dict:
     )
     with urlopen(request, timeout=60) as response:
         return json.load(response)
+
+
+class RequestPacer:
+    """Space API requests so a shared per-minute quota is not burst-consumed.
+
+    A single instance should be shared across all symbols in one CLI run.  The
+    default CLI rate is 8 requests/minute, matching Twelve Data Basic.  Tests
+    can inject monotonic/sleep callables so pacing remains deterministic.
+    """
+
+    def __init__(
+        self,
+        requests_per_minute: float,
+        *,
+        monotonic_fn: Callable[[], float] = time.monotonic,
+        sleep_fn: Callable[[float], None] = time.sleep,
+    ) -> None:
+        if requests_per_minute <= 0:
+            raise ValueError("requests_per_minute must be positive")
+        self.requests_per_minute = float(requests_per_minute)
+        self.interval_seconds = 60.0 / self.requests_per_minute
+        self._monotonic = monotonic_fn
+        self._sleep = sleep_fn
+        self._last_request_started: float | None = None
+
+    def before_request(self) -> None:
+        now = self._monotonic()
+        if self._last_request_started is not None:
+            delay = self.interval_seconds - (now - self._last_request_started)
+            if delay > 0:
+                self._sleep(delay)
+                now = self._monotonic()
+        self._last_request_started = now
+
+    def reset(self) -> None:
+        self._last_request_started = None
+
+
+def _retry_after_seconds(exc: HTTPError) -> float:
+    header = None
+    if exc.headers is not None:
+        header = exc.headers.get("Retry-After")
+    if header:
+        try:
+            return max(1.0, float(header))
+        except ValueError:
+            pass
+    # Twelve Data Basic credits reset each minute.  A full minute is a safe
+    # fallback when no Retry-After header is supplied.
+    return 60.0
+
+
+def _get_with_rate_limit_retry(
+    url: str,
+    *,
+    getter: Callable[[str], dict],
+    pacer: RequestPacer | None,
+    max_429_retries: int,
+    sleep_fn: Callable[[float], None] = time.sleep,
+) -> dict:
+    if max_429_retries < 0:
+        raise ValueError("max_429_retries must be non-negative")
+
+    attempt = 0
+    while True:
+        if pacer is not None:
+            pacer.before_request()
+        try:
+            return getter(url)
+        except HTTPError as exc:
+            if exc.code != 429 or attempt >= max_429_retries:
+                raise
+            attempt += 1
+            delay = _retry_after_seconds(exc)
+            print(
+                f"RATE LIMIT 429: retry {attempt}/{max_429_retries} "
+                f"after quota reset"
+            )
+            sleep_fn(delay)
+            if pacer is not None:
+                pacer.reset()
 
 
 def _load_existing(path: Path) -> list[dict[str, object]]:
@@ -124,11 +208,16 @@ def backfill_symbol(
     state_dir: str | Path | None = None,
     api_key: str | None = None,
     getter=_get,
+    pacer: RequestPacer | None = None,
+    max_429_retries: int = 2,
+    retry_sleep_fn: Callable[[float], None] = time.sleep,
 ) -> Path:
     if start >= end:
         raise ValueError("start must be before end")
     if chunk_days <= 0:
         raise ValueError("chunk_days must be positive")
+    if max_429_retries < 0:
+        raise ValueError("max_429_retries must be non-negative")
     key = (api_key or os.getenv("TWELVE_DATA_API_KEY") or "").strip()
     if not key:
         raise RuntimeError("TWELVE_DATA_API_KEY is not set")
@@ -160,7 +249,13 @@ def backfill_symbol(
             continue
 
         request_number += 1
-        payload = getter(build_backfill_url(provider_symbol, interval, cursor, chunk_end, key))
+        payload = _get_with_rate_limit_retry(
+            build_backfill_url(provider_symbol, interval, cursor, chunk_end, key),
+            getter=getter,
+            pacer=pacer,
+            max_429_retries=max_429_retries,
+            sleep_fn=retry_sleep_fn,
+        )
         rows = parse_twelve_time_series(payload)
         for row in rows:
             by_timestamp[str(row["timestamp"])] = row
@@ -192,7 +287,7 @@ def backfill_symbol(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Backfill Twelve Data history in checkpointed date chunks and merge into replay CSVs"
+        description="Backfill Twelve Data history in checkpointed, rate-limited date chunks"
     )
     parser.add_argument("--symbols", nargs="+", required=True)
     parser.add_argument("--interval", default="5m", choices=sorted(TWELVE_INTERVAL_MAP))
@@ -205,6 +300,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="checkpoint directory (default: <output-dir>/.backfill_state)",
     )
+    parser.add_argument(
+        "--requests-per-minute",
+        type=float,
+        default=8.0,
+        help="pace Twelve Data requests across all symbols (default: 8 for Basic free plan)",
+    )
+    parser.add_argument(
+        "--max-429-retries",
+        type=int,
+        default=2,
+        help="retry a 429 after the provider quota reset (default: 2)",
+    )
     return parser
 
 
@@ -212,6 +319,13 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     start = _parse_utc(args.start)
     end = _parse_utc(args.end)
+    if args.requests_per_minute <= 0:
+        parser.error("--requests-per-minute must be positive")
+    if args.max_429_retries < 0:
+        parser.error("--max-429-retries must be non-negative")
+
+    # One shared pacer prevents symbol boundaries from creating new bursts.
+    pacer = RequestPacer(args.requests_per_minute)
     failures = 0
     for symbol in args.symbols:
         try:
@@ -223,6 +337,8 @@ def main(argv: list[str] | None = None) -> int:
                 chunk_days=args.chunk_days,
                 output_dir=args.output_dir,
                 state_dir=args.state_dir,
+                pacer=pacer,
+                max_429_retries=args.max_429_retries,
             )
         except Exception as exc:
             failures += 1

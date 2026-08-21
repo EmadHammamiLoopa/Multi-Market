@@ -10,6 +10,7 @@ from .data import load_ohlc_csv
 from .execution import simulate_barrier_trade
 from .metrics import Metrics, calculate_metrics
 from .models import Direction, Prediction, TradeResult
+from .portfolio import calculate_portfolio_metrics
 from .reporting import sha256_file
 from .v1_model import V1Config, WalkForwardXGBoostPredictor
 
@@ -110,9 +111,13 @@ def main(argv: list[str] | None = None) -> int:
         stop_loss_bps=args.stop_loss_bps,
         round_trip_cost_bps=args.round_trip_cost_bps,
     )
+    portfolio = calculate_portfolio_metrics(trades)
 
     dataset_hash = sha256_file(args.csv)
     payload = _serialize_metrics(metrics)
+    portfolio_payload = asdict(portfolio)
+    if portfolio_payload["profit_factor"] == inf:
+        portfolio_payload["profit_factor"] = "inf"
     payload.update(
         {
             "symbol": args.symbol,
@@ -125,31 +130,34 @@ def main(argv: list[str] | None = None) -> int:
             "validation_fraction": args.validation_fraction,
             "feature_count": len(predictor.feature_names),
             "feature_names": list(predictor.feature_names),
+            "portfolio_non_overlapping": portfolio_payload,
         }
     )
 
     print(f"Multi-Market {args.version_label} | {args.symbol}")
-    print("=" * 52)
-    print(f"Dataset SHA-256     : {dataset_hash}")
-    print(f"Predictions          : {metrics.predictions}")
-    print(f"Trades               : {metrics.trades}")
-    print(f"Coverage             : {metrics.coverage:.2%}")
-    print(f"Directional accuracy : {metrics.directional_accuracy:.2%}")
-    print(f"Trade win rate       : {metrics.win_rate:.2%}")
-    if metrics.profit_factor == inf:
-        print("Profit factor        : inf")
-    else:
-        print(f"Profit factor        : {metrics.profit_factor:.3f}")
-    print(f"Expectancy           : {metrics.expectancy_bps:+.3f} bps/trade")
-    print(f"Net return*          : {metrics.net_return_pct:+.3f}%")
-    print(f"Max drawdown*        : {metrics.max_drawdown_pct:.3f}%")
-    print("* Diagnostic only: overlapping trades are not portfolio-accounting results.")
+    print("=" * 58)
+    print(f"Dataset SHA-256       : {dataset_hash}")
+    print(f"Predictions            : {metrics.predictions}")
+    print(f"Trades (signals)       : {metrics.trades}")
+    print(f"Coverage               : {metrics.coverage:.2%}")
+    print(f"Directional accuracy   : {metrics.directional_accuracy:.2%}")
+    print(f"Signal win rate        : {metrics.win_rate:.2%}")
+    print(f"Signal profit factor   : {'inf' if metrics.profit_factor == inf else f'{metrics.profit_factor:.3f}'}")
+    print(f"Signal expectancy      : {metrics.expectancy_bps:+.3f} bps/trade")
+    print("\nNon-overlapping execution")
+    print("-" * 58)
+    print(f"Executed trades        : {portfolio.trades}")
+    print(f"Win rate               : {portfolio.win_rate:.2%}")
+    print(f"Profit factor          : {'inf' if portfolio.profit_factor == inf else f'{portfolio.profit_factor:.3f}'}")
+    print(f"Expectancy             : {portfolio.expectancy_bps:+.3f} bps/trade")
+    print(f"Net return             : {portfolio.net_return_pct:+.3f}%")
+    print(f"Max drawdown           : {portfolio.max_drawdown_pct:.3f}%")
 
     if args.output_json:
         output = Path(args.output_json)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        print(f"Metrics JSON         : {output}")
+        print(f"Metrics JSON           : {output}")
 
     if args.output_jsonl:
         trade_by_timestamp = {trade.prediction.timestamp: trade for trade in trades}
@@ -167,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
                 if trade is not None:
                     row["trade"] = asdict(trade)
                 handle.write(json.dumps(row, default=str) + "\n")
-        print(f"Predictions JSONL    : {output}")
+        print(f"Predictions JSONL      : {output}")
 
     print("\nMachine-readable metrics")
     print(json.dumps(payload, indent=2, sort_keys=True))

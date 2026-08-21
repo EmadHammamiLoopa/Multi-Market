@@ -1,141 +1,129 @@
-# Multi-Market — V0
+# Multi-Market
 
-Point-in-time historical replay and evaluation framework for multi-market trading research.
+Point-in-time historical replay and evaluation framework for multi-market intraday trading research.
 
-**V0 is the benchmark baseline.** Its job is not to claim profitability; it gives every future model version (V1, V2, ...) the same leakage-resistant test harness and records comparable accuracy, profitability and risk metrics.
+**V0 remains the immutable benchmark baseline. V1 is the first learned model.** Every future version is evaluated with leakage-resistant historical tests, explicit costs, selective LONG / SHORT / NO_TRADE decisions, and frozen time-machine timestamps.
 
-## What V0 does
+## V0 baseline
 
-- strict point-in-time historical replay — the predictor cannot see future bars
+V0 provides:
+
+- strict point-in-time historical replay
 - transparent momentum baseline predictor
 - LONG / SHORT / NO_TRADE decisions with confidence filtering
-- TP/SL barrier trade simulation
-- configurable spread/commission/slippage cost
-- human-readable terminal results
-- machine-readable metrics JSON
-- optional PNG dashboard with running accuracy, equity curve, trade outcomes and version comparison
-- persistent `results/benchmark_history.csv` so V0/V1/V2/... can be ranked on the **exact same dataset hash**
-- unit tests for leakage, execution, metrics and reporting
+- TP/SL barrier simulation and costs
+- machine-readable metrics and dashboard reporting
+- deterministic historical time-machine audits
+- exact dataset SHA-256 recording
 
-## Install
-
-Core backtest only:
+Run:
 
 ```bash
-python -m pip install -e .
+multimarket-replay data/EURUSD_5m.csv --symbol EURUSD --version-label V0-5M-30M --horizon-bars 6 --plot
+multimarket-time-machine data/EURUSD_5m.csv --symbol EURUSD --samples 30 --horizon-bars 6
 ```
 
-With plots:
+## V1 learned intraday model
+
+V1 adds:
+
+- 35 causal technical/time/session features
+- expanding-window XGBoost classification
+- completed-horizon-only training labels
+- chronological historical validation and confidence calibration
+- selective `NO_TRADE`
+- 15 / 30 / 60 minute evaluation on 5-minute bars
+- Twelve Data chunked historical backfill
+- non-overlapping portfolio execution metrics
+- V1 time-machine evaluation on the exact timestamps frozen by V0
+
+Install V1 dependencies:
 
 ```bash
-python -m pip install -e ".[plot]"
+python -m pip install -e ".[all]"
 ```
 
-## Run V0
-
-Input CSV must contain:
-
-```text
-timestamp,open,high,low,close
-```
-
-Example:
+Important: before backfilling the current V0 files, freeze their 30-point audit JSONs:
 
 ```bash
-multimarket-replay data/eurusd_15m.csv \
+for SYMBOL in EURUSD XAUUSD BTCUSD ETHUSD QQQ; do
+  multimarket-time-machine "data/${SYMBOL}_5m.csv" \
+    --symbol "$SYMBOL" \
+    --samples 30 \
+    --horizon-bars 6 \
+    --lookback-bars 24 \
+    --confidence-threshold 0.60 \
+    --output-json "reports/${SYMBOL}_V0_TIME_MACHINE_30.json"
+done
+```
+
+Backfill approximately one year of 5-minute history:
+
+```bash
+multimarket-backfill \
+  --symbols EURUSD XAUUSD BTCUSD ETHUSD QQQ \
+  --interval 5m \
+  --start 2025-08-01 \
+  --end 2026-08-22 \
+  --chunk-days 14
+```
+
+Run a full multi-horizon V1 suite:
+
+```bash
+multimarket-v1-suite data/EURUSD_5m.csv \
   --symbol EURUSD \
-  --version-label V0 \
-  --horizon-bars 4 \
-  --lookback-bars 20 \
+  --horizons 3 6 12 \
   --confidence-threshold 0.60 \
-  --take-profit-bps 20 \
-  --stop-loss-bps 10 \
-  --round-trip-cost-bps 2 \
-  --plot \
-  --output-jsonl reports/EURUSD_V0_predictions.jsonl
+  --min-train-rows 5000 \
+  --retrain-every 500 \
+  --output-json reports/EURUSD_V1_SUITE.json
 ```
 
-The terminal prints results such as:
-
-```text
-Multi-Market V0 | EURUSD
-==========================================
-Predictions          : ...
-Trades               : ...
-Coverage             : ...%
-Directional accuracy : ...%
-Trade win rate       : ...%
-Profit factor        : ...
-Expectancy           : ... bps/trade
-Net return           : ...%
-Max drawdown         : ...%
-```
-
-Generated files:
-
-```text
-reports/EURUSD_V0_metrics.json
-reports/EURUSD_V0_dashboard.png
-results/benchmark_history.csv
-```
-
-The dashboard contains:
-
-1. running directional accuracy
-2. simulated cumulative net return
-3. win/loss counts
-4. best recorded accuracy by model version on the same dataset
-
-## Comparing V0, V1, V2, ...
-
-Use the **same historical CSV** for every version and change only the model/version label. For example:
+Re-test the exact frozen V0 historical timestamps with V1:
 
 ```bash
-multimarket-replay data/eurusd_15m.csv --symbol EURUSD --version-label V0 --plot
-multimarket-replay data/eurusd_15m.csv --symbol EURUSD --version-label V1 --plot
-multimarket-replay data/eurusd_15m.csv --symbol EURUSD --version-label V2 --plot
+multimarket-v1-time-machine data/EURUSD_5m.csv \
+  --symbol EURUSD \
+  --baseline-json reports/EURUSD_V0_TIME_MACHINE_30.json \
+  --horizon-bars 6 \
+  --confidence-threshold 0.60 \
+  --min-train-rows 5000 \
+  --retrain-every 500 \
+  --output-json reports/EURUSD_V1_TIME_MACHINE_30.json
 ```
 
-Each run is appended to `results/benchmark_history.csv`. The CLI then prints a ranking like:
-
-```text
-Version ranking on this exact dataset
-==========================================
- 1. V2       accuracy=65.20%  win=61.80%  net=  7.200%  maxDD= 4.100%
- 2. V1       accuracy=61.70%  win=58.50%  net=  4.900%  maxDD= 5.000%
- 3. V0       accuracy=53.10%  win=51.20%  net=  0.800%  maxDD= 6.700%
-```
-
-The CSV SHA-256 is stored with every run, preventing us from accidentally calling a result "better" when it was tested on a different dataset.
+See [`docs/V1.md`](docs/V1.md) for the full methodology and required run order.
 
 ## Accuracy is not enough
 
-The main comparison metrics are:
+Primary evidence includes:
 
-- directional accuracy
-- trade win rate
+- selected directional accuracy
 - coverage
+- win rate
 - profit factor
 - expectancy after costs
-- net return after costs
-- maximum drawdown
+- non-overlapping portfolio return and drawdown
+- confidence calibration
+- robustness across markets, horizons, and historical periods
 
-A future model is not considered better merely because accuracy increased. It should improve out-of-sample risk-adjusted results too.
+A version is not considered better merely because one accuracy number increased.
 
 ## Research progression
 
-- **V0:** replay engine + auditable momentum baseline + benchmark reporting
-- **V1:** walk-forward folds + XGBoost + probability calibration
+- **V0:** replay engine + auditable momentum baseline + frozen historical audit
+- **V1:** causal features + walk-forward XGBoost + calibration + realistic execution accounting
 - **V2:** synchronized multi-market features and opportunity ranking
 - **V3:** point-in-time macro/news/event store
 - **V4:** ensemble + regime detector + news/event agent
 - **V5:** paper-trading adapter behind a deterministic risk engine
 - **V6:** live execution only after acceptance criteria are met
 
-## Test
+## Tests
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-This software is for research and testing. Historical accuracy does not guarantee future profit.
+This software is for research and testing. Historical results do not guarantee future profit, and no live broker execution is included in V1.

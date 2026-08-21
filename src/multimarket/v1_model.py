@@ -79,12 +79,7 @@ def _fit_xgb(X, y, random_state: int):
 
 
 def _calibrate_probability(raw_probability: float, validation_pairs: Sequence[tuple[float, int]]) -> float:
-    """Simple leakage-safe calibration using only a historical validation tail.
-
-    We bucket the model's raw confidence and return empirical accuracy for the
-    matching confidence range. This deliberately avoids fitting calibration on
-    the test point itself.
-    """
+    """Simple leakage-safe calibration using only a historical validation tail."""
     confidence = max(raw_probability, 1.0 - raw_probability)
     if not validation_pairs:
         return confidence
@@ -121,7 +116,7 @@ class WalkForwardXGBoostPredictor:
         return FEATURE_NAMES
 
     def _train_for_index(self, decision_index: int) -> None:
-        # A training label is known only when its future horizon is already in the past.
+        # A label is eligible only after its complete future horizon is already known.
         eligible = [
             point
             for point in self.labeled
@@ -135,6 +130,7 @@ class WalkForwardXGBoostPredictor:
 
         if (
             self._model is not None
+            and decision_index >= self._model_trained_through
             and decision_index - self._model_trained_through < self.config.retrain_every
         ):
             return

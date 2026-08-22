@@ -6,7 +6,7 @@ from collections import Counter
 from datetime import timedelta
 from pathlib import Path
 
-from .cross_market import causal_peer_snapshot
+from .cross_market import CausalPeerIndex
 from .data import load_ohlc_csv
 
 
@@ -40,22 +40,25 @@ def main(argv: list[str] | None = None) -> int:
     if not peers:
         raise SystemExit("at least one --peer SYMBOL=CSV is required")
     peer_bars = {symbol: load_ohlc_csv(path) for symbol, path in peers.items()}
+    peer_indices = {symbol: CausalPeerIndex.build(bars) for symbol, bars in peer_bars.items()}
     max_staleness = timedelta(minutes=args.max_staleness_minutes)
 
     payload_peers: dict[str, object] = {}
-    print(f"Multi-Market causal cross-market alignment audit | {args.target_symbol.upper()}")
-    print("=" * 86)
-    print(f"Target bars              : {len(target_bars)}")
-    print(f"Max peer staleness       : {args.max_staleness_minutes} minutes")
+    print(f"Multi-Market causal cross-market alignment audit | {args.target_symbol.upper()}", flush=True)
+    print("=" * 86, flush=True)
+    print(f"Target bars              : {len(target_bars)}", flush=True)
+    print(f"Max peer staleness       : {args.max_staleness_minutes} minutes", flush=True)
 
     for symbol, bars in peer_bars.items():
+        print(f"Scanning peer            : {symbol} ({len(bars)} bars)", flush=True)
+        peer_index = peer_indices[symbol]
         available = 0
         future_violations = 0
         stale_or_missing = 0
         staleness_counts: Counter[int] = Counter()
         feature_complete = 0
         for target in target_bars:
-            snapshot = causal_peer_snapshot(bars, target.timestamp, max_staleness=max_staleness)
+            snapshot = peer_index.snapshot(target.timestamp, max_staleness=max_staleness)
             if snapshot is None:
                 stale_or_missing += 1
                 continue
@@ -72,7 +75,8 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"{symbol:8s} available={available:7d} ({coverage:6.2%}) "
             f"complete={feature_complete:7d} ({complete_coverage:6.2%}) "
-            f"stale/missing={stale_or_missing:7d} future={future_violations}"
+            f"stale/missing={stale_or_missing:7d} future={future_violations}",
+            flush=True,
         )
         payload_peers[symbol] = {
             "peer_bars": len(bars),
@@ -96,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
         output = Path(args.output_json)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        print(f"Audit JSON               : {output}")
+        print(f"Audit JSON               : {output}", flush=True)
     return 0
 
 

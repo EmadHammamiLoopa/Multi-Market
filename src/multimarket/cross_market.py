@@ -38,35 +38,63 @@ def _vol_bps(bars: Sequence[MarketBar], index: int, window: int) -> float | None
     return sqrt(fmean((value - mean) ** 2 for value in values))
 
 
+@dataclass(frozen=True, slots=True)
+class CausalPeerIndex:
+    """Reusable causal as-of index for one peer market.
+
+    Timestamp extraction is intentionally done once. Reusing this object avoids the
+    O(target_rows * peer_rows) behavior that results from rebuilding the timestamp
+    list for every target lookup.
+    """
+
+    bars: tuple[MarketBar, ...]
+    timestamps: tuple[datetime, ...]
+
+    @classmethod
+    def build(cls, peer_bars: Sequence[MarketBar]) -> "CausalPeerIndex":
+        bars = tuple(peer_bars)
+        return cls(bars=bars, timestamps=tuple(bar.timestamp for bar in bars))
+
+    def snapshot(
+        self,
+        decision_timestamp: datetime,
+        *,
+        max_staleness: timedelta = timedelta(minutes=15),
+    ) -> PeerSnapshot | None:
+        if max_staleness < timedelta(0):
+            raise ValueError("max_staleness must be non-negative")
+        index = bisect_right(self.timestamps, decision_timestamp) - 1
+        if index < 0:
+            return None
+        peer_timestamp = self.bars[index].timestamp
+        if peer_timestamp > decision_timestamp:
+            raise AssertionError("causal alignment selected a future peer bar")
+        staleness = decision_timestamp - peer_timestamp
+        if staleness > max_staleness:
+            return None
+        return PeerSnapshot(
+            peer_index=index,
+            peer_timestamp=peer_timestamp,
+            staleness=staleness,
+            ret_1_bps=_return_bps(self.bars, index, 1),
+            ret_6_bps=_return_bps(self.bars, index, 6),
+            ret_12_bps=_return_bps(self.bars, index, 12),
+            vol_12_bps=_vol_bps(self.bars, index, 12),
+        )
+
+
 def causal_peer_snapshot(
     peer_bars: Sequence[MarketBar],
     decision_timestamp: datetime,
     *,
     max_staleness: timedelta = timedelta(minutes=15),
 ) -> PeerSnapshot | None:
-    """Return the latest peer observation available at or before decision time.
+    """Return one causal peer snapshot.
 
-    No interpolation or forward fill beyond max_staleness is allowed. The returned
-    snapshot can never use a timestamp later than the decision timestamp.
+    This compatibility helper builds an index for a single lookup. Bulk callers must
+    construct ``CausalPeerIndex`` once and reuse it.
     """
-    if max_staleness < timedelta(0):
-        raise ValueError("max_staleness must be non-negative")
-    timestamps = [bar.timestamp for bar in peer_bars]
-    index = bisect_right(timestamps, decision_timestamp) - 1
-    if index < 0:
-        return None
-    peer_timestamp = peer_bars[index].timestamp
-    if peer_timestamp > decision_timestamp:
-        raise AssertionError("causal alignment selected a future peer bar")
-    staleness = decision_timestamp - peer_timestamp
-    if staleness > max_staleness:
-        return None
-    return PeerSnapshot(
-        peer_index=index,
-        peer_timestamp=peer_timestamp,
-        staleness=staleness,
-        ret_1_bps=_return_bps(peer_bars, index, 1),
-        ret_6_bps=_return_bps(peer_bars, index, 6),
-        ret_12_bps=_return_bps(peer_bars, index, 12),
-        vol_12_bps=_vol_bps(peer_bars, index, 12),
+    return CausalPeerIndex.build(peer_bars).snapshot(
+        decision_timestamp,
+        max_staleness=max_staleness,
     )

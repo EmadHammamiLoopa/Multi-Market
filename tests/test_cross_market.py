@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from multimarket.cross_market import causal_peer_snapshot
+from multimarket.cross_market import CausalPeerIndex, causal_peer_snapshot
 from multimarket.models import MarketBar
 
 
@@ -45,6 +45,24 @@ class CrossMarketAlignmentTests(unittest.TestCase):
         mutated = list(bars)
         mutated[19] = _bar(19, 9999.0)
         after = causal_peer_snapshot(mutated, decision)
+        self.assertEqual(before, after)
+
+    def test_reusable_index_matches_single_lookup_helper(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(30)]
+        index = CausalPeerIndex.build(bars)
+        for minute in (12, 15, 20, 29):
+            decision = bars[minute].timestamp + timedelta(minutes=2)
+            expected = causal_peer_snapshot(bars, decision, max_staleness=timedelta(minutes=15))
+            actual = index.snapshot(decision, max_staleness=timedelta(minutes=15))
+            self.assertEqual(actual, expected)
+
+    def test_reusable_index_copies_source_sequence(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(20)]
+        index = CausalPeerIndex.build(bars)
+        decision = bars[15].timestamp
+        before = index.snapshot(decision)
+        bars[15] = _bar(15, 9999.0)
+        after = index.snapshot(decision)
         self.assertEqual(before, after)
 
 

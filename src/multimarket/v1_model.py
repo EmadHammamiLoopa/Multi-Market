@@ -110,12 +110,23 @@ class WalkForwardXGBoostPredictor:
         self._model = None
         self._model_trained_through = -1
         self._validation_pairs: list[tuple[float, int]] = []
+        self._fit_count = 0
 
     @property
     def feature_names(self) -> tuple[str, ...]:
         return FEATURE_NAMES
 
     def _train_for_index(self, decision_index: int) -> None:
+        # Reuse the cached model before scanning the full labeled history. This is
+        # behavior-equivalent to the old ordering for monotonic walk-forward use,
+        # but avoids an O(history) label scan on every bar between retrains.
+        if (
+            self._model is not None
+            and decision_index >= self._model_trained_through
+            and decision_index - self._model_trained_through < self.config.retrain_every
+        ):
+            return
+
         # A label is eligible only after its complete future horizon is already known.
         eligible = [
             point
@@ -128,13 +139,6 @@ class WalkForwardXGBoostPredictor:
                 f"only {len(eligible)} are available at this timestamp"
             )
 
-        if (
-            self._model is not None
-            and decision_index >= self._model_trained_through
-            and decision_index - self._model_trained_through < self.config.retrain_every
-        ):
-            return
-
         split = max(
             self.config.min_train_rows,
             int(len(eligible) * (1.0 - self.config.validation_fraction)),
@@ -146,6 +150,7 @@ class WalkForwardXGBoostPredictor:
         X_train = [list(point.features) for point in train]
         y_train = [point.label for point in train]
         self._model = _fit_xgb(X_train, y_train, self.config.random_state)
+        self._fit_count += 1
 
         self._validation_pairs = []
         if validation:

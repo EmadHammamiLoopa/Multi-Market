@@ -2,6 +2,7 @@ import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.error import URLError
 
 from multimarket.backfill import RequestPacer, backfill_symbol, build_backfill_url
 
@@ -133,6 +134,39 @@ class BackfillTests(unittest.TestCase):
             text = data_path.read_text(encoding="utf-8")
             self.assertIn("2026-01-01T00:00:00Z", text)
             self.assertIn("2026-01-02T00:00:00Z", text)
+
+    def test_transient_network_failure_retries_then_succeeds(self):
+        payload = {
+            "status": "ok",
+            "values": [
+                {"datetime": "2026-01-01 00:00:00", "open": "1", "high": "2", "low": "0.5", "close": "1.5"},
+            ],
+        }
+        calls = []
+        sleeps = []
+
+        def flaky_getter(url):
+            calls.append(url)
+            if len(calls) < 3:
+                raise URLError("Temporary failure in name resolution")
+            return payload
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = backfill_symbol(
+                "EURUSD",
+                interval="5m",
+                start=datetime(2026, 1, 1, tzinfo=timezone.utc),
+                end=datetime(2026, 1, 2, tzinfo=timezone.utc),
+                chunk_days=1,
+                output_dir=tmp,
+                api_key="secret",
+                getter=flaky_getter,
+                max_network_retries=5,
+                retry_sleep_fn=sleeps.append,
+            )
+            self.assertTrue(Path(path).exists())
+            self.assertEqual(len(calls), 3)
+            self.assertEqual(sleeps, [5.0, 10.0])
 
 
 if __name__ == "__main__":

@@ -21,14 +21,46 @@ class PeerSnapshot:
     vol_12_bps: float | None
 
 
-def _return_bps(bars: Sequence[MarketBar], index: int, lag: int) -> float | None:
-    if index - lag < 0:
+def _history_is_contiguous(
+    bars: Sequence[MarketBar],
+    index: int,
+    lookback_bars: int,
+    *,
+    expected_interval: timedelta,
+) -> bool:
+    if lookback_bars <= 0:
+        raise ValueError("lookback_bars must be positive")
+    if expected_interval <= timedelta(0):
+        raise ValueError("expected_interval must be positive")
+    start = index - lookback_bars
+    if start < 0:
+        return False
+    return all(
+        bars[j].timestamp - bars[j - 1].timestamp == expected_interval
+        for j in range(start + 1, index + 1)
+    )
+
+
+def _return_bps(
+    bars: Sequence[MarketBar],
+    index: int,
+    lag: int,
+    *,
+    expected_interval: timedelta,
+) -> float | None:
+    if not _history_is_contiguous(bars, index, lag, expected_interval=expected_interval):
         return None
     return (bars[index].close / bars[index - lag].close - 1.0) * 10_000.0
 
 
-def _vol_bps(bars: Sequence[MarketBar], index: int, window: int) -> float | None:
-    if index - window < 0:
+def _vol_bps(
+    bars: Sequence[MarketBar],
+    index: int,
+    window: int,
+    *,
+    expected_interval: timedelta,
+) -> float | None:
+    if not _history_is_contiguous(bars, index, window, expected_interval=expected_interval):
         return None
     values = [
         log(bars[j].close / bars[j - 1].close) * 10_000.0
@@ -45,6 +77,11 @@ class CausalPeerIndex:
     Timestamp extraction is intentionally done once. Reusing this object avoids the
     O(target_rows * peer_rows) behavior that results from rebuilding the timestamp
     list for every target lookup.
+
+    Peer returns and volatility are emitted only when the raw peer bars required by
+    that feature are exactly contiguous at the expected interval. This prevents a
+    cross-market feature from silently spanning a weekend, overnight closure, or data
+    gap even when the latest peer observation itself is sufficiently fresh.
     """
 
     bars: tuple[MarketBar, ...]
@@ -60,9 +97,12 @@ class CausalPeerIndex:
         decision_timestamp: datetime,
         *,
         max_staleness: timedelta = timedelta(minutes=15),
+        expected_interval: timedelta = timedelta(minutes=5),
     ) -> PeerSnapshot | None:
         if max_staleness < timedelta(0):
             raise ValueError("max_staleness must be non-negative")
+        if expected_interval <= timedelta(0):
+            raise ValueError("expected_interval must be positive")
         index = bisect_right(self.timestamps, decision_timestamp) - 1
         if index < 0:
             return None
@@ -76,10 +116,10 @@ class CausalPeerIndex:
             peer_index=index,
             peer_timestamp=peer_timestamp,
             staleness=staleness,
-            ret_1_bps=_return_bps(self.bars, index, 1),
-            ret_6_bps=_return_bps(self.bars, index, 6),
-            ret_12_bps=_return_bps(self.bars, index, 12),
-            vol_12_bps=_vol_bps(self.bars, index, 12),
+            ret_1_bps=_return_bps(self.bars, index, 1, expected_interval=expected_interval),
+            ret_6_bps=_return_bps(self.bars, index, 6, expected_interval=expected_interval),
+            ret_12_bps=_return_bps(self.bars, index, 12, expected_interval=expected_interval),
+            vol_12_bps=_vol_bps(self.bars, index, 12, expected_interval=expected_interval),
         )
 
 
@@ -88,6 +128,7 @@ def causal_peer_snapshot(
     decision_timestamp: datetime,
     *,
     max_staleness: timedelta = timedelta(minutes=15),
+    expected_interval: timedelta = timedelta(minutes=5),
 ) -> PeerSnapshot | None:
     """Return one causal peer snapshot.
 
@@ -97,4 +138,5 @@ def causal_peer_snapshot(
     return CausalPeerIndex.build(peer_bars).snapshot(
         decision_timestamp,
         max_staleness=max_staleness,
+        expected_interval=expected_interval,
     )

@@ -24,6 +24,7 @@ def _evaluate(
     take_profit_bps: float,
     stop_loss_bps: float,
     round_trip_cost_bps: float,
+    progress_every: int | None = None,
 ):
     predictor = WalkForwardXGBoostPredictor(bars, config)
     predictions: list[Prediction] = []
@@ -32,7 +33,8 @@ def _evaluate(
 
     first_index = max(48, config.min_train_rows + config.horizon_bars)
     last_index = len(bars) - config.horizon_bars - 1
-    for index in range(first_index, last_index + 1):
+    total = max(0, last_index - first_index + 1)
+    for offset, index in enumerate(range(first_index, last_index + 1), start=1):
         try:
             prediction = predictor.predict_at_index(index)
         except ValueError as exc:
@@ -59,6 +61,13 @@ def _evaluate(
                     stop_loss_bps=stop_loss_bps,
                     round_trip_cost_bps=round_trip_cost_bps,
                 )
+            )
+
+        if progress_every and (offset % progress_every == 0 or offset == total):
+            print(
+                f"[{symbol} {version}] progress {offset}/{total} "
+                f"({offset / total:.1%}) fits={predictor._fit_count}",
+                flush=True,
             )
 
     metrics = calculate_metrics(predictions, directional_hits, trades)

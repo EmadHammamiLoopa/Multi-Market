@@ -124,6 +124,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--round-trip-cost-bps", type=float, default=2.0)
     parser.add_argument("--v0-baseline-json")
     parser.add_argument("--output-json", required=True)
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=5000,
+        help="print walk-forward progress every N decision bars (default: 5000; 0 disables)",
+    )
     return parser
 
 
@@ -131,30 +137,35 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if any(not 0.5 <= threshold <= 1.0 for threshold in args.thresholds):
         raise SystemExit("all --thresholds must be in [0.5, 1]")
+    if args.progress_every < 0:
+        raise SystemExit("--progress-every must be non-negative")
 
     bars = load_ohlc_csv(args.csv)
     dataset_hash = sha256_file(args.csv)
     v0_baseline = _read_v0_baseline(args.v0_baseline_json)
     horizon_rows: list[dict[str, object]] = []
 
-    print(f"Multi-Market V1 research diagnostics | {args.symbol}")
-    print("=" * 104)
-    print(f"Dataset SHA-256 : {dataset_hash}")
-    print(f"Bars            : {len(bars)}")
+    print(f"Multi-Market V1 research diagnostics | {args.symbol}", flush=True)
+    print("=" * 104, flush=True)
+    print(f"Dataset SHA-256 : {dataset_hash}", flush=True)
+    print(f"Bars            : {len(bars)}", flush=True)
     print(
         f"Range           : {bars[0].timestamp.astimezone(timezone.utc).isoformat()} .. "
-        f"{bars[-1].timestamp.astimezone(timezone.utc).isoformat()}"
+        f"{bars[-1].timestamp.astimezone(timezone.utc).isoformat()}",
+        flush=True,
     )
     if v0_baseline:
         accuracy = v0_baseline.get("selected_accuracy")
         print(
             "Frozen V0       : "
             + (f"{float(accuracy):.2%}" if accuracy is not None else "n/a")
-            + f" ({v0_baseline.get('actionable')} actionable)"
+            + f" ({v0_baseline.get('actionable')} actionable)",
+            flush=True,
         )
-    print()
+    print(flush=True)
 
     for horizon in args.horizons:
+        print(f"Starting horizon {horizon} bars...", flush=True)
         # Evaluate once at 0.50 so threshold sweeps reuse identical walk-forward predictions.
         config = V1Config(
             horizon_bars=horizon,
@@ -171,12 +182,13 @@ def main(argv: list[str] | None = None) -> int:
             take_profit_bps=args.take_profit_bps,
             stop_loss_bps=args.stop_loss_bps,
             round_trip_cost_bps=args.round_trip_cost_bps,
+            progress_every=(args.progress_every or None),
         )
 
         threshold_rows: list[dict[str, object]] = []
-        print(f"Horizon {horizon} bars")
-        print("threshold coverage accuracy   PF   exp(bp) execTrades execPF execExp net% maxDD%")
-        print("-" * 88)
+        print(f"Horizon {horizon} bars", flush=True)
+        print("threshold coverage accuracy   PF   exp(bp) execTrades execPF execExp net% maxDD%", flush=True)
+        print("-" * 88, flush=True)
         for threshold in args.thresholds:
             p2, h2, t2 = threshold_predictions(predictions, hits, trades, threshold)
             metrics = calculate_metrics(p2, h2, t2)
@@ -197,10 +209,10 @@ def main(argv: list[str] | None = None) -> int:
                 f"{threshold:8.2f} {metrics.coverage:7.2%} {metrics.directional_accuracy:7.2%} "
                 f"{pf:>5s} {metrics.expectancy_bps:+8.2f} {portfolio.trades:10d} "
                 f"{exec_pf:>6s} {portfolio.expectancy_bps:+7.2f} "
-                f"{portfolio.net_return_pct:+5.2f} {portfolio.max_drawdown_pct:6.2f}"
+                f"{portfolio.net_return_pct:+5.2f} {portfolio.max_drawdown_pct:6.2f}",
+                flush=True,
             )
 
-        # This is an exploratory ranking only; it must not be treated as an untouched test selection.
         eligible = [
             row for row in threshold_rows
             if row["execution"]["trades"] >= 20
@@ -222,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
                 "top_feature_importance": _feature_importance(predictor)[:20],
             }
         )
-        print(f"Exploratory best threshold: {best['threshold']:.2f} (not an untouched-test choice)\n")
+        print(f"Exploratory best threshold: {best['threshold']:.2f} (not an untouched-test choice)\n", flush=True)
 
     payload = {
         "symbol": args.symbol,
@@ -255,7 +267,7 @@ def main(argv: list[str] | None = None) -> int:
     output = Path(args.output_json)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
-    print(f"Research manifest: {output}")
+    print(f"Research manifest: {output}", flush=True)
     return 0
 
 

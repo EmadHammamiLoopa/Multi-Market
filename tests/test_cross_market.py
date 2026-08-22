@@ -68,7 +68,9 @@ class CrossMarketAlignmentTests(unittest.TestCase):
     def test_gap_inside_peer_history_blocks_affected_features(self) -> None:
         bars = [_bar(i, 100.0 + i) for i in range(20)]
         del bars[8]
-        snapshot = causal_peer_snapshot(bars, bars[14].timestamp, max_staleness=timedelta(minutes=0))
+        # After deleting original bar 8, bars[13] is original bar 14. Its
+        # one-bar history is clean, but its six/twelve-bar windows cross the gap.
+        snapshot = causal_peer_snapshot(bars, bars[13].timestamp, max_staleness=timedelta(minutes=0))
         self.assertIsNotNone(snapshot)
         assert snapshot is not None
         self.assertIsNotNone(snapshot.ret_1_bps)

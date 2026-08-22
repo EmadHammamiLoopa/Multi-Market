@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .cross_market import CausalPeerIndex
 from .data import load_ohlc_csv
+from .data_quality import audit_bars
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -31,6 +32,14 @@ def _parse_peer(value: str) -> tuple[str, str]:
     return symbol, path
 
 
+def _hard_eligible(bars, symbol: str) -> set[int]:
+    return {
+        row.index
+        for row in audit_bars(list(bars), symbol=symbol)
+        if row.session_eligible and not row.zero_range and not row.repeated_ohlc
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.max_staleness_minutes < 0:
@@ -41,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("at least one --peer SYMBOL=CSV is required")
     peer_bars = {symbol: load_ohlc_csv(path) for symbol, path in peers.items()}
     peer_indices = {symbol: CausalPeerIndex.build(bars) for symbol, bars in peer_bars.items()}
+    peer_eligible = {symbol: _hard_eligible(bars, symbol) for symbol, bars in peer_bars.items()}
     max_staleness = timedelta(minutes=args.max_staleness_minutes)
 
     payload_peers: dict[str, object] = {}
@@ -48,17 +58,23 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 86, flush=True)
     print(f"Target bars              : {len(target_bars)}", flush=True)
     print(f"Max peer staleness       : {args.max_staleness_minutes} minutes", flush=True)
+    print("Peer feature rule        : contiguous 5m + hard session/data-quality eligibility", flush=True)
 
     for symbol, bars in peer_bars.items():
         print(f"Scanning peer            : {symbol} ({len(bars)} bars)", flush=True)
         peer_index = peer_indices[symbol]
+        eligible = peer_eligible[symbol]
         available = 0
         future_violations = 0
         stale_or_missing = 0
         staleness_counts: Counter[int] = Counter()
         feature_complete = 0
         for target in target_bars:
-            snapshot = peer_index.snapshot(target.timestamp, max_staleness=max_staleness)
+            snapshot = peer_index.snapshot(
+                target.timestamp,
+                max_staleness=max_staleness,
+                eligible_indices=eligible,
+            )
             if snapshot is None:
                 stale_or_missing += 1
                 continue
@@ -80,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         payload_peers[symbol] = {
             "peer_bars": len(bars),
+            "peer_hard_eligible_bars": len(eligible),
             "available": available,
             "coverage": coverage,
             "feature_complete": feature_complete,
@@ -94,7 +111,10 @@ def main(argv: list[str] | None = None) -> int:
         "target_bars": len(target_bars),
         "max_staleness_minutes": args.max_staleness_minutes,
         "peers": payload_peers,
-        "note": "diagnostic only; as-of alignment uses latest peer timestamp <= target timestamp and never interpolates future data",
+        "note": (
+            "diagnostic only; as-of alignment uses latest peer timestamp <= target timestamp; "
+            "peer return/volatility features require contiguous 5m history and V2 hard session/data-quality eligibility"
+        ),
     }
     if args.output_json:
         output = Path(args.output_json)

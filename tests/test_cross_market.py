@@ -68,8 +68,6 @@ class CrossMarketAlignmentTests(unittest.TestCase):
     def test_gap_inside_peer_history_blocks_affected_features(self) -> None:
         bars = [_bar(i, 100.0 + i) for i in range(20)]
         del bars[8]
-        # After deleting original bar 8, bars[13] is original bar 14. Its
-        # one-bar history is clean, but its six/twelve-bar windows cross the gap.
         snapshot = causal_peer_snapshot(bars, bars[13].timestamp, max_staleness=timedelta(minutes=0))
         self.assertIsNotNone(snapshot)
         assert snapshot is not None
@@ -104,6 +102,40 @@ class CrossMarketAlignmentTests(unittest.TestCase):
         self.assertIsNone(default_snapshot.ret_1_bps)
         self.assertIsNotNone(custom_snapshot.ret_12_bps)
         self.assertIsNotNone(custom_snapshot.vol_12_bps)
+
+    def test_ineligible_peer_bar_inside_window_blocks_affected_features(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(25)]
+        eligible = set(range(len(bars)))
+        eligible.remove(18)
+        snapshot = causal_peer_snapshot(
+            bars,
+            bars[24].timestamp,
+            max_staleness=timedelta(minutes=0),
+            eligible_indices=eligible,
+        )
+        self.assertIsNotNone(snapshot)
+        assert snapshot is not None
+        self.assertIsNotNone(snapshot.ret_1_bps)
+        self.assertIsNone(snapshot.ret_6_bps)
+        self.assertIsNone(snapshot.ret_12_bps)
+        self.assertIsNone(snapshot.vol_12_bps)
+
+    def test_ineligible_peer_bar_before_window_does_not_block_features(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(25)]
+        eligible = set(range(len(bars)))
+        eligible.remove(5)
+        snapshot = causal_peer_snapshot(
+            bars,
+            bars[24].timestamp,
+            max_staleness=timedelta(minutes=0),
+            eligible_indices=eligible,
+        )
+        self.assertIsNotNone(snapshot)
+        assert snapshot is not None
+        self.assertIsNotNone(snapshot.ret_1_bps)
+        self.assertIsNotNone(snapshot.ret_6_bps)
+        self.assertIsNotNone(snapshot.ret_12_bps)
+        self.assertIsNotNone(snapshot.vol_12_bps)
 
 
 if __name__ == "__main__":

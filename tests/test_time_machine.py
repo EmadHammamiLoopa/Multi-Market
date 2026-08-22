@@ -3,7 +3,11 @@ from datetime import datetime, timedelta, timezone
 
 from multimarket.models import Direction, MarketBar, Prediction
 from multimarket.replay import ReplayConfig
-from multimarket.time_machine import audit_at_index, evenly_spaced_indices
+from multimarket.time_machine import (
+    audit_at_index,
+    evenly_spaced_indices,
+    evenly_spaced_window_indices,
+)
 
 
 class SpyPredictor:
@@ -65,6 +69,45 @@ class TimeMachineTests(unittest.TestCase):
         self.assertEqual(len(first), 5)
         self.assertEqual(first[0], 9)
         self.assertEqual(first[-1], 93)
+
+    def test_window_selection_is_deterministic_and_stays_inside_window(self):
+        bars = make_bars(100)
+        start = bars[20].timestamp.isoformat()
+        end = bars[60].timestamp.isoformat()
+        first = evenly_spaced_window_indices(
+            bars,
+            start_timestamp=start,
+            end_timestamp=end,
+            min_history_bars=10,
+            horizon_bars=6,
+            samples=5,
+        )
+        second = evenly_spaced_window_indices(
+            bars,
+            start_timestamp=start,
+            end_timestamp=end,
+            min_history_bars=10,
+            horizon_bars=6,
+            samples=5,
+        )
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 5)
+        self.assertEqual(first[0], 20)
+        self.assertEqual(first[-1], 60)
+        self.assertTrue(all(20 <= index <= 60 for index in first))
+
+    def test_window_selection_respects_history_and_future_eligibility(self):
+        bars = make_bars(30)
+        indices = evenly_spaced_window_indices(
+            bars,
+            start_timestamp=bars[0].timestamp.isoformat(),
+            end_timestamp=bars[-1].timestamp.isoformat(),
+            min_history_bars=10,
+            horizon_bars=6,
+            samples=100,
+        )
+        self.assertEqual(indices[0], 9)
+        self.assertEqual(indices[-1], 23)
 
 
 if __name__ == "__main__":

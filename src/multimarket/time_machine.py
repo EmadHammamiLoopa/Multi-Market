@@ -154,6 +154,45 @@ def _parse_timestamp(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def evenly_spaced_window_indices(
+    bars: Sequence[MarketBar],
+    *,
+    start_timestamp: str,
+    end_timestamp: str,
+    min_history_bars: int,
+    horizon_bars: int,
+    samples: int,
+) -> list[int]:
+    """Select deterministic evenly spaced valid decisions inside a UTC window.
+
+    Selection is based only on timestamps and structural eligibility. Outcomes,
+    predictions, returns, and prices are never inspected, preventing cherry-picking.
+    """
+    if samples <= 0:
+        raise ValueError("samples must be positive")
+    start = _parse_timestamp(start_timestamp)
+    end = _parse_timestamp(end_timestamp)
+    if end < start:
+        raise ValueError("end timestamp must be at or after start timestamp")
+
+    first_valid = min_history_bars - 1
+    last_valid = len(bars) - horizon_bars - 1
+    candidates = [
+        index
+        for index in range(max(0, first_valid), max(-1, last_valid) + 1)
+        if start <= bars[index].timestamp.astimezone(timezone.utc) <= end
+    ]
+    if not candidates:
+        raise ValueError("no structurally valid decision candles exist inside requested window")
+    if samples >= len(candidates):
+        return candidates
+    if samples == 1:
+        return [candidates[(len(candidates) - 1) // 2]]
+
+    last = len(candidates) - 1
+    return [candidates[(i * last) // (samples - 1)] for i in range(samples)]
+
+
 def indices_for_timestamps(
     bars: Sequence[MarketBar],
     timestamps: Sequence[str],
@@ -208,6 +247,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Audit an exact ISO-8601 candle timestamp; may be supplied multiple times",
     )
+    parser.add_argument(
+        "--start-timestamp",
+        help="Inclusive UTC/ISO-8601 start for deterministic window sampling",
+    )
+    parser.add_argument(
+        "--end-timestamp",
+        help="Inclusive UTC/ISO-8601 end for deterministic window sampling",
+    )
     parser.add_argument("--horizon-bars", type=int, default=6)
     parser.add_argument("--lookback-bars", type=int, default=24)
     parser.add_argument("--confidence-threshold", type=float, default=0.60)
@@ -230,6 +277,14 @@ def main(argv: list[str] | None = None) -> int:
         round_trip_cost_bps=args.round_trip_cost_bps,
     )
 
+    has_window_arg = args.start_timestamp is not None or args.end_timestamp is not None
+    if args.timestamp and has_window_arg:
+        raise SystemExit("--timestamp cannot be combined with --start-timestamp/--end-timestamp")
+    if has_window_arg and not (args.start_timestamp and args.end_timestamp):
+        raise SystemExit("--start-timestamp and --end-timestamp must be supplied together")
+
+    window_start = None
+    window_end = None
     if args.timestamp:
         indices = indices_for_timestamps(
             bars,
@@ -238,6 +293,18 @@ def main(argv: list[str] | None = None) -> int:
             horizon_bars=args.horizon_bars,
         )
         selection = "explicit historical timestamps"
+    elif has_window_arg:
+        indices = evenly_spaced_window_indices(
+            bars,
+            start_timestamp=args.start_timestamp,
+            end_timestamp=args.end_timestamp,
+            min_history_bars=args.lookback_bars,
+            horizon_bars=args.horizon_bars,
+            samples=args.samples,
+        )
+        window_start = _parse_timestamp(args.start_timestamp)
+        window_end = _parse_timestamp(args.end_timestamp)
+        selection = "evenly spaced valid candles inside frozen historical window (no cherry-picking)"
     else:
         indices = evenly_spaced_indices(
             len(bars),
@@ -262,7 +329,13 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 92)
     print(f"Dataset SHA-256 : {sha256_file(args.csv)}")
     print(f"Selection       : {selection}")
-    print(f"History visible : only candles at/before each decision timestamp")
+    if window_start is not None and window_end is not None:
+        print(
+            "Frozen window   : "
+            f"{window_start.isoformat().replace('+00:00', 'Z')} .. "
+            f"{window_end.isoformat().replace('+00:00', 'Z')}"
+        )
+    print("History visible : only candles at/before each decision timestamp")
     print(f"Future horizon  : {args.horizon_bars} bars")
     print()
     print(
@@ -308,6 +381,12 @@ def main(argv: list[str] | None = None) -> int:
             "version": args.version_label,
             "dataset_sha256": sha256_file(args.csv),
             "selection": selection,
+            "window_start": (
+                window_start.isoformat().replace("+00:00", "Z") if window_start else None
+            ),
+            "window_end": (
+                window_end.isoformat().replace("+00:00", "Z") if window_end else None
+            ),
             "horizon_bars": args.horizon_bars,
             "lookback_bars": args.lookback_bars,
             "confidence_threshold": args.confidence_threshold,

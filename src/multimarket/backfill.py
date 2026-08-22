@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -64,12 +64,7 @@ def _get(url: str) -> dict:
 
 
 class RequestPacer:
-    """Space API requests so a shared per-minute quota is not burst-consumed.
-
-    A single instance should be shared across all symbols in one CLI run.  The
-    default CLI rate is 8 requests/minute, matching Twelve Data Basic.  Tests
-    can inject monotonic/sleep callables so pacing remains deterministic.
-    """
+    """Space API requests so a shared per-minute quota is not burst-consumed."""
 
     def __init__(
         self,
@@ -108,9 +103,11 @@ def _retry_after_seconds(exc: HTTPError) -> float:
             return max(1.0, float(header))
         except ValueError:
             pass
-    # Twelve Data Basic credits reset each minute.  A full minute is a safe
-    # fallback when no Retry-After header is supplied.
     return 60.0
+
+
+def _network_retry_delay(attempt: int) -> float:
+    return min(60.0, 5.0 * (2 ** max(0, attempt - 1)))
 
 
 def _get_with_rate_limit_retry(
@@ -119,25 +116,41 @@ def _get_with_rate_limit_retry(
     getter: Callable[[str], dict],
     pacer: RequestPacer | None,
     max_429_retries: int,
+    max_network_retries: int = 5,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> dict:
     if max_429_retries < 0:
         raise ValueError("max_429_retries must be non-negative")
+    if max_network_retries < 0:
+        raise ValueError("max_network_retries must be non-negative")
 
-    attempt = 0
+    rate_attempt = 0
+    network_attempt = 0
     while True:
         if pacer is not None:
             pacer.before_request()
         try:
             return getter(url)
         except HTTPError as exc:
-            if exc.code != 429 or attempt >= max_429_retries:
+            if exc.code != 429 or rate_attempt >= max_429_retries:
                 raise
-            attempt += 1
+            rate_attempt += 1
             delay = _retry_after_seconds(exc)
             print(
-                f"RATE LIMIT 429: retry {attempt}/{max_429_retries} "
-                f"after quota reset"
+                f"RATE LIMIT 429: retry {rate_attempt}/{max_429_retries} "
+                f"after quota reset ({delay:.0f}s)"
+            )
+            sleep_fn(delay)
+            if pacer is not None:
+                pacer.reset()
+        except (URLError, TimeoutError) as exc:
+            if network_attempt >= max_network_retries:
+                raise
+            network_attempt += 1
+            delay = _network_retry_delay(network_attempt)
+            print(
+                f"NETWORK RETRY: {network_attempt}/{max_network_retries} "
+                f"after {delay:.0f}s ({exc})"
             )
             sleep_fn(delay)
             if pacer is not None:
@@ -210,6 +223,7 @@ def backfill_symbol(
     getter=_get,
     pacer: RequestPacer | None = None,
     max_429_retries: int = 2,
+    max_network_retries: int = 5,
     retry_sleep_fn: Callable[[float], None] = time.sleep,
 ) -> Path:
     if start >= end:
@@ -218,6 +232,8 @@ def backfill_symbol(
         raise ValueError("chunk_days must be positive")
     if max_429_retries < 0:
         raise ValueError("max_429_retries must be non-negative")
+    if max_network_retries < 0:
+        raise ValueError("max_network_retries must be non-negative")
     key = (api_key or os.getenv("TWELVE_DATA_API_KEY") or "").strip()
     if not key:
         raise RuntimeError("TWELVE_DATA_API_KEY is not set")
@@ -254,6 +270,7 @@ def backfill_symbol(
             getter=getter,
             pacer=pacer,
             max_429_retries=max_429_retries,
+            max_network_retries=max_network_retries,
             sleep_fn=retry_sleep_fn,
         )
         rows = parse_twelve_time_series(payload)
@@ -312,19 +329,27 @@ def build_parser() -> argparse.ArgumentParser:
         default=2,
         help="retry a 429 after the provider quota reset (default: 2)",
     )
+    parser.add_argument(
+        "--max-network-retries",
+        type=int,
+        default=5,
+        help="retry temporary DNS/network/timeouts with exponential backoff (default: 5)",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
     start = _parse_utc(args.start)
     end = _parse_utc(args.end)
     if args.requests_per_minute <= 0:
         parser.error("--requests-per-minute must be positive")
     if args.max_429_retries < 0:
         parser.error("--max-429-retries must be non-negative")
+    if args.max_network_retries < 0:
+        parser.error("--max-network-retries must be non-negative")
 
-    # One shared pacer prevents symbol boundaries from creating new bursts.
     pacer = RequestPacer(args.requests_per_minute)
     failures = 0
     for symbol in args.symbols:
@@ -339,6 +364,7 @@ def main(argv: list[str] | None = None) -> int:
                 state_dir=args.state_dir,
                 pacer=pacer,
                 max_429_retries=args.max_429_retries,
+                max_network_retries=args.max_network_retries,
             )
         except Exception as exc:
             failures += 1

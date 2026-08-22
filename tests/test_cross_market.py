@@ -65,6 +65,44 @@ class CrossMarketAlignmentTests(unittest.TestCase):
         after = index.snapshot(decision)
         self.assertEqual(before, after)
 
+    def test_gap_inside_peer_history_blocks_affected_features(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(20)]
+        del bars[8]
+        snapshot = causal_peer_snapshot(bars, bars[14].timestamp, max_staleness=timedelta(minutes=0))
+        self.assertIsNotNone(snapshot)
+        assert snapshot is not None
+        self.assertIsNotNone(snapshot.ret_1_bps)
+        self.assertIsNone(snapshot.ret_6_bps)
+        self.assertIsNone(snapshot.ret_12_bps)
+        self.assertIsNone(snapshot.vol_12_bps)
+
+    def test_gap_before_required_window_does_not_block_features(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(25)]
+        del bars[2]
+        snapshot = causal_peer_snapshot(bars, bars[-1].timestamp, max_staleness=timedelta(minutes=0))
+        self.assertIsNotNone(snapshot)
+        assert snapshot is not None
+        self.assertIsNotNone(snapshot.ret_1_bps)
+        self.assertIsNotNone(snapshot.ret_6_bps)
+        self.assertIsNotNone(snapshot.ret_12_bps)
+        self.assertIsNotNone(snapshot.vol_12_bps)
+
+    def test_custom_expected_interval_is_respected(self) -> None:
+        bars = [_bar(i * 3, 100.0 + i) for i in range(20)]
+        default_snapshot = causal_peer_snapshot(bars, bars[-1].timestamp, max_staleness=timedelta(minutes=0))
+        custom_snapshot = causal_peer_snapshot(
+            bars,
+            bars[-1].timestamp,
+            max_staleness=timedelta(minutes=0),
+            expected_interval=timedelta(minutes=15),
+        )
+        self.assertIsNotNone(default_snapshot)
+        self.assertIsNotNone(custom_snapshot)
+        assert default_snapshot is not None and custom_snapshot is not None
+        self.assertIsNone(default_snapshot.ret_1_bps)
+        self.assertIsNotNone(custom_snapshot.ret_12_bps)
+        self.assertIsNotNone(custom_snapshot.vol_12_bps)
+
 
 if __name__ == "__main__":
     unittest.main()

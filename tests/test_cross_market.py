@@ -12,6 +12,11 @@ def _bar(minute: int, close: float) -> MarketBar:
     return MarketBar(timestamp=ts, open=close, high=close, low=close, close=close)
 
 
+class _NoIterFrozenSet(frozenset[int]):
+    def __iter__(self):
+        raise AssertionError("eligibility set must not be copied/iterated wholesale")
+
+
 class CrossMarketAlignmentTests(unittest.TestCase):
     def test_never_uses_future_peer_bar(self) -> None:
         bars = [_bar(i, 100.0 + i) for i in range(20)]
@@ -134,6 +139,20 @@ class CrossMarketAlignmentTests(unittest.TestCase):
         assert snapshot is not None
         self.assertIsNotNone(snapshot.ret_1_bps)
         self.assertIsNotNone(snapshot.ret_6_bps)
+        self.assertIsNotNone(snapshot.ret_12_bps)
+        self.assertIsNotNone(snapshot.vol_12_bps)
+
+    def test_frozenset_eligibility_is_reused_without_wholesale_copy(self) -> None:
+        bars = [_bar(i, 100.0 + i) for i in range(25)]
+        eligible = _NoIterFrozenSet(range(len(bars)))
+        snapshot = causal_peer_snapshot(
+            bars,
+            bars[24].timestamp,
+            max_staleness=timedelta(minutes=0),
+            eligible_indices=eligible,
+        )
+        self.assertIsNotNone(snapshot)
+        assert snapshot is not None
         self.assertIsNotNone(snapshot.ret_12_bps)
         self.assertIsNotNone(snapshot.vol_12_bps)
 

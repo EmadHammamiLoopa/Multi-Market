@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from bisect import bisect_right
+from collections.abc import Set as AbstractSet
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from math import log, sqrt
@@ -37,7 +38,10 @@ def _history_is_usable(
     if start < 0:
         return False
     if eligible_indices is not None:
-        eligible = eligible_indices if isinstance(eligible_indices, set) else set(eligible_indices)
+        # set and frozenset are already O(1)-membership containers. In particular,
+        # V2.1 stores peer eligibility as a frozenset; copying that ~100k-element
+        # collection for every feature lookup was the dominant evaluation cost.
+        eligible = eligible_indices if isinstance(eligible_indices, AbstractSet) else set(eligible_indices)
         if any(j not in eligible for j in range(start, index + 1)):
             return False
     return all(

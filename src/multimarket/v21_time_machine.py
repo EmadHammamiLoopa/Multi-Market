@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -194,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
             "peers": sorted(peers),
             "feature_count": len(predictor.feature_names),
             "max_peer_staleness_minutes": args.max_peer_staleness_minutes,
-            "frozen_v2_config": vars(base),
+            "frozen_v2_config": asdict(base),
             "frozen_samples": len(frozen_rows),
             "gate_blocked": gated,
             "unavailable": unavailable,

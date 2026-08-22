@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Collection, Sequence
 
 from .features import FEATURE_NAMES, FeaturePoint, build_feature_points
 from .models import Direction, MarketBar, Prediction
@@ -55,9 +55,7 @@ def _fit_xgb(X, y, random_state: int):
     try:
         from xgboost import XGBClassifier
     except ImportError as exc:
-        raise RuntimeError(
-            "V1 requires xgboost. Install with: python -m pip install -e '.[ml]'"
-        ) from exc
+        raise RuntimeError("V1 requires xgboost. Install with: python -m pip install -e '.[ml]'") from exc
 
     model = XGBClassifier(
         n_estimators=350,
@@ -79,11 +77,9 @@ def _fit_xgb(X, y, random_state: int):
 
 
 def _calibrate_probability(raw_probability: float, validation_pairs: Sequence[tuple[float, int]]) -> float:
-    """Simple leakage-safe calibration using only a historical validation tail."""
     confidence = max(raw_probability, 1.0 - raw_probability)
     if not validation_pairs:
         return confidence
-
     lower = max(0.50, confidence - 0.05)
     upper = min(1.00, confidence + 0.05)
     matching = []
@@ -99,14 +95,27 @@ def _calibrate_probability(raw_probability: float, validation_pairs: Sequence[tu
 
 
 class WalkForwardXGBoostPredictor:
-    """Expanding-window V1 predictor with historical-only calibration."""
+    """Expanding-window V1 predictor with optional hard training eligibility mask."""
 
-    def __init__(self, bars: Sequence[MarketBar], config: V1Config) -> None:
+    def __init__(
+        self,
+        bars: Sequence[MarketBar],
+        config: V1Config,
+        eligible_indices: Collection[int] | None = None,
+    ) -> None:
         self.bars = bars
         self.config = config
+        self.eligible_indices = set(eligible_indices) if eligible_indices is not None else None
         self.feature_points = build_feature_points(bars)
         self.feature_by_index = {point.bar_index: point for point in self.feature_points}
         self.labeled = build_labeled_points(bars, self.feature_points, config.horizon_bars)
+        if self.eligible_indices is not None:
+            self.labeled = [
+                point
+                for point in self.labeled
+                if point.bar_index in self.eligible_indices
+                and point.bar_index + config.horizon_bars in self.eligible_indices
+            ]
         self._model = None
         self._model_trained_through = -1
         self._validation_pairs: list[tuple[float, int]] = []
@@ -117,17 +126,12 @@ class WalkForwardXGBoostPredictor:
         return FEATURE_NAMES
 
     def _train_for_index(self, decision_index: int) -> None:
-        # Reuse the cached model before scanning the full labeled history. This is
-        # behavior-equivalent to the old ordering for monotonic walk-forward use,
-        # but avoids an O(history) label scan on every bar between retrains.
         if (
             self._model is not None
             and decision_index >= self._model_trained_through
             and decision_index - self._model_trained_through < self.config.retrain_every
         ):
             return
-
-        # A label is eligible only after its complete future horizon is already known.
         eligible = [
             point
             for point in self.labeled
@@ -135,47 +139,33 @@ class WalkForwardXGBoostPredictor:
         ]
         if len(eligible) < self.config.min_train_rows:
             raise ValueError(
-                f"V1 needs at least {self.config.min_train_rows} labeled historical rows; "
-                f"only {len(eligible)} are available at this timestamp"
+                f"V1 needs at least {self.config.min_train_rows} labeled historical rows; only {len(eligible)} are available at this timestamp"
             )
-
-        split = max(
-            self.config.min_train_rows,
-            int(len(eligible) * (1.0 - self.config.validation_fraction)),
-        )
+        split = max(self.config.min_train_rows, int(len(eligible) * (1.0 - self.config.validation_fraction)))
         split = min(split, len(eligible) - 1)
         train = eligible[:split]
         validation = eligible[split:]
-
         X_train = [list(point.features) for point in train]
         y_train = [point.label for point in train]
         self._model = _fit_xgb(X_train, y_train, self.config.random_state)
         self._fit_count += 1
-
         self._validation_pairs = []
         if validation:
-            probabilities = self._model.predict_proba(
-                [list(point.features) for point in validation]
-            )[:, 1]
-            self._validation_pairs = [
-                (float(probability), point.label)
-                for probability, point in zip(probabilities, validation)
-            ]
+            probabilities = self._model.predict_proba([list(point.features) for point in validation])[:, 1]
+            self._validation_pairs = [(float(probability), point.label) for probability, point in zip(probabilities, validation)]
         self._model_trained_through = decision_index
 
     def predict_at_index(self, decision_index: int) -> Prediction:
+        if self.eligible_indices is not None and decision_index not in self.eligible_indices:
+            raise ValueError("decision index is not eligible for this predictor")
         point = self.feature_by_index.get(decision_index)
         if point is None:
             raise ValueError("decision index does not have enough feature history")
         self._train_for_index(decision_index)
         assert self._model is not None
-        probability_long = float(
-            self._model.predict_proba([list(point.values)])[0][1]
-        )
+        probability_long = float(self._model.predict_proba([list(point.values)])[0][1])
         direction = Direction.LONG if probability_long >= 0.5 else Direction.SHORT
-        calibrated_confidence = _calibrate_probability(
-            probability_long, self._validation_pairs
-        )
+        calibrated_confidence = _calibrate_probability(probability_long, self._validation_pairs)
         if calibrated_confidence < self.config.confidence_threshold:
             direction = Direction.NO_TRADE
         bar = self.bars[decision_index]

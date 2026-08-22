@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multi-market-replay"
-version = "0.1.1"
+version = "0.1.2"
 description = "Point-in-time historical replay framework for multi-market trading research"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,5 +33,5 @@ where = ["src"]
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
-ml = ["xgboost>=2.1,<4"]
-all = ["matplotlib>=3.8", "xgboost>=2.1,<4"]
+ml = ["xgboost>=2.1,<4", "scikit-learn>=1.5"]
+all = ["matplotlib>=3.8", "xgboost>=2.1,<4", "scikit-learn>=1.5"]

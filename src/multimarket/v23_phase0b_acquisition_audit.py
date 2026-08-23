@@ -4,9 +4,10 @@ import argparse
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Sequence
+from zoneinfo import ZoneInfo
 
 from .data import load_ohlc_csv
 from .data_quality import audit_bars
@@ -20,9 +21,14 @@ SENSORS = (
 )
 TARGETS = ("EURUSD", "XAUUSD", "BTCUSD", "ETHUSD", "QQQ")
 
-REQUIRED_START = datetime(2025, 8, 1, tzinfo=timezone.utc)
-REQUIRED_END = datetime(2026, 8, 21, 23, 59, 59, tzinfo=timezone.utc)
+_NEW_YORK = ZoneInfo("America/New_York")
+REQUIRED_START_TRADING_DATE = date(2025, 8, 1)
+REQUIRED_END_TRADING_DATE = date(2026, 8, 21)
 MIN_RTH_BARS = 10_000
+COVERAGE_SEMANTICS = (
+    "America/New_York trading-date coverage for U.S. RTH sensors; "
+    "first/last bars are not required at UTC midnight"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +39,8 @@ class SensorAudit:
     bars: int
     first_timestamp: str
     last_timestamp: str
+    first_trading_date: str
+    last_trading_date: str
     hard_eligible_bars: int
     session_ineligible: int
     zero_range: int
@@ -58,6 +66,19 @@ def _iso(ts: datetime) -> str:
     return ts.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _trading_date(ts: datetime) -> date:
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return ts.astimezone(_NEW_YORK).date()
+
+
+def _coverage_flags(first: datetime, last: datetime) -> tuple[bool, bool]:
+    return (
+        _trading_date(first) <= REQUIRED_START_TRADING_DATE,
+        _trading_date(last) >= REQUIRED_END_TRADING_DATE,
+    )
+
+
 def audit_sensor(path: Path, symbol: str) -> SensorAudit:
     sha = _sha256(path)
     try:
@@ -70,6 +91,8 @@ def audit_sensor(path: Path, symbol: str) -> SensorAudit:
             bars=0,
             first_timestamp="",
             last_timestamp="",
+            first_trading_date="",
+            last_trading_date="",
             hard_eligible_bars=0,
             session_ineligible=0,
             zero_range=0,
@@ -88,8 +111,7 @@ def audit_sensor(path: Path, symbol: str) -> SensorAudit:
     ]
     first = bars[0].timestamp.astimezone(timezone.utc)
     last = bars[-1].timestamp.astimezone(timezone.utc)
-    covers_start = first <= REQUIRED_START
-    covers_end = last >= REQUIRED_END
+    covers_start, covers_end = _coverage_flags(first, last)
     enough = len(hard_eligible) >= MIN_RTH_BARS
     passed = covers_start and covers_end and enough
     return SensorAudit(
@@ -99,6 +121,8 @@ def audit_sensor(path: Path, symbol: str) -> SensorAudit:
         bars=len(bars),
         first_timestamp=_iso(first),
         last_timestamp=_iso(last),
+        first_trading_date=_trading_date(first).isoformat(),
+        last_trading_date=_trading_date(last).isoformat(),
         hard_eligible_bars=len(hard_eligible),
         session_ineligible=sum(not row.session_eligible for row in quality),
         zero_range=sum(row.zero_range for row in quality),
@@ -126,6 +150,17 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _base_payload() -> dict[str, object]:
+    return {
+        "version": "V2.3-PHASE0B-ACQUISITION-AUDIT",
+        "frozen_sensors": list(SENSORS),
+        "required_start_trading_date": REQUIRED_START_TRADING_DATE.isoformat(),
+        "required_end_trading_date": REQUIRED_END_TRADING_DATE.isoformat(),
+        "coverage_semantics": COVERAGE_SEMANTICS,
+        "minimum_hard_eligible_bars": MIN_RTH_BARS,
+    }
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     data_dir = Path(args.data_dir)
@@ -138,11 +173,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     ]
     if missing:
         payload = {
-            "version": "V2.3-PHASE0B-ACQUISITION-AUDIT",
-            "frozen_sensors": list(SENSORS),
-            "required_start": _iso(REQUIRED_START),
-            "required_end": _iso(REQUIRED_END),
-            "minimum_hard_eligible_bars": MIN_RTH_BARS,
+            **_base_payload(),
             "missing_sensors": missing,
             "sensor_results": [],
             "gate_pass": False,
@@ -160,11 +191,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     gate_pass = all(result.status == "PASS" for result in results)
     invalid = [result for result in results if result.load_error]
     payload = {
-        "version": "V2.3-PHASE0B-ACQUISITION-AUDIT",
-        "frozen_sensors": list(SENSORS),
-        "required_start": _iso(REQUIRED_START),
-        "required_end": _iso(REQUIRED_END),
-        "minimum_hard_eligible_bars": MIN_RTH_BARS,
+        **_base_payload(),
         "missing_sensors": [],
         "invalid_sensor_files": [result.symbol for result in invalid],
         "sensor_results": [asdict(result) for result in results],
@@ -174,6 +201,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     print("===== V2.3 PHASE 0B ACQUISITION AUDIT =====")
+    print(f"coverage_semantics={COVERAGE_SEMANTICS}")
     for result in results:
         if result.load_error:
             print(
@@ -185,6 +213,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"{result.symbol:4s} status={result.status} bars={result.bars:6d} "
             f"eligible={result.hard_eligible_bars:6d} "
             f"start={result.first_timestamp} end={result.last_timestamp} "
+            f"trading_dates={result.first_trading_date}..{result.last_trading_date} "
             f"zero={result.zero_range} repeated={result.repeated_ohlc}"
         )
     print(f"invalid_sensor_files={','.join(result.symbol for result in invalid) or 'NONE'}")

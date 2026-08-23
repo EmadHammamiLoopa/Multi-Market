@@ -1,0 +1,2412 @@
+{
+  "version": "V2.3-PHASE0B-RAW-OHLC-DIAGNOSTIC",
+  "data_modified": false,
+  "predictive_scoring_performed": false,
+  "results": [
+    {
+      "symbol": "IWM",
+      "path": "data/IWM_5m.csv",
+      "row_count": 20676,
+      "anomaly_count": 1,
+      "anomalies": [
+        {
+          "csv_line": 6477,
+          "timestamp": "2025-11-28T14:35:00Z",
+          "open": 247.31,
+          "high": 247.7796,
+          "low": 247.089996,
+          "close": 247.78,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0004000000000132786,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 6475,
+              "timestamp": "2025-11-26T20:55:00Z",
+              "open": "247.53",
+              "high": "247.55",
+              "low": "247.14999",
+              "close": "247.32001"
+            },
+            {
+              "csv_line": 6476,
+              "timestamp": "2025-11-28T14:30:00Z",
+              "open": "247.965",
+              "high": "248.020004",
+              "low": "247.17999",
+              "close": "247.28999"
+            },
+            {
+              "csv_line": 6477,
+              "timestamp": "2025-11-28T14:35:00Z",
+              "open": "247.31",
+              "high": "247.7796",
+              "low": "247.089996",
+              "close": "247.78"
+            },
+            {
+              "csv_line": 6478,
+              "timestamp": "2025-11-28T14:40:00Z",
+              "open": "247.74001",
+              "high": "248.23",
+              "low": "247.50999",
+              "close": "248.21001"
+            },
+            {
+              "csv_line": 6479,
+              "timestamp": "2025-11-28T14:45:00Z",
+              "open": "248.25",
+              "high": "248.25",
+              "low": "247.72",
+              "close": "248.23"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "TLT",
+      "path": "data/TLT_5m.csv",
+      "row_count": 20676,
+      "anomaly_count": 12,
+      "anomalies": [
+        {
+          "csv_line": 3835,
+          "timestamp": "2025-10-10T14:25:00Z",
+          "open": 90.014999,
+          "high": 90.014999,
+          "low": 89.9822,
+          "close": 89.98,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.002200000000001978,
+          "neighbors": [
+            {
+              "csv_line": 3833,
+              "timestamp": "2025-10-10T14:15:00Z",
+              "open": "90.025002",
+              "high": "90.074997",
+              "low": "89.98",
+              "close": "90.0049973"
+            },
+            {
+              "csv_line": 3834,
+              "timestamp": "2025-10-10T14:20:00Z",
+              "open": "90.014999",
+              "high": "90.018204",
+              "low": "89.98",
+              "close": "90.014999"
+            },
+            {
+              "csv_line": 3835,
+              "timestamp": "2025-10-10T14:25:00Z",
+              "open": "90.014999",
+              "high": "90.014999",
+              "low": "89.9822",
+              "close": "89.98"
+            },
+            {
+              "csv_line": 3836,
+              "timestamp": "2025-10-10T14:30:00Z",
+              "open": "89.98",
+              "high": "90.025002",
+              "low": "89.9701",
+              "close": "89.9801"
+            },
+            {
+              "csv_line": 3837,
+              "timestamp": "2025-10-10T14:35:00Z",
+              "open": "89.975",
+              "high": "89.985",
+              "low": "89.935",
+              "close": "89.94"
+            }
+          ]
+        },
+        {
+          "csv_line": 17804,
+          "timestamp": "2026-07-01T14:30:00Z",
+          "open": 85.6919,
+          "high": 85.745,
+          "low": 85.6919,
+          "close": 85.75,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0049999999999954525,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17802,
+              "timestamp": "2026-07-01T14:20:00Z",
+              "open": "85.76",
+              "high": "85.79",
+              "low": "85.73",
+              "close": "85.73"
+            },
+            {
+              "csv_line": 17803,
+              "timestamp": "2026-07-01T14:25:00Z",
+              "open": "85.735",
+              "high": "85.735",
+              "low": "85.68",
+              "close": "85.69"
+            },
+            {
+              "csv_line": 17804,
+              "timestamp": "2026-07-01T14:30:00Z",
+              "open": "85.6919",
+              "high": "85.745",
+              "low": "85.6919",
+              "close": "85.75"
+            },
+            {
+              "csv_line": 17805,
+              "timestamp": "2026-07-01T14:35:00Z",
+              "open": "85.7487",
+              "high": "85.7487",
+              "low": "85.68",
+              "close": "85.71"
+            },
+            {
+              "csv_line": 17806,
+              "timestamp": "2026-07-01T14:40:00Z",
+              "open": "85.715",
+              "high": "85.73",
+              "low": "85.69",
+              "close": "85.69"
+            }
+          ]
+        },
+        {
+          "csv_line": 17818,
+          "timestamp": "2026-07-01T15:40:00Z",
+          "open": 85.67,
+          "high": 85.695,
+          "low": 85.64,
+          "close": 85.7,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.005000000000009663,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17816,
+              "timestamp": "2026-07-01T15:30:00Z",
+              "open": "85.665",
+              "high": "85.73",
+              "low": "85.665",
+              "close": "85.7"
+            },
+            {
+              "csv_line": 17817,
+              "timestamp": "2026-07-01T15:35:00Z",
+              "open": "85.69",
+              "high": "85.715",
+              "low": "85.65",
+              "close": "85.67"
+            },
+            {
+              "csv_line": 17818,
+              "timestamp": "2026-07-01T15:40:00Z",
+              "open": "85.67",
+              "high": "85.695",
+              "low": "85.64",
+              "close": "85.7"
+            },
+            {
+              "csv_line": 17819,
+              "timestamp": "2026-07-01T15:45:00Z",
+              "open": "85.6969",
+              "high": "85.715",
+              "low": "85.6969",
+              "close": "85.71"
+            },
+            {
+              "csv_line": 17820,
+              "timestamp": "2026-07-01T15:50:00Z",
+              "open": "85.715",
+              "high": "85.7399",
+              "low": "85.715",
+              "close": "85.74"
+            }
+          ]
+        },
+        {
+          "csv_line": 17820,
+          "timestamp": "2026-07-01T15:50:00Z",
+          "open": 85.715,
+          "high": 85.7399,
+          "low": 85.715,
+          "close": 85.74,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.99999999891088e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17818,
+              "timestamp": "2026-07-01T15:40:00Z",
+              "open": "85.67",
+              "high": "85.695",
+              "low": "85.64",
+              "close": "85.7"
+            },
+            {
+              "csv_line": 17819,
+              "timestamp": "2026-07-01T15:45:00Z",
+              "open": "85.6969",
+              "high": "85.715",
+              "low": "85.6969",
+              "close": "85.71"
+            },
+            {
+              "csv_line": 17820,
+              "timestamp": "2026-07-01T15:50:00Z",
+              "open": "85.715",
+              "high": "85.7399",
+              "low": "85.715",
+              "close": "85.74"
+            },
+            {
+              "csv_line": 17821,
+              "timestamp": "2026-07-01T15:55:00Z",
+              "open": "85.7399",
+              "high": "85.7399",
+              "low": "85.71",
+              "close": "85.7199"
+            },
+            {
+              "csv_line": 17822,
+              "timestamp": "2026-07-01T16:00:00Z",
+              "open": "85.72",
+              "high": "85.7399",
+              "low": "85.7",
+              "close": "85.74"
+            }
+          ]
+        },
+        {
+          "csv_line": 17822,
+          "timestamp": "2026-07-01T16:00:00Z",
+          "open": 85.72,
+          "high": 85.7399,
+          "low": 85.7,
+          "close": 85.74,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.99999999891088e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17820,
+              "timestamp": "2026-07-01T15:50:00Z",
+              "open": "85.715",
+              "high": "85.7399",
+              "low": "85.715",
+              "close": "85.74"
+            },
+            {
+              "csv_line": 17821,
+              "timestamp": "2026-07-01T15:55:00Z",
+              "open": "85.7399",
+              "high": "85.7399",
+              "low": "85.71",
+              "close": "85.7199"
+            },
+            {
+              "csv_line": 17822,
+              "timestamp": "2026-07-01T16:00:00Z",
+              "open": "85.72",
+              "high": "85.7399",
+              "low": "85.7",
+              "close": "85.74"
+            },
+            {
+              "csv_line": 17823,
+              "timestamp": "2026-07-01T16:05:00Z",
+              "open": "85.74",
+              "high": "85.74",
+              "low": "85.72",
+              "close": "85.73"
+            },
+            {
+              "csv_line": 17824,
+              "timestamp": "2026-07-01T16:10:00Z",
+              "open": "85.72",
+              "high": "85.7369",
+              "low": "85.72",
+              "close": "85.725"
+            }
+          ]
+        },
+        {
+          "csv_line": 17829,
+          "timestamp": "2026-07-01T16:35:00Z",
+          "open": 85.7402,
+          "high": 85.749,
+          "low": 85.7,
+          "close": 85.695,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.005000000000009663,
+          "neighbors": [
+            {
+              "csv_line": 17827,
+              "timestamp": "2026-07-01T16:25:00Z",
+              "open": "85.71",
+              "high": "85.745",
+              "low": "85.704",
+              "close": "85.74"
+            },
+            {
+              "csv_line": 17828,
+              "timestamp": "2026-07-01T16:30:00Z",
+              "open": "85.75",
+              "high": "85.7655",
+              "low": "85.74",
+              "close": "85.75"
+            },
+            {
+              "csv_line": 17829,
+              "timestamp": "2026-07-01T16:35:00Z",
+              "open": "85.7402",
+              "high": "85.749",
+              "low": "85.7",
+              "close": "85.695"
+            },
+            {
+              "csv_line": 17830,
+              "timestamp": "2026-07-01T16:40:00Z",
+              "open": "85.694",
+              "high": "85.7",
+              "low": "85.68",
+              "close": "85.69"
+            },
+            {
+              "csv_line": 17831,
+              "timestamp": "2026-07-01T16:45:00Z",
+              "open": "85.69",
+              "high": "85.7099",
+              "low": "85.69",
+              "close": "85.705"
+            }
+          ]
+        },
+        {
+          "csv_line": 17835,
+          "timestamp": "2026-07-01T17:05:00Z",
+          "open": 85.665,
+          "high": 85.665,
+          "low": 85.66,
+          "close": 85.67,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0049999999999954525,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17833,
+              "timestamp": "2026-07-01T16:55:00Z",
+              "open": "85.6869",
+              "high": "85.6869",
+              "low": "85.6414",
+              "close": "85.645"
+            },
+            {
+              "csv_line": 17834,
+              "timestamp": "2026-07-01T17:00:00Z",
+              "open": "85.645",
+              "high": "85.675",
+              "low": "85.64",
+              "close": "85.67"
+            },
+            {
+              "csv_line": 17835,
+              "timestamp": "2026-07-01T17:05:00Z",
+              "open": "85.665",
+              "high": "85.665",
+              "low": "85.66",
+              "close": "85.67"
+            },
+            {
+              "csv_line": 17836,
+              "timestamp": "2026-07-01T17:10:00Z",
+              "open": "85.675",
+              "high": "85.705",
+              "low": "85.675",
+              "close": "85.7"
+            },
+            {
+              "csv_line": 17837,
+              "timestamp": "2026-07-01T17:15:00Z",
+              "open": "85.69",
+              "high": "85.6999",
+              "low": "85.68",
+              "close": "85.69"
+            }
+          ]
+        },
+        {
+          "csv_line": 17841,
+          "timestamp": "2026-07-01T17:35:00Z",
+          "open": 85.675,
+          "high": 85.6899,
+          "low": 85.67,
+          "close": 85.69,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.00010000000000331966,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17839,
+              "timestamp": "2026-07-01T17:25:00Z",
+              "open": "85.66",
+              "high": "85.665",
+              "low": "85.65",
+              "close": "85.665"
+            },
+            {
+              "csv_line": 17840,
+              "timestamp": "2026-07-01T17:30:00Z",
+              "open": "85.665",
+              "high": "85.685",
+              "low": "85.66",
+              "close": "85.67"
+            },
+            {
+              "csv_line": 17841,
+              "timestamp": "2026-07-01T17:35:00Z",
+              "open": "85.675",
+              "high": "85.6899",
+              "low": "85.67",
+              "close": "85.69"
+            },
+            {
+              "csv_line": 17842,
+              "timestamp": "2026-07-01T17:40:00Z",
+              "open": "85.69",
+              "high": "85.755",
+              "low": "85.69",
+              "close": "85.75"
+            },
+            {
+              "csv_line": 17843,
+              "timestamp": "2026-07-01T17:45:00Z",
+              "open": "85.755",
+              "high": "85.78",
+              "low": "85.75",
+              "close": "85.77"
+            }
+          ]
+        },
+        {
+          "csv_line": 17851,
+          "timestamp": "2026-07-01T18:25:00Z",
+          "open": 85.65,
+          "high": 85.655,
+          "low": 85.6348,
+          "close": 85.631,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.0037999999999982492,
+          "neighbors": [
+            {
+              "csv_line": 17849,
+              "timestamp": "2026-07-01T18:15:00Z",
+              "open": "85.67",
+              "high": "85.68",
+              "low": "85.6402",
+              "close": "85.65"
+            },
+            {
+              "csv_line": 17850,
+              "timestamp": "2026-07-01T18:20:00Z",
+              "open": "85.645",
+              "high": "85.6694",
+              "low": "85.645",
+              "close": "85.65"
+            },
+            {
+              "csv_line": 17851,
+              "timestamp": "2026-07-01T18:25:00Z",
+              "open": "85.65",
+              "high": "85.655",
+              "low": "85.6348",
+              "close": "85.631"
+            },
+            {
+              "csv_line": 17852,
+              "timestamp": "2026-07-01T18:30:00Z",
+              "open": "85.63",
+              "high": "85.63",
+              "low": "85.6",
+              "close": "85.605"
+            },
+            {
+              "csv_line": 17853,
+              "timestamp": "2026-07-01T18:35:00Z",
+              "open": "85.605",
+              "high": "85.605",
+              "low": "85.59",
+              "close": "85.6"
+            }
+          ]
+        },
+        {
+          "csv_line": 17859,
+          "timestamp": "2026-07-01T19:05:00Z",
+          "open": 85.635,
+          "high": 85.655,
+          "low": 85.635,
+          "close": 85.66,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0049999999999954525,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17857,
+              "timestamp": "2026-07-01T18:55:00Z",
+              "open": "85.58",
+              "high": "85.6499",
+              "low": "85.564",
+              "close": "85.6499"
+            },
+            {
+              "csv_line": 17858,
+              "timestamp": "2026-07-01T19:00:00Z",
+              "open": "85.625",
+              "high": "85.645",
+              "low": "85.625",
+              "close": "85.63"
+            },
+            {
+              "csv_line": 17859,
+              "timestamp": "2026-07-01T19:05:00Z",
+              "open": "85.635",
+              "high": "85.655",
+              "low": "85.635",
+              "close": "85.66"
+            },
+            {
+              "csv_line": 17860,
+              "timestamp": "2026-07-01T19:10:00Z",
+              "open": "85.665",
+              "high": "85.67",
+              "low": "85.655",
+              "close": "85.66"
+            },
+            {
+              "csv_line": 17861,
+              "timestamp": "2026-07-01T19:15:00Z",
+              "open": "85.66",
+              "high": "85.66",
+              "low": "85.63",
+              "close": "85.63"
+            }
+          ]
+        },
+        {
+          "csv_line": 17862,
+          "timestamp": "2026-07-01T19:20:00Z",
+          "open": 85.625,
+          "high": 85.625,
+          "low": 85.6101,
+          "close": 85.63,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0049999999999954525,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 17860,
+              "timestamp": "2026-07-01T19:10:00Z",
+              "open": "85.665",
+              "high": "85.67",
+              "low": "85.655",
+              "close": "85.66"
+            },
+            {
+              "csv_line": 17861,
+              "timestamp": "2026-07-01T19:15:00Z",
+              "open": "85.66",
+              "high": "85.66",
+              "low": "85.63",
+              "close": "85.63"
+            },
+            {
+              "csv_line": 17862,
+              "timestamp": "2026-07-01T19:20:00Z",
+              "open": "85.625",
+              "high": "85.625",
+              "low": "85.6101",
+              "close": "85.63"
+            },
+            {
+              "csv_line": 17863,
+              "timestamp": "2026-07-01T19:25:00Z",
+              "open": "85.625",
+              "high": "85.635",
+              "low": "85.62",
+              "close": "85.625"
+            },
+            {
+              "csv_line": 17864,
+              "timestamp": "2026-07-01T19:30:00Z",
+              "open": "85.625",
+              "high": "85.645",
+              "low": "85.6099",
+              "close": "85.645"
+            }
+          ]
+        },
+        {
+          "csv_line": 17865,
+          "timestamp": "2026-07-01T19:35:00Z",
+          "open": 85.6401,
+          "high": 85.65,
+          "low": 85.62,
+          "close": 85.6199,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.00010000000000331966,
+          "neighbors": [
+            {
+              "csv_line": 17863,
+              "timestamp": "2026-07-01T19:25:00Z",
+              "open": "85.625",
+              "high": "85.635",
+              "low": "85.62",
+              "close": "85.625"
+            },
+            {
+              "csv_line": 17864,
+              "timestamp": "2026-07-01T19:30:00Z",
+              "open": "85.625",
+              "high": "85.645",
+              "low": "85.6099",
+              "close": "85.645"
+            },
+            {
+              "csv_line": 17865,
+              "timestamp": "2026-07-01T19:35:00Z",
+              "open": "85.6401",
+              "high": "85.65",
+              "low": "85.62",
+              "close": "85.6199"
+            },
+            {
+              "csv_line": 17866,
+              "timestamp": "2026-07-01T19:40:00Z",
+              "open": "85.615",
+              "high": "85.6299",
+              "low": "85.6",
+              "close": "85.62"
+            },
+            {
+              "csv_line": 17867,
+              "timestamp": "2026-07-01T19:45:00Z",
+              "open": "85.61",
+              "high": "85.61",
+              "low": "85.59",
+              "close": "85.6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "GLD",
+      "path": "data/GLD_5m.csv",
+      "row_count": 20676,
+      "anomaly_count": 3,
+      "anomalies": [
+        {
+          "csv_line": 336,
+          "timestamp": "2025-08-07T15:20:00Z",
+          "open": 311.89999,
+          "high": 311.89999,
+          "low": 311.80161,
+          "close": 311.79999,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.0016200000000026193,
+          "neighbors": [
+            {
+              "csv_line": 334,
+              "timestamp": "2025-08-07T15:10:00Z",
+              "open": "312.049988",
+              "high": "312.079987",
+              "low": "311.94",
+              "close": "312.059998"
+            },
+            {
+              "csv_line": 335,
+              "timestamp": "2025-08-07T15:15:00Z",
+              "open": "312.059998",
+              "high": "312.14999",
+              "low": "311.87",
+              "close": "311.89999"
+            },
+            {
+              "csv_line": 336,
+              "timestamp": "2025-08-07T15:20:00Z",
+              "open": "311.89999",
+              "high": "311.89999",
+              "low": "311.80161",
+              "close": "311.79999"
+            },
+            {
+              "csv_line": 337,
+              "timestamp": "2025-08-07T15:25:00Z",
+              "open": "311.73001",
+              "high": "311.79999",
+              "low": "311.60501",
+              "close": "311.72849"
+            },
+            {
+              "csv_line": 338,
+              "timestamp": "2025-08-07T15:30:00Z",
+              "open": "311.78",
+              "high": "311.9483",
+              "low": "311.77499",
+              "close": "311.92001"
+            }
+          ]
+        },
+        {
+          "csv_line": 341,
+          "timestamp": "2025-08-07T15:45:00Z",
+          "open": 311.75,
+          "high": 311.94,
+          "low": 311.75,
+          "close": 311.94391,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.003910000000018954,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 339,
+              "timestamp": "2025-08-07T15:35:00Z",
+              "open": "311.91501",
+              "high": "311.98209",
+              "low": "311.8103",
+              "close": "311.84"
+            },
+            {
+              "csv_line": 340,
+              "timestamp": "2025-08-07T15:40:00Z",
+              "open": "311.82999",
+              "high": "311.84",
+              "low": "311.67999",
+              "close": "311.76001"
+            },
+            {
+              "csv_line": 341,
+              "timestamp": "2025-08-07T15:45:00Z",
+              "open": "311.75",
+              "high": "311.94",
+              "low": "311.75",
+              "close": "311.94391"
+            },
+            {
+              "csv_line": 342,
+              "timestamp": "2025-08-07T15:50:00Z",
+              "open": "311.91",
+              "high": "312.10001",
+              "low": "311.91",
+              "close": "312.10001"
+            },
+            {
+              "csv_line": 343,
+              "timestamp": "2025-08-07T15:55:00Z",
+              "open": "312.075104",
+              "high": "312.17999",
+              "low": "312.059998",
+              "close": "312.14001"
+            }
+          ]
+        },
+        {
+          "csv_line": 390,
+          "timestamp": "2025-08-07T19:50:00Z",
+          "open": 312.94,
+          "high": 312.97791,
+          "low": 312.76001,
+          "close": 312.98001,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0020999999999844476,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 388,
+              "timestamp": "2025-08-07T19:40:00Z",
+              "open": "312.76501",
+              "high": "313.019989",
+              "low": "312.76001",
+              "close": "313.01001"
+            },
+            {
+              "csv_line": 389,
+              "timestamp": "2025-08-07T19:45:00Z",
+              "open": "313.019989",
+              "high": "313.070007",
+              "low": "312.905",
+              "close": "312.97501"
+            },
+            {
+              "csv_line": 390,
+              "timestamp": "2025-08-07T19:50:00Z",
+              "open": "312.94",
+              "high": "312.97791",
+              "low": "312.76001",
+              "close": "312.98001"
+            },
+            {
+              "csv_line": 391,
+              "timestamp": "2025-08-07T19:55:00Z",
+              "open": "312.98999",
+              "high": "313.10999",
+              "low": "312.97",
+              "close": "313.049988"
+            },
+            {
+              "csv_line": 392,
+              "timestamp": "2025-08-08T13:30:00Z",
+              "open": "312.35001",
+              "high": "312.79001",
+              "low": "312.20001",
+              "close": "312.23499"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "UUP",
+      "path": "data/UUP_5m.csv",
+      "row_count": 19874,
+      "anomaly_count": 25,
+      "anomalies": [
+        {
+          "csv_line": 12348,
+          "timestamp": "2026-03-31T13:40:00Z",
+          "open": 27.8501,
+          "high": 27.855,
+          "low": 27.85,
+          "close": 27.86,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.004999999999999005,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12346,
+              "timestamp": "2026-03-31T13:30:00Z",
+              "open": "27.86",
+              "high": "27.8699",
+              "low": "27.85",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12347,
+              "timestamp": "2026-03-31T13:35:00Z",
+              "open": "27.85",
+              "high": "27.86",
+              "low": "27.85",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12348,
+              "timestamp": "2026-03-31T13:40:00Z",
+              "open": "27.8501",
+              "high": "27.855",
+              "low": "27.85",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12349,
+              "timestamp": "2026-03-31T13:45:00Z",
+              "open": "27.85",
+              "high": "27.858",
+              "low": "27.845",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12350,
+              "timestamp": "2026-03-31T13:50:00Z",
+              "open": "27.8497",
+              "high": "27.8497",
+              "low": "27.83",
+              "close": "27.83"
+            }
+          ]
+        },
+        {
+          "csv_line": 12351,
+          "timestamp": "2026-03-31T13:55:00Z",
+          "open": 27.8215,
+          "high": 27.8274,
+          "low": 27.8215,
+          "close": 27.82,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.0015000000000000568,
+          "neighbors": [
+            {
+              "csv_line": 12349,
+              "timestamp": "2026-03-31T13:45:00Z",
+              "open": "27.85",
+              "high": "27.858",
+              "low": "27.845",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12350,
+              "timestamp": "2026-03-31T13:50:00Z",
+              "open": "27.8497",
+              "high": "27.8497",
+              "low": "27.83",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12351,
+              "timestamp": "2026-03-31T13:55:00Z",
+              "open": "27.8215",
+              "high": "27.8274",
+              "low": "27.8215",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12352,
+              "timestamp": "2026-03-31T14:00:00Z",
+              "open": "27.815",
+              "high": "27.8265",
+              "low": "27.81",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12353,
+              "timestamp": "2026-03-31T14:05:00Z",
+              "open": "27.83",
+              "high": "27.845",
+              "low": "27.83",
+              "close": "27.85"
+            }
+          ]
+        },
+        {
+          "csv_line": 12352,
+          "timestamp": "2026-03-31T14:00:00Z",
+          "open": 27.815,
+          "high": 27.8265,
+          "low": 27.81,
+          "close": 27.83,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0034999999999989484,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12350,
+              "timestamp": "2026-03-31T13:50:00Z",
+              "open": "27.8497",
+              "high": "27.8497",
+              "low": "27.83",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12351,
+              "timestamp": "2026-03-31T13:55:00Z",
+              "open": "27.8215",
+              "high": "27.8274",
+              "low": "27.8215",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12352,
+              "timestamp": "2026-03-31T14:00:00Z",
+              "open": "27.815",
+              "high": "27.8265",
+              "low": "27.81",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12353,
+              "timestamp": "2026-03-31T14:05:00Z",
+              "open": "27.83",
+              "high": "27.845",
+              "low": "27.83",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12354,
+              "timestamp": "2026-03-31T14:10:00Z",
+              "open": "27.84",
+              "high": "27.845",
+              "low": "27.84",
+              "close": "27.84"
+            }
+          ]
+        },
+        {
+          "csv_line": 12353,
+          "timestamp": "2026-03-31T14:05:00Z",
+          "open": 27.83,
+          "high": 27.845,
+          "low": 27.83,
+          "close": 27.85,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.005000000000002558,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12351,
+              "timestamp": "2026-03-31T13:55:00Z",
+              "open": "27.8215",
+              "high": "27.8274",
+              "low": "27.8215",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12352,
+              "timestamp": "2026-03-31T14:00:00Z",
+              "open": "27.815",
+              "high": "27.8265",
+              "low": "27.81",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12353,
+              "timestamp": "2026-03-31T14:05:00Z",
+              "open": "27.83",
+              "high": "27.845",
+              "low": "27.83",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12354,
+              "timestamp": "2026-03-31T14:10:00Z",
+              "open": "27.84",
+              "high": "27.845",
+              "low": "27.84",
+              "close": "27.84"
+            },
+            {
+              "csv_line": 12355,
+              "timestamp": "2026-03-31T14:15:00Z",
+              "open": "27.84",
+              "high": "27.84",
+              "low": "27.83",
+              "close": "27.83"
+            }
+          ]
+        },
+        {
+          "csv_line": 12356,
+          "timestamp": "2026-03-31T14:20:00Z",
+          "open": 27.825,
+          "high": 27.8399,
+          "low": 27.825,
+          "close": 27.84,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12354,
+              "timestamp": "2026-03-31T14:10:00Z",
+              "open": "27.84",
+              "high": "27.845",
+              "low": "27.84",
+              "close": "27.84"
+            },
+            {
+              "csv_line": 12355,
+              "timestamp": "2026-03-31T14:15:00Z",
+              "open": "27.84",
+              "high": "27.84",
+              "low": "27.83",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12356,
+              "timestamp": "2026-03-31T14:20:00Z",
+              "open": "27.825",
+              "high": "27.8399",
+              "low": "27.825",
+              "close": "27.84"
+            },
+            {
+              "csv_line": 12357,
+              "timestamp": "2026-03-31T14:25:00Z",
+              "open": "27.835",
+              "high": "27.835",
+              "low": "27.825",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12358,
+              "timestamp": "2026-03-31T14:30:00Z",
+              "open": "27.825",
+              "high": "27.8299",
+              "low": "27.81",
+              "close": "27.815"
+            }
+          ]
+        },
+        {
+          "csv_line": 12360,
+          "timestamp": "2026-03-31T14:40:00Z",
+          "open": 27.845,
+          "high": 27.8599,
+          "low": 27.845,
+          "close": 27.86,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12358,
+              "timestamp": "2026-03-31T14:30:00Z",
+              "open": "27.825",
+              "high": "27.8299",
+              "low": "27.81",
+              "close": "27.815"
+            },
+            {
+              "csv_line": 12359,
+              "timestamp": "2026-03-31T14:35:00Z",
+              "open": "27.815",
+              "high": "27.8499",
+              "low": "27.815",
+              "close": "27.8499"
+            },
+            {
+              "csv_line": 12360,
+              "timestamp": "2026-03-31T14:40:00Z",
+              "open": "27.845",
+              "high": "27.8599",
+              "low": "27.845",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12361,
+              "timestamp": "2026-03-31T14:45:00Z",
+              "open": "27.855",
+              "high": "27.8569",
+              "low": "27.8401",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12362,
+              "timestamp": "2026-03-31T14:50:00Z",
+              "open": "27.855",
+              "high": "27.865",
+              "low": "27.84",
+              "close": "27.865"
+            }
+          ]
+        },
+        {
+          "csv_line": 12361,
+          "timestamp": "2026-03-31T14:45:00Z",
+          "open": 27.855,
+          "high": 27.8569,
+          "low": 27.8401,
+          "close": 27.86,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0030999999999998806,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12359,
+              "timestamp": "2026-03-31T14:35:00Z",
+              "open": "27.815",
+              "high": "27.8499",
+              "low": "27.815",
+              "close": "27.8499"
+            },
+            {
+              "csv_line": 12360,
+              "timestamp": "2026-03-31T14:40:00Z",
+              "open": "27.845",
+              "high": "27.8599",
+              "low": "27.845",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12361,
+              "timestamp": "2026-03-31T14:45:00Z",
+              "open": "27.855",
+              "high": "27.8569",
+              "low": "27.8401",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12362,
+              "timestamp": "2026-03-31T14:50:00Z",
+              "open": "27.855",
+              "high": "27.865",
+              "low": "27.84",
+              "close": "27.865"
+            },
+            {
+              "csv_line": 12363,
+              "timestamp": "2026-03-31T14:55:00Z",
+              "open": "27.87",
+              "high": "27.885",
+              "low": "27.87",
+              "close": "27.87"
+            }
+          ]
+        },
+        {
+          "csv_line": 12367,
+          "timestamp": "2026-03-31T15:15:00Z",
+          "open": 27.8436,
+          "high": 27.8499,
+          "low": 27.8401,
+          "close": 27.85,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12365,
+              "timestamp": "2026-03-31T15:05:00Z",
+              "open": "27.8599",
+              "high": "27.8602",
+              "low": "27.855",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12366,
+              "timestamp": "2026-03-31T15:10:00Z",
+              "open": "27.8601",
+              "high": "27.8601",
+              "low": "27.85",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12367,
+              "timestamp": "2026-03-31T15:15:00Z",
+              "open": "27.8436",
+              "high": "27.8499",
+              "low": "27.8401",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12368,
+              "timestamp": "2026-03-31T15:20:00Z",
+              "open": "27.8499",
+              "high": "27.865",
+              "low": "27.8499",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12369,
+              "timestamp": "2026-03-31T15:25:00Z",
+              "open": "27.8455",
+              "high": "27.865",
+              "low": "27.845",
+              "close": "27.87"
+            }
+          ]
+        },
+        {
+          "csv_line": 12369,
+          "timestamp": "2026-03-31T15:25:00Z",
+          "open": 27.8455,
+          "high": 27.865,
+          "low": 27.845,
+          "close": 27.87,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.005000000000002558,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12367,
+              "timestamp": "2026-03-31T15:15:00Z",
+              "open": "27.8436",
+              "high": "27.8499",
+              "low": "27.8401",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12368,
+              "timestamp": "2026-03-31T15:20:00Z",
+              "open": "27.8499",
+              "high": "27.865",
+              "low": "27.8499",
+              "close": "27.85"
+            },
+            {
+              "csv_line": 12369,
+              "timestamp": "2026-03-31T15:25:00Z",
+              "open": "27.8455",
+              "high": "27.865",
+              "low": "27.845",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12370,
+              "timestamp": "2026-03-31T15:30:00Z",
+              "open": "27.865",
+              "high": "27.8799",
+              "low": "27.865",
+              "close": "27.8701"
+            },
+            {
+              "csv_line": 12371,
+              "timestamp": "2026-03-31T15:35:00Z",
+              "open": "27.87",
+              "high": "27.87",
+              "low": "27.8634",
+              "close": "27.86"
+            }
+          ]
+        },
+        {
+          "csv_line": 12371,
+          "timestamp": "2026-03-31T15:35:00Z",
+          "open": 27.87,
+          "high": 27.87,
+          "low": 27.8634,
+          "close": 27.86,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.0033999999999991815,
+          "neighbors": [
+            {
+              "csv_line": 12369,
+              "timestamp": "2026-03-31T15:25:00Z",
+              "open": "27.8455",
+              "high": "27.865",
+              "low": "27.845",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12370,
+              "timestamp": "2026-03-31T15:30:00Z",
+              "open": "27.865",
+              "high": "27.8799",
+              "low": "27.865",
+              "close": "27.8701"
+            },
+            {
+              "csv_line": 12371,
+              "timestamp": "2026-03-31T15:35:00Z",
+              "open": "27.87",
+              "high": "27.87",
+              "low": "27.8634",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12372,
+              "timestamp": "2026-03-31T15:40:00Z",
+              "open": "27.875",
+              "high": "27.875",
+              "low": "27.865",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12373,
+              "timestamp": "2026-03-31T15:45:00Z",
+              "open": "27.8701",
+              "high": "27.8701",
+              "low": "27.8697",
+              "close": "27.87"
+            }
+          ]
+        },
+        {
+          "csv_line": 12374,
+          "timestamp": "2026-03-31T15:50:00Z",
+          "open": 27.865,
+          "high": 27.8699,
+          "low": 27.86,
+          "close": 27.87,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12372,
+              "timestamp": "2026-03-31T15:40:00Z",
+              "open": "27.875",
+              "high": "27.875",
+              "low": "27.865",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12373,
+              "timestamp": "2026-03-31T15:45:00Z",
+              "open": "27.8701",
+              "high": "27.8701",
+              "low": "27.8697",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12374,
+              "timestamp": "2026-03-31T15:50:00Z",
+              "open": "27.865",
+              "high": "27.8699",
+              "low": "27.86",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12375,
+              "timestamp": "2026-03-31T15:55:00Z",
+              "open": "27.8801",
+              "high": "27.885",
+              "low": "27.88",
+              "close": "27.8832"
+            },
+            {
+              "csv_line": 12376,
+              "timestamp": "2026-03-31T16:00:00Z",
+              "open": "27.88",
+              "high": "27.88",
+              "low": "27.8602",
+              "close": "27.86"
+            }
+          ]
+        },
+        {
+          "csv_line": 12376,
+          "timestamp": "2026-03-31T16:00:00Z",
+          "open": 27.88,
+          "high": 27.88,
+          "low": 27.8602,
+          "close": 27.86,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.00019999999999953388,
+          "neighbors": [
+            {
+              "csv_line": 12374,
+              "timestamp": "2026-03-31T15:50:00Z",
+              "open": "27.865",
+              "high": "27.8699",
+              "low": "27.86",
+              "close": "27.87"
+            },
+            {
+              "csv_line": 12375,
+              "timestamp": "2026-03-31T15:55:00Z",
+              "open": "27.8801",
+              "high": "27.885",
+              "low": "27.88",
+              "close": "27.8832"
+            },
+            {
+              "csv_line": 12376,
+              "timestamp": "2026-03-31T16:00:00Z",
+              "open": "27.88",
+              "high": "27.88",
+              "low": "27.8602",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12377,
+              "timestamp": "2026-03-31T16:05:00Z",
+              "open": "27.865",
+              "high": "27.8798",
+              "low": "27.865",
+              "close": "27.88"
+            },
+            {
+              "csv_line": 12378,
+              "timestamp": "2026-03-31T16:10:00Z",
+              "open": "27.8796",
+              "high": "27.885",
+              "low": "27.875",
+              "close": "27.875"
+            }
+          ]
+        },
+        {
+          "csv_line": 12377,
+          "timestamp": "2026-03-31T16:05:00Z",
+          "open": 27.865,
+          "high": 27.8798,
+          "low": 27.865,
+          "close": 27.88,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.00019999999999953388,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12375,
+              "timestamp": "2026-03-31T15:55:00Z",
+              "open": "27.8801",
+              "high": "27.885",
+              "low": "27.88",
+              "close": "27.8832"
+            },
+            {
+              "csv_line": 12376,
+              "timestamp": "2026-03-31T16:00:00Z",
+              "open": "27.88",
+              "high": "27.88",
+              "low": "27.8602",
+              "close": "27.86"
+            },
+            {
+              "csv_line": 12377,
+              "timestamp": "2026-03-31T16:05:00Z",
+              "open": "27.865",
+              "high": "27.8798",
+              "low": "27.865",
+              "close": "27.88"
+            },
+            {
+              "csv_line": 12378,
+              "timestamp": "2026-03-31T16:10:00Z",
+              "open": "27.8796",
+              "high": "27.885",
+              "low": "27.875",
+              "close": "27.875"
+            },
+            {
+              "csv_line": 12379,
+              "timestamp": "2026-03-31T16:15:00Z",
+              "open": "27.87",
+              "high": "27.887",
+              "low": "27.87",
+              "close": "27.89"
+            }
+          ]
+        },
+        {
+          "csv_line": 12379,
+          "timestamp": "2026-03-31T16:15:00Z",
+          "open": 27.87,
+          "high": 27.887,
+          "low": 27.87,
+          "close": 27.89,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0030000000000001137,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12377,
+              "timestamp": "2026-03-31T16:05:00Z",
+              "open": "27.865",
+              "high": "27.8798",
+              "low": "27.865",
+              "close": "27.88"
+            },
+            {
+              "csv_line": 12378,
+              "timestamp": "2026-03-31T16:10:00Z",
+              "open": "27.8796",
+              "high": "27.885",
+              "low": "27.875",
+              "close": "27.875"
+            },
+            {
+              "csv_line": 12379,
+              "timestamp": "2026-03-31T16:15:00Z",
+              "open": "27.87",
+              "high": "27.887",
+              "low": "27.87",
+              "close": "27.89"
+            },
+            {
+              "csv_line": 12380,
+              "timestamp": "2026-03-31T16:20:00Z",
+              "open": "27.885",
+              "high": "27.89",
+              "low": "27.88",
+              "close": "27.88"
+            },
+            {
+              "csv_line": 12381,
+              "timestamp": "2026-03-31T16:25:00Z",
+              "open": "27.87",
+              "high": "27.8799",
+              "low": "27.87",
+              "close": "27.8707"
+            }
+          ]
+        },
+        {
+          "csv_line": 12387,
+          "timestamp": "2026-03-31T16:55:00Z",
+          "open": 27.825,
+          "high": 27.825,
+          "low": 27.82,
+          "close": 27.83,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.004999999999999005,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12385,
+              "timestamp": "2026-03-31T16:45:00Z",
+              "open": "27.81",
+              "high": "27.84",
+              "low": "27.81",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12386,
+              "timestamp": "2026-03-31T16:50:00Z",
+              "open": "27.8299",
+              "high": "27.835",
+              "low": "27.8101",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12387,
+              "timestamp": "2026-03-31T16:55:00Z",
+              "open": "27.825",
+              "high": "27.825",
+              "low": "27.82",
+              "close": "27.83"
+            },
+            {
+              "csv_line": 12388,
+              "timestamp": "2026-03-31T17:00:00Z",
+              "open": "27.82",
+              "high": "27.82",
+              "low": "27.7899",
+              "close": "27.795"
+            },
+            {
+              "csv_line": 12389,
+              "timestamp": "2026-03-31T17:05:00Z",
+              "open": "27.8",
+              "high": "27.815",
+              "low": "27.7985",
+              "close": "27.815"
+            }
+          ]
+        },
+        {
+          "csv_line": 12399,
+          "timestamp": "2026-03-31T17:55:00Z",
+          "open": 27.7999,
+          "high": 27.8199,
+          "low": 27.7999,
+          "close": 27.82,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12397,
+              "timestamp": "2026-03-31T17:45:00Z",
+              "open": "27.7999",
+              "high": "27.7999",
+              "low": "27.785",
+              "close": "27.79"
+            },
+            {
+              "csv_line": 12398,
+              "timestamp": "2026-03-31T17:50:00Z",
+              "open": "27.7897",
+              "high": "27.7999",
+              "low": "27.7897",
+              "close": "27.79"
+            },
+            {
+              "csv_line": 12399,
+              "timestamp": "2026-03-31T17:55:00Z",
+              "open": "27.7999",
+              "high": "27.8199",
+              "low": "27.7999",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12400,
+              "timestamp": "2026-03-31T18:00:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8099",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12401,
+              "timestamp": "2026-03-31T18:05:00Z",
+              "open": "27.8161",
+              "high": "27.8161",
+              "low": "27.8003",
+              "close": "27.8"
+            }
+          ]
+        },
+        {
+          "csv_line": 12400,
+          "timestamp": "2026-03-31T18:00:00Z",
+          "open": 27.815,
+          "high": 27.8199,
+          "low": 27.8099,
+          "close": 27.82,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12398,
+              "timestamp": "2026-03-31T17:50:00Z",
+              "open": "27.7897",
+              "high": "27.7999",
+              "low": "27.7897",
+              "close": "27.79"
+            },
+            {
+              "csv_line": 12399,
+              "timestamp": "2026-03-31T17:55:00Z",
+              "open": "27.7999",
+              "high": "27.8199",
+              "low": "27.7999",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12400,
+              "timestamp": "2026-03-31T18:00:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8099",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12401,
+              "timestamp": "2026-03-31T18:05:00Z",
+              "open": "27.8161",
+              "high": "27.8161",
+              "low": "27.8003",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12402,
+              "timestamp": "2026-03-31T18:10:00Z",
+              "open": "27.795",
+              "high": "27.8001",
+              "low": "27.795",
+              "close": "27.8"
+            }
+          ]
+        },
+        {
+          "csv_line": 12401,
+          "timestamp": "2026-03-31T18:05:00Z",
+          "open": 27.8161,
+          "high": 27.8161,
+          "low": 27.8003,
+          "close": 27.8,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.0002999999999993008,
+          "neighbors": [
+            {
+              "csv_line": 12399,
+              "timestamp": "2026-03-31T17:55:00Z",
+              "open": "27.7999",
+              "high": "27.8199",
+              "low": "27.7999",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12400,
+              "timestamp": "2026-03-31T18:00:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8099",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12401,
+              "timestamp": "2026-03-31T18:05:00Z",
+              "open": "27.8161",
+              "high": "27.8161",
+              "low": "27.8003",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12402,
+              "timestamp": "2026-03-31T18:10:00Z",
+              "open": "27.795",
+              "high": "27.8001",
+              "low": "27.795",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12403,
+              "timestamp": "2026-03-31T18:15:00Z",
+              "open": "27.7901",
+              "high": "27.7999",
+              "low": "27.7801",
+              "close": "27.8"
+            }
+          ]
+        },
+        {
+          "csv_line": 12403,
+          "timestamp": "2026-03-31T18:15:00Z",
+          "open": 27.7901,
+          "high": 27.7999,
+          "low": 27.7801,
+          "close": 27.8,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12401,
+              "timestamp": "2026-03-31T18:05:00Z",
+              "open": "27.8161",
+              "high": "27.8161",
+              "low": "27.8003",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12402,
+              "timestamp": "2026-03-31T18:10:00Z",
+              "open": "27.795",
+              "high": "27.8001",
+              "low": "27.795",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12403,
+              "timestamp": "2026-03-31T18:15:00Z",
+              "open": "27.7901",
+              "high": "27.7999",
+              "low": "27.7801",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12404,
+              "timestamp": "2026-03-31T18:20:00Z",
+              "open": "27.7915",
+              "high": "27.7999",
+              "low": "27.7915",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12405,
+              "timestamp": "2026-03-31T18:25:00Z",
+              "open": "27.805",
+              "high": "27.805",
+              "low": "27.8",
+              "close": "27.8"
+            }
+          ]
+        },
+        {
+          "csv_line": 12404,
+          "timestamp": "2026-03-31T18:20:00Z",
+          "open": 27.7915,
+          "high": 27.7999,
+          "low": 27.7915,
+          "close": 27.8,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12402,
+              "timestamp": "2026-03-31T18:10:00Z",
+              "open": "27.795",
+              "high": "27.8001",
+              "low": "27.795",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12403,
+              "timestamp": "2026-03-31T18:15:00Z",
+              "open": "27.7901",
+              "high": "27.7999",
+              "low": "27.7801",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12404,
+              "timestamp": "2026-03-31T18:20:00Z",
+              "open": "27.7915",
+              "high": "27.7999",
+              "low": "27.7915",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12405,
+              "timestamp": "2026-03-31T18:25:00Z",
+              "open": "27.805",
+              "high": "27.805",
+              "low": "27.8",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12406,
+              "timestamp": "2026-03-31T18:30:00Z",
+              "open": "27.7999",
+              "high": "27.8007",
+              "low": "27.795",
+              "close": "27.8007"
+            }
+          ]
+        },
+        {
+          "csv_line": 12407,
+          "timestamp": "2026-03-31T18:35:00Z",
+          "open": 27.805,
+          "high": 27.8099,
+          "low": 27.79,
+          "close": 27.81,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12405,
+              "timestamp": "2026-03-31T18:25:00Z",
+              "open": "27.805",
+              "high": "27.805",
+              "low": "27.8",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12406,
+              "timestamp": "2026-03-31T18:30:00Z",
+              "open": "27.7999",
+              "high": "27.8007",
+              "low": "27.795",
+              "close": "27.8007"
+            },
+            {
+              "csv_line": 12407,
+              "timestamp": "2026-03-31T18:35:00Z",
+              "open": "27.805",
+              "high": "27.8099",
+              "low": "27.79",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12408,
+              "timestamp": "2026-03-31T18:40:00Z",
+              "open": "27.805",
+              "high": "27.8099",
+              "low": "27.8001",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12409,
+              "timestamp": "2026-03-31T18:45:00Z",
+              "open": "27.805",
+              "high": "27.8199",
+              "low": "27.7901",
+              "close": "27.8101"
+            }
+          ]
+        },
+        {
+          "csv_line": 12408,
+          "timestamp": "2026-03-31T18:40:00Z",
+          "open": 27.805,
+          "high": 27.8099,
+          "low": 27.8001,
+          "close": 27.8,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 9.999999999976694e-05,
+          "neighbors": [
+            {
+              "csv_line": 12406,
+              "timestamp": "2026-03-31T18:30:00Z",
+              "open": "27.7999",
+              "high": "27.8007",
+              "low": "27.795",
+              "close": "27.8007"
+            },
+            {
+              "csv_line": 12407,
+              "timestamp": "2026-03-31T18:35:00Z",
+              "open": "27.805",
+              "high": "27.8099",
+              "low": "27.79",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12408,
+              "timestamp": "2026-03-31T18:40:00Z",
+              "open": "27.805",
+              "high": "27.8099",
+              "low": "27.8001",
+              "close": "27.8"
+            },
+            {
+              "csv_line": 12409,
+              "timestamp": "2026-03-31T18:45:00Z",
+              "open": "27.805",
+              "high": "27.8199",
+              "low": "27.7901",
+              "close": "27.8101"
+            },
+            {
+              "csv_line": 12410,
+              "timestamp": "2026-03-31T18:50:00Z",
+              "open": "27.8102",
+              "high": "27.815",
+              "low": "27.8",
+              "close": "27.81"
+            }
+          ]
+        },
+        {
+          "csv_line": 12414,
+          "timestamp": "2026-03-31T19:10:00Z",
+          "open": 27.815,
+          "high": 27.8199,
+          "low": 27.8148,
+          "close": 27.81,
+          "violations": [
+            "LOW_ABOVE_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0,
+          "low_excess": 0.004800000000003024,
+          "neighbors": [
+            {
+              "csv_line": 12412,
+              "timestamp": "2026-03-31T19:00:00Z",
+              "open": "27.8099",
+              "high": "27.8193",
+              "low": "27.8",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12413,
+              "timestamp": "2026-03-31T19:05:00Z",
+              "open": "27.805",
+              "high": "27.82",
+              "low": "27.805",
+              "close": "27.815"
+            },
+            {
+              "csv_line": 12414,
+              "timestamp": "2026-03-31T19:10:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8148",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12415,
+              "timestamp": "2026-03-31T19:15:00Z",
+              "open": "27.8107",
+              "high": "27.8199",
+              "low": "27.8101",
+              "close": "27.8146"
+            },
+            {
+              "csv_line": 12416,
+              "timestamp": "2026-03-31T19:20:00Z",
+              "open": "27.8107",
+              "high": "27.819",
+              "low": "27.8101",
+              "close": "27.82"
+            }
+          ]
+        },
+        {
+          "csv_line": 12416,
+          "timestamp": "2026-03-31T19:20:00Z",
+          "open": 27.8107,
+          "high": 27.819,
+          "low": 27.8101,
+          "close": 27.82,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.0010000000000012221,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12414,
+              "timestamp": "2026-03-31T19:10:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8148",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12415,
+              "timestamp": "2026-03-31T19:15:00Z",
+              "open": "27.8107",
+              "high": "27.8199",
+              "low": "27.8101",
+              "close": "27.8146"
+            },
+            {
+              "csv_line": 12416,
+              "timestamp": "2026-03-31T19:20:00Z",
+              "open": "27.8107",
+              "high": "27.819",
+              "low": "27.8101",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12417,
+              "timestamp": "2026-03-31T19:25:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8103",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12418,
+              "timestamp": "2026-03-31T19:30:00Z",
+              "open": "27.8107",
+              "high": "27.8199",
+              "low": "27.805",
+              "close": "27.81"
+            }
+          ]
+        },
+        {
+          "csv_line": 12417,
+          "timestamp": "2026-03-31T19:25:00Z",
+          "open": 27.815,
+          "high": 27.8199,
+          "low": 27.8103,
+          "close": 27.82,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 9.999999999976694e-05,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 12415,
+              "timestamp": "2026-03-31T19:15:00Z",
+              "open": "27.8107",
+              "high": "27.8199",
+              "low": "27.8101",
+              "close": "27.8146"
+            },
+            {
+              "csv_line": 12416,
+              "timestamp": "2026-03-31T19:20:00Z",
+              "open": "27.8107",
+              "high": "27.819",
+              "low": "27.8101",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12417,
+              "timestamp": "2026-03-31T19:25:00Z",
+              "open": "27.815",
+              "high": "27.8199",
+              "low": "27.8103",
+              "close": "27.82"
+            },
+            {
+              "csv_line": 12418,
+              "timestamp": "2026-03-31T19:30:00Z",
+              "open": "27.8107",
+              "high": "27.8199",
+              "low": "27.805",
+              "close": "27.81"
+            },
+            {
+              "csv_line": 12419,
+              "timestamp": "2026-03-31T19:35:00Z",
+              "open": "27.8008",
+              "high": "27.8099",
+              "low": "27.78",
+              "close": "27.78"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "XLI",
+      "path": "data/XLI_5m.csv",
+      "row_count": 20676,
+      "anomaly_count": 2,
+      "anomalies": [
+        {
+          "csv_line": 6502,
+          "timestamp": "2025-11-28T16:40:00Z",
+          "open": 153.77,
+          "high": 153.83501,
+          "low": 153.72501,
+          "close": 153.84,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.004989999999992278,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 6500,
+              "timestamp": "2025-11-28T16:30:00Z",
+              "open": "153.685",
+              "high": "153.755",
+              "low": "153.625",
+              "close": "153.75"
+            },
+            {
+              "csv_line": 6501,
+              "timestamp": "2025-11-28T16:35:00Z",
+              "open": "153.71001",
+              "high": "153.86",
+              "low": "153.69",
+              "close": "153.78"
+            },
+            {
+              "csv_line": 6502,
+              "timestamp": "2025-11-28T16:40:00Z",
+              "open": "153.77",
+              "high": "153.83501",
+              "low": "153.72501",
+              "close": "153.84"
+            },
+            {
+              "csv_line": 6503,
+              "timestamp": "2025-11-28T16:45:00Z",
+              "open": "153.83",
+              "high": "153.86",
+              "low": "153.795",
+              "close": "153.83501"
+            },
+            {
+              "csv_line": 6504,
+              "timestamp": "2025-11-28T16:50:00Z",
+              "open": "153.84",
+              "high": "153.855",
+              "low": "153.79379",
+              "close": "153.81"
+            }
+          ]
+        },
+        {
+          "csv_line": 6512,
+          "timestamp": "2025-11-28T17:30:00Z",
+          "open": 153.545,
+          "high": 153.63499,
+          "low": 153.545,
+          "close": 153.64,
+          "violations": [
+            "HIGH_BELOW_OPEN_OR_CLOSE"
+          ],
+          "high_shortfall": 0.005009999999998627,
+          "low_excess": 0.0,
+          "neighbors": [
+            {
+              "csv_line": 6510,
+              "timestamp": "2025-11-28T17:20:00Z",
+              "open": "153.715",
+              "high": "153.74001",
+              "low": "153.62",
+              "close": "153.63"
+            },
+            {
+              "csv_line": 6511,
+              "timestamp": "2025-11-28T17:25:00Z",
+              "open": "153.62",
+              "high": "153.64999",
+              "low": "153.565",
+              "close": "153.59"
+            },
+            {
+              "csv_line": 6512,
+              "timestamp": "2025-11-28T17:30:00Z",
+              "open": "153.545",
+              "high": "153.63499",
+              "low": "153.545",
+              "close": "153.64"
+            },
+            {
+              "csv_line": 6513,
+              "timestamp": "2025-11-28T17:35:00Z",
+              "open": "153.62",
+              "high": "153.69",
+              "low": "153.58501",
+              "close": "153.595"
+            },
+            {
+              "csv_line": 6514,
+              "timestamp": "2025-11-28T17:40:00Z",
+              "open": "153.60001",
+              "high": "153.655",
+              "low": "153.565",
+              "close": "153.605"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

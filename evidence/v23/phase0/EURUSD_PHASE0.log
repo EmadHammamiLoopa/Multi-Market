@@ -1,0 +1,7 @@
+Building V2.3 Phase 0 rows | EURUSD | peers=BTCUSD,ETHUSD,QQQ,XAUUSD
+eligible_development_rows=60552
+
+Pooled six-bar incremental R2
+ridge: incremental_r2=-0.01171969 non_jump_incremental_r2=-0.01180198
+elasticnet: incremental_r2=-0.01164279 non_jump_incremental_r2=-0.01172617
+Output: evidence/v23/phase0/EURUSD_PHASE0.json

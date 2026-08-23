@@ -1,0 +1,8 @@
+Building V2.3 Phase 0 rows | QQQ | peers=BTCUSD,ETHUSD,EURUSD,XAUUSD
+eligible_development_rows=5048
+
+Pooled six-bar incremental R2
+ridge: incremental_r2=n/a non_jump_incremental_r2=n/a
+elasticnet: incremental_r2=n/a non_jump_incremental_r2=n/a
+target_status=UNAVAILABLE_MIN_TRAIN_OR_NO_SCORED_FOLDS
+Output: evidence/v23/phase0_full_capacity/QQQ_PHASE0.json

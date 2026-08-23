@@ -1,0 +1,98 @@
+{
+  "version": "V2.3-PHASE0-INFORMATION-DIFFUSION",
+  "symbol": "QQQ",
+  "row_count": 5048,
+  "lags": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    9,
+    12
+  ],
+  "primary_horizon_bars": 6,
+  "secondary_horizon_bars": 1,
+  "min_train_rows": 5000,
+  "jump_sigma_multiplier": 4.0,
+  "reserved_windows": [
+    [
+      "2025-10-06T00:00:00+00:00",
+      "2025-10-24T23:59:59+00:00"
+    ],
+    [
+      "2026-02-02T00:00:00+00:00",
+      "2026-02-20T23:59:59+00:00"
+    ],
+    [
+      "2026-07-06T00:00:00+00:00",
+      "2026-07-24T23:59:59+00:00"
+    ]
+  ],
+  "models": {
+    "ridge": {
+      "alpha": 10.0
+    },
+    "elasticnet": {
+      "alpha": 0.0005,
+      "l1_ratio": 0.25,
+      "max_iter": 10000
+    }
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "status": "SKIP_MIN_TRAIN_ROWS",
+      "train_rows": 0,
+      "eval_rows": 1010
+    },
+    {
+      "fold": 2,
+      "status": "SKIP_MIN_TRAIN_ROWS",
+      "train_rows": 1004,
+      "eval_rows": 1009
+    },
+    {
+      "fold": 3,
+      "status": "SKIP_MIN_TRAIN_ROWS",
+      "train_rows": 2013,
+      "eval_rows": 1010
+    },
+    {
+      "fold": 4,
+      "status": "SKIP_MIN_TRAIN_ROWS",
+      "train_rows": 3023,
+      "eval_rows": 1009
+    },
+    {
+      "fold": 5,
+      "status": "SKIP_MIN_TRAIN_ROWS",
+      "train_rows": 4036,
+      "eval_rows": 1010
+    }
+  ],
+  "pooled": {
+    "ridge": {
+      "1": {},
+      "6": {}
+    },
+    "elasticnet": {
+      "1": {},
+      "6": {}
+    }
+  },
+  "forbidden_outputs": [
+    "pnl",
+    "trade_direction",
+    "take_profit",
+    "stop_loss",
+    "decision_threshold"
+  ],
+  "robustness_amendment": {
+    "elasticnet_max_iter": 50000,
+    "elasticnet_alpha": 0.0005,
+    "elasticnet_l1_ratio": 0.25,
+    "min_train_rows_unchanged": 5000,
+    "unavailable_folds_are_not_relaxed": true
+  }
+}

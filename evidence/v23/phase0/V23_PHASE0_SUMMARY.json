@@ -1,0 +1,174 @@
+{
+  "version": "V2.3-PHASE0-INFORMATION-DIFFUSION-SUMMARY",
+  "targets": [
+    "BTCUSD",
+    "ETHUSD",
+    "EURUSD",
+    "QQQ",
+    "XAUUSD"
+  ],
+  "primary_horizon_bars": 6,
+  "pooled_incremental_r2": {
+    "ridge": -0.004761828510561061,
+    "elasticnet": -0.004711972606621595
+  },
+  "pooled_non_jump_incremental_r2": {
+    "ridge": -0.004782790590033725,
+    "elasticnet": -0.004734466535220472
+  },
+  "target_results": [
+    {
+      "symbol": "BTCUSD",
+      "status": "SCORED",
+      "ridge_incremental_r2": -0.004116817843283105,
+      "elasticnet_incremental_r2": -0.003976095836662363,
+      "mean_model_incremental_r2": -0.004046456839972734,
+      "positive": false
+    },
+    {
+      "symbol": "ETHUSD",
+      "status": "SCORED",
+      "ridge_incremental_r2": -0.00534458181824693,
+      "elasticnet_incremental_r2": -0.005332099197632223,
+      "mean_model_incremental_r2": -0.005338340507939576,
+      "positive": false
+    },
+    {
+      "symbol": "EURUSD",
+      "status": "SCORED",
+      "ridge_incremental_r2": -0.011719687829358172,
+      "elasticnet_incremental_r2": -0.011642786681341999,
+      "mean_model_incremental_r2": -0.011681237255350085,
+      "positive": false
+    },
+    {
+      "symbol": "QQQ",
+      "status": "UNAVAILABLE_NO_SCORED_FOLDS",
+      "ridge_incremental_r2": null,
+      "elasticnet_incremental_r2": null,
+      "mean_model_incremental_r2": null,
+      "positive": false
+    },
+    {
+      "symbol": "XAUUSD",
+      "status": "SCORED",
+      "ridge_incremental_r2": -0.0031085080544244192,
+      "elasticnet_incremental_r2": -0.0031110734363191117,
+      "mean_model_incremental_r2": -0.0031097907453717655,
+      "positive": false
+    }
+  ],
+  "positive_targets": 0,
+  "unavailable_targets": 1,
+  "positive_target_requirement_denominator": 5,
+  "scored_target_fold_cells": 16,
+  "positive_target_fold_cells": 1,
+  "positive_target_fold_fraction": 0.0625,
+  "fold_results": [
+    {
+      "symbol": "BTCUSD",
+      "fold": 2,
+      "mean_model_incremental_r2": -0.004202916299168802,
+      "positive": false
+    },
+    {
+      "symbol": "BTCUSD",
+      "fold": 3,
+      "mean_model_incremental_r2": -0.00405897242153852,
+      "positive": false
+    },
+    {
+      "symbol": "BTCUSD",
+      "fold": 4,
+      "mean_model_incremental_r2": -0.004368863959034075,
+      "positive": false
+    },
+    {
+      "symbol": "BTCUSD",
+      "fold": 5,
+      "mean_model_incremental_r2": -0.0036213183395576998,
+      "positive": false
+    },
+    {
+      "symbol": "ETHUSD",
+      "fold": 2,
+      "mean_model_incremental_r2": -0.0019008016278037054,
+      "positive": false
+    },
+    {
+      "symbol": "ETHUSD",
+      "fold": 3,
+      "mean_model_incremental_r2": -0.00747287181957168,
+      "positive": false
+    },
+    {
+      "symbol": "ETHUSD",
+      "fold": 4,
+      "mean_model_incremental_r2": -0.007431921873488012,
+      "positive": false
+    },
+    {
+      "symbol": "ETHUSD",
+      "fold": 5,
+      "mean_model_incremental_r2": -0.0063658991403248155,
+      "positive": false
+    },
+    {
+      "symbol": "EURUSD",
+      "fold": 2,
+      "mean_model_incremental_r2": -0.04677433000899023,
+      "positive": false
+    },
+    {
+      "symbol": "EURUSD",
+      "fold": 3,
+      "mean_model_incremental_r2": -0.0031491566357948475,
+      "positive": false
+    },
+    {
+      "symbol": "EURUSD",
+      "fold": 4,
+      "mean_model_incremental_r2": -0.007465257387443358,
+      "positive": false
+    },
+    {
+      "symbol": "EURUSD",
+      "fold": 5,
+      "mean_model_incremental_r2": -0.0049052475003297236,
+      "positive": false
+    },
+    {
+      "symbol": "XAUUSD",
+      "fold": 2,
+      "mean_model_incremental_r2": -0.009323412899133299,
+      "positive": false
+    },
+    {
+      "symbol": "XAUUSD",
+      "fold": 3,
+      "mean_model_incremental_r2": 0.0005587250923073661,
+      "positive": true
+    },
+    {
+      "symbol": "XAUUSD",
+      "fold": 4,
+      "mean_model_incremental_r2": -0.011063765943795767,
+      "positive": false
+    },
+    {
+      "symbol": "XAUUSD",
+      "fold": 5,
+      "mean_model_incremental_r2": -0.0019007261623283922,
+      "positive": false
+    }
+  ],
+  "promotion_conditions": {
+    "pooled_positive_both_models": false,
+    "at_least_three_positive_targets": false,
+    "at_least_60pct_positive_target_fold_cells": false,
+    "non_jump_nonnegative_both_models": false
+  },
+  "promotion_pass": false,
+  "decision": "REJECT_DENSE_CROSS_SECTIONAL_BLOCK",
+  "post_hoc_selection_allowed": false
+}

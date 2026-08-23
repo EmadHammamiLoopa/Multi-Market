@@ -1,0 +1,14 @@
+{
+  "logical_cpus": 24,
+  "cpu_budget": 24,
+  "workers": 5,
+  "threads_per_worker": 4,
+  "nominal_thread_slots": 20,
+  "symbols": [
+    "EURUSD",
+    "XAUUSD",
+    "BTCUSD",
+    "ETHUSD",
+    "QQQ"
+  ]
+}

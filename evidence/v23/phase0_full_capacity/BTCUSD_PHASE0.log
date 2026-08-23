@@ -1,0 +1,7 @@
+Building V2.3 Phase 0 rows | BTCUSD | peers=ETHUSD,EURUSD,QQQ,XAUUSD
+eligible_development_rows=93926
+
+Pooled six-bar incremental R2
+ridge: incremental_r2=-0.00411682 non_jump_incremental_r2=-0.00403238
+elasticnet: incremental_r2=-0.00397610 non_jump_incremental_r2=-0.00389999
+Output: evidence/v23/phase0_full_capacity/BTCUSD_PHASE0.json

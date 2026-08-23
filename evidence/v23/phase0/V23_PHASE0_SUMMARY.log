@@ -1,0 +1,15 @@
+===== V2.3 PHASE 0 PROMOTION =====
+pooled_6bar_ridge_incremental_r2=-0.00476183
+pooled_6bar_elasticnet_incremental_r2=-0.00471197
+pooled_non_jump_6bar_ridge_incremental_r2=-0.00478279
+pooled_non_jump_6bar_elasticnet_incremental_r2=-0.00473447
+positive_targets=0/5
+unavailable_targets=1/5
+positive_target_fold_cells=1/16 (6.25%)
+pooled_positive_both_models=FAIL
+at_least_three_positive_targets=FAIL
+at_least_60pct_positive_target_fold_cells=FAIL
+non_jump_nonnegative_both_models=FAIL
+PHASE0_PROMOTION=FAIL
+decision=REJECT_DENSE_CROSS_SECTIONAL_BLOCK
+Output: evidence/v23/phase0/V23_PHASE0_SUMMARY.json

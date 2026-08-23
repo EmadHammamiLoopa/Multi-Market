@@ -1,0 +1,106 @@
+{
+  "version": "V2.2-MACRO-CONTEXT",
+  "purpose": "selection-only frozen decision timestamp manifest",
+  "symbol": "ETHUSD",
+  "window": "D",
+  "window_start": "2025-11-03T00:00:00Z",
+  "window_end": "2025-11-21T23:59:59Z",
+  "source_csv": "data/ETHUSD_5m.csv",
+  "source_csv_sha256": "89b7facb88b34b07177709ab4b28af1616bd8707f62093dbd7121758b3f77a12",
+  "structural_eligibility": "session_eligible AND NOT zero_range AND NOT repeated_ohlc",
+  "sampling_rule": "position_j=floor(j*(n-1)/(30-1)), j=0..29, chronological structurally eligible candidates only",
+  "candidate_count": 5472,
+  "sample_count": 30,
+  "rows": [
+    {
+      "decision_timestamp": "2025-11-03T00:00:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-03T15:40:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-04T07:25:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-04T23:05:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-05T14:50:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-06T06:35:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-06T22:15:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-07T14:00:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-08T05:45:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-08T21:25:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-09T13:10:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-10T04:55:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-10T20:35:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-11T12:20:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-12T04:05:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-12T19:45:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-13T11:30:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-14T03:15:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-14T18:55:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-15T10:40:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-16T02:25:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-16T18:05:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-17T09:50:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-18T01:35:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-18T17:15:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-19T09:00:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-20T00:45:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-20T16:25:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-21T08:10:00Z"
+    },
+    {
+      "decision_timestamp": "2025-11-21T23:55:00Z"
+    }
+  ]
+}

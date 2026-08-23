@@ -6,7 +6,6 @@ from pathlib import Path
 from multimarket.v2_model import V2Config
 from multimarket.v22_combined_audit import _load_rows, build_parser
 from multimarket.v22_features import v22_feature_names
-from multimarket.v21_features import PeerMarket
 
 
 class V22CombinedAuditTests(unittest.TestCase):
@@ -68,11 +67,10 @@ class V22CombinedAuditTests(unittest.TestCase):
         self.assertEqual(cfg.embargo_bars, 6)
 
     def test_v22_feature_count_with_four_peers_is_86(self):
-        peers = {
-            symbol: PeerMarket(symbol=symbol, bars=(), eligible_indices=frozenset())
-            for symbol in ("BTCUSD", "ETHUSD", "QQQ", "XAUUSD")
-        }
-        self.assertEqual(len(v22_feature_names(peers)), 86)
+        self.assertEqual(
+            len(v22_feature_names(("BTCUSD", "ETHUSD", "QQQ", "XAUUSD"))),
+            86,
+        )
 
 
 if __name__ == "__main__":

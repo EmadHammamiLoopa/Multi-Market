@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from math import cos, log, pi, sin, sqrt
 from pathlib import Path
 from statistics import fmean
-from typing import Iterable, Sequence
+from typing import Collection, Sequence
 
 import numpy as np
 from sklearn.linear_model import ElasticNet, Ridge
@@ -51,6 +51,7 @@ RESERVED_WINDOWS = (
 @dataclass(frozen=True, slots=True)
 class Phase0Row:
     timestamp: datetime
+    label_end_timestamp: datetime
     base_features: tuple[float, ...]
     cross_features: tuple[float, ...]
     forward_1_bps: float
@@ -66,6 +67,14 @@ class FitMetrics:
     spearman: float | None
     pearson: float | None
     sign_accuracy: float
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedPeer:
+    bars: tuple[MarketBar, ...]
+    timestamps: tuple[datetime, ...]
+    eligible: frozenset[int]
+    sigma48: tuple[float | None, ...]
 
 
 def _is_reserved(ts: datetime) -> bool:
@@ -86,24 +95,47 @@ def _one_bar_log_return_bps(bars: Sequence[MarketBar], index: int) -> float:
     return log(bars[index].close / bars[index - 1].close) * 10_000.0
 
 
-def _prior_sigma_48(bars: Sequence[MarketBar], index: int, eligible: set[int]) -> float | None:
-    # Excludes the current one-bar return: uses returns ending at index-1 through index-48.
-    start_bar = index - 49
-    end_bar = index - 1
-    if start_bar < 0:
-        return None
-    if any(i not in eligible for i in range(start_bar, end_bar + 1)):
-        return None
-    if not _contiguous(bars, start_bar, end_bar):
-        return None
-    values = [_one_bar_log_return_bps(bars, i) for i in range(index - 48, index)]
-    mean = fmean(values)
-    variance = fmean((x - mean) ** 2 for x in values)
-    sigma = sqrt(variance)
-    return sigma if sigma > 0.0 else None
+def _sigma48_series(
+    bars: Sequence[MarketBar],
+    eligible: Collection[int],
+) -> tuple[float | None, ...]:
+    """Causal sigma for index i using 48 returns ending at i-1, never return i."""
+    eligible_set = eligible if isinstance(eligible, (set, frozenset)) else set(eligible)
+    one_bar: list[float | None] = [None] * len(bars)
+    for i in range(1, len(bars)):
+        if i not in eligible_set or i - 1 not in eligible_set:
+            continue
+        if (bars[i].timestamp - bars[i - 1].timestamp).total_seconds() != EXPECTED_SECONDS:
+            continue
+        one_bar[i] = _one_bar_log_return_bps(bars, i)
+
+    result: list[float | None] = [None] * len(bars)
+    for index in range(49, len(bars)):
+        values = one_bar[index - 48 : index]
+        if any(value is None for value in values):
+            continue
+        clean = [float(value) for value in values if value is not None]
+        mean = fmean(clean)
+        sigma = sqrt(fmean((x - mean) ** 2 for x in clean))
+        if sigma > 0.0:
+            result[index] = sigma
+    return tuple(result)
 
 
-def _target_lag_features(bars: Sequence[MarketBar], index: int, eligible: set[int]) -> tuple[float, ...] | None:
+def _prepare_peer(peer: PeerMarket) -> PreparedPeer:
+    return PreparedPeer(
+        bars=peer.bars,
+        timestamps=tuple(bar.timestamp for bar in peer.bars),
+        eligible=peer.eligible_indices,
+        sigma48=_sigma48_series(peer.bars, peer.eligible_indices),
+    )
+
+
+def _target_lag_features(
+    bars: Sequence[MarketBar],
+    index: int,
+    eligible: Collection[int],
+) -> tuple[float, ...] | None:
     values: list[float] = []
     for lag in LAGS:
         end = index - (lag - 1)
@@ -117,39 +149,42 @@ def _target_lag_features(bars: Sequence[MarketBar], index: int, eligible: set[in
 
 
 def _peer_lag_packet(
-    peer: PeerMarket,
+    peer: PreparedPeer,
     decision_timestamp: datetime,
 ) -> tuple[tuple[float, ...], tuple[float, ...]]:
-    bars = peer.bars
-    timestamps = tuple(bar.timestamp for bar in bars)
-    asof = bisect_right(timestamps, decision_timestamp) - 1
+    asof = bisect_right(peer.timestamps, decision_timestamp) - 1
     numeric: list[float] = []
     available: list[float] = []
 
     for lag in LAGS:
+        # lag=1 is the latest completed one-bar peer return known at decision time.
         end = asof - (lag - 1)
         start = end - 1
         ok = (
             start >= 0
-            and start in peer.eligible_indices
-            and end in peer.eligible_indices
-            and bars[end].timestamp <= decision_timestamp
-            and _contiguous(bars, start, end)
+            and start in peer.eligible
+            and end in peer.eligible
+            and peer.bars[end].timestamp <= decision_timestamp
+            and _contiguous(peer.bars, start, end)
+            and peer.sigma48[end] is not None
         )
         if not ok:
             numeric.append(0.0)
             available.append(0.0)
             continue
 
-        sigma = _prior_sigma_48(bars, end, set(peer.eligible_indices))
-        raw = (bars[end].close / bars[start].close - 1.0) * 10_000.0
-        numeric.append(raw / sigma if sigma is not None else 0.0)
-        available.append(1.0 if sigma is not None else 0.0)
+        raw = (peer.bars[end].close / peer.bars[start].close - 1.0) * 10_000.0
+        sigma = peer.sigma48[end]
+        assert sigma is not None and sigma > 0.0
+        numeric.append(raw / sigma)
+        available.append(1.0)
 
     return tuple(numeric), tuple(available)
 
 
-def _cross_summary(peer_packets: Sequence[tuple[tuple[float, ...], tuple[float, ...]]]) -> tuple[float, ...]:
+def _cross_summary(
+    peer_packets: Sequence[tuple[tuple[float, ...], tuple[float, ...]]],
+) -> tuple[float, ...]:
     summary: list[float] = []
     for lag_position in range(len(LAGS)):
         values = [
@@ -158,25 +193,23 @@ def _cross_summary(peer_packets: Sequence[tuple[tuple[float, ...], tuple[float, 
             if packet[1][lag_position] > 0.5
         ]
         if len(values) < 2:
+            # summary_available, breadth, mean, dispersion, max_abs
             summary.extend((0.0, 0.0, 0.0, 0.0, 0.0))
             continue
         mean = fmean(values)
         dispersion = sqrt(fmean((x - mean) ** 2 for x in values))
         breadth = sum(x > 0.0 for x in values) / len(values)
-        summary.extend(
-            (
-                1.0,
-                breadth,
-                mean,
-                dispersion,
-                max(abs(x) for x in values),
-            )
-        )
+        summary.extend((1.0, breadth, mean, dispersion, max(abs(x) for x in values)))
     return tuple(summary)
 
 
-def _intraday_state(bars: Sequence[MarketBar], index: int, eligible: set[int]) -> tuple[tuple[float, ...], int] | None:
-    sigma = _prior_sigma_48(bars, index, eligible)
+def _intraday_state(
+    bars: Sequence[MarketBar],
+    index: int,
+    eligible: Collection[int],
+    sigma48: Sequence[float | None],
+) -> tuple[tuple[float, ...], int] | None:
+    sigma = sigma48[index]
     if sigma is None or index < 1 or index not in eligible or index - 1 not in eligible:
         return None
     if not _contiguous(bars, index - 1, index):
@@ -188,14 +221,13 @@ def _intraday_state(bars: Sequence[MarketBar], index: int, eligible: set[int]) -
     current = _one_bar_log_return_bps(bars, index)
     jump = int(abs(current) > JUMP_SIGMA_MULTIPLIER * sigma)
 
-    # Causal percentile: compare prior sigma to sigma values from prior target bars only.
-    prior_sigmas: list[float] = []
-    for j in range(max(49, index - 288), index):
-        value = _prior_sigma_48(bars, j, eligible)
-        if value is not None:
-            prior_sigmas.append(value)
+    prior_sigmas = [
+        value
+        for value in sigma48[max(0, index - 288) : index]
+        if value is not None
+    ]
     vol_pct = (
-        sum(x <= sigma for x in prior_sigmas) / len(prior_sigmas)
+        sum(float(value) <= sigma for value in prior_sigmas) / len(prior_sigmas)
         if prior_sigmas
         else 0.5
     )
@@ -216,7 +248,7 @@ def _forward_return(
     bars: Sequence[MarketBar],
     index: int,
     horizon: int,
-    eligible: set[int],
+    eligible: Collection[int],
 ) -> float | None:
     end = index + horizon
     if end >= len(bars):
@@ -237,13 +269,15 @@ def build_phase0_rows(
     peers: dict[str, PeerMarket],
 ) -> list[Phase0Row]:
     eligible = hard_eligible_indices(bars, symbol)
+    target_sigma = _sigma48_series(bars, eligible)
+    prepared_peers = {name: _prepare_peer(peer) for name, peer in peers.items()}
     result: list[Phase0Row] = []
 
     for index, bar in enumerate(bars):
         if index not in eligible or _is_reserved(bar.timestamp):
             continue
         target_lags = _target_lag_features(bars, index, eligible)
-        state_result = _intraday_state(bars, index, eligible)
+        state_result = _intraday_state(bars, index, eligible, target_sigma)
         if target_lags is None or state_result is None:
             continue
         state, jump = state_result
@@ -252,7 +286,10 @@ def build_phase0_rows(
         if y1 is None or y6 is None:
             continue
 
-        peer_packets = [_peer_lag_packet(peers[name], bar.timestamp) for name in sorted(peers)]
+        peer_packets = [
+            _peer_lag_packet(prepared_peers[name], bar.timestamp)
+            for name in sorted(prepared_peers)
+        ]
         peer_values: list[float] = []
         for numeric, available in peer_packets:
             peer_values.extend(numeric)
@@ -262,6 +299,7 @@ def build_phase0_rows(
         result.append(
             Phase0Row(
                 timestamp=bar.timestamp,
+                label_end_timestamp=bars[index + PRIMARY_HORIZON].timestamp,
                 base_features=target_lags + state,
                 cross_features=target_lags + state + tuple(peer_values) + summaries,
                 forward_1_bps=y1,
@@ -338,7 +376,12 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
         eval_rows = rows[start:end]
         if not eval_rows:
             continue
-        train_rows = rows[:start]
+        eval_start = eval_rows[0].timestamp
+        train_rows = [
+            row
+            for row in rows[:start]
+            if row.label_end_timestamp < eval_start
+        ]
         if len(train_rows) < MIN_TRAIN_ROWS:
             folds.append(
                 {
@@ -350,19 +393,12 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
             )
             continue
 
-        # Six-bar embargo relative to the first evaluation timestamp.
-        eval_start = eval_rows[0].timestamp
-        train_rows = [
-            row
-            for row in train_rows
-            if row.timestamp < eval_start
-        ]
-
         fold_result: dict[str, object] = {
             "fold": fold_number,
             "status": "SCORED",
             "train_rows": len(train_rows),
             "eval_rows": len(eval_rows),
+            "eval_start": eval_start.isoformat(),
             "models": {},
         }
 
@@ -371,7 +407,7 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
             for horizon, y_field in ((1, "forward_1_bps"), (6, "forward_6_bps")):
                 y_train = np.asarray([getattr(row, y_field) for row in train_rows], dtype=float)
                 y_eval = np.asarray([getattr(row, y_field) for row in eval_rows], dtype=float)
-                representations = {}
+                representations: dict[str, object] = {}
                 for rep_name, feature_field in (("base", "base_features"), ("cross", "cross_features")):
                     X_train = np.asarray([getattr(row, feature_field) for row in train_rows], dtype=float)
                     X_eval = np.asarray([getattr(row, feature_field) for row in eval_rows], dtype=float)
@@ -387,6 +423,9 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
                     slot["pred"].extend(float(x) for x in pred)
                     slot["jump"].extend(row.jump_state for row in eval_rows)
 
+                representations["incremental_r2"] = (
+                    representations["cross"]["r2"] - representations["base"]["r2"]
+                )
                 model_payload[str(horizon)] = representations
             fold_result["models"][model_name] = model_payload
         folds.append(fold_result)
@@ -415,9 +454,7 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
                     "non_jump": asdict(non_jump) if non_jump is not None else None,
                 }
             if "base" in reps and "cross" in reps:
-                reps["incremental_r2"] = (
-                    reps["cross"]["all"]["r2"] - reps["base"]["all"]["r2"]
-                )
+                reps["incremental_r2"] = reps["cross"]["all"]["r2"] - reps["base"]["all"]["r2"]
                 base_nj = reps["base"]["non_jump"]
                 cross_nj = reps["cross"]["non_jump"]
                 reps["incremental_non_jump_r2"] = (
@@ -435,9 +472,9 @@ def evaluate_rows(rows: Sequence[Phase0Row], *, symbol: str) -> dict[str, object
         "lags": list(LAGS),
         "primary_horizon_bars": PRIMARY_HORIZON,
         "secondary_horizon_bars": SECONDARY_HORIZON,
-        "reserved_windows": [
-            [start.isoformat(), end.isoformat()] for start, end in RESERVED_WINDOWS
-        ],
+        "min_train_rows": MIN_TRAIN_ROWS,
+        "jump_sigma_multiplier": JUMP_SIGMA_MULTIPLIER,
+        "reserved_windows": [[start.isoformat(), end.isoformat()] for start, end in RESERVED_WINDOWS],
         "models": {
             "ridge": {"alpha": RIDGE_ALPHA},
             "elasticnet": {

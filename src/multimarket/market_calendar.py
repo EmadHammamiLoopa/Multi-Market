@@ -7,7 +7,32 @@ from zoneinfo import ZoneInfo
 
 _CRYPTO = {"BTCUSD", "ETHUSD", "BTC-USD", "ETH-USD"}
 _FX_METALS = {"EURUSD", "GBPUSD", "USDJPY", "XAUUSD"}
-_US_RTH = {"QQQ", "NDX", "SPX", "GSPC", "^GSPC", "^NDX"}
+_US_RTH = {
+    "QQQ",
+    "NDX",
+    "SPX",
+    "GSPC",
+    "^GSPC",
+    "^NDX",
+    # V2.3 Phase 0B expanded U.S.-listed ETF sensor universe.
+    "SPY",
+    "IWM",
+    "DIA",
+    "TLT",
+    "HYG",
+    "LQD",
+    "GLD",
+    "SLV",
+    "USO",
+    "UUP",
+    "XLK",
+    "XLF",
+    "XLE",
+    "XLI",
+    "XLY",
+    "XLP",
+    "XLV",
+}
 _NEW_YORK = ZoneInfo("America/New_York")
 
 
@@ -26,7 +51,7 @@ def tradability_at(symbol: str, timestamp: datetime) -> TradabilityDecision:
 
     This is intentionally a coarse research/data-quality gate, not a broker-specific
     trading-hours guarantee. Crypto is treated as 24/7. FX/metals reject UTC weekend
-    bars. US equity/index proxies use DST-aware New York regular trading hours.
+    bars. US equity/index/ETF proxies use DST-aware New York regular trading hours.
     Unknown instruments are left eligible but explicitly marked as unknown-policy.
     """
     if timestamp.tzinfo is None:

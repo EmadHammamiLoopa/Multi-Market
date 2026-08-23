@@ -19,7 +19,9 @@ class V23Phase0RobustnessTests(unittest.TestCase):
         def scored(symbol: str, increment: float):
             def metrics(r2: float):
                 rows = 100
-                mse = 1.0
+                # Keep SST fixed at 100 for BASE and CROSS. With rows=100,
+                # SSE = MSE*rows and R2 = 1-SSE/SST, so MSE = 1-R2.
+                mse = 1.0 - r2
                 return {
                     "rows": rows,
                     "r2": r2,

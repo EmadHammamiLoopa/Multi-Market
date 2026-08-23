@@ -1,0 +1,50 @@
+Building V2.1 predictor | EURUSD | peers=BTCUSD,ETHUSD,QQQ,XAUUSD
+Predictor ready | features=62 feature_rows=72557 training_rows=71939
+[01/30] 2026-04-06 00:00Z
+[02/30] 2026-04-06 12:20Z
+[03/30] 2026-04-07 00:45Z
+[04/30] 2026-04-07 13:10Z
+[05/30] 2026-04-08 01:35Z
+[06/30] 2026-04-08 14:00Z
+[07/30] 2026-04-09 02:25Z
+[08/30] 2026-04-09 14:50Z
+[09/30] 2026-04-10 03:15Z
+[10/30] 2026-04-10 15:40Z
+[11/30] 2026-04-13 04:05Z
+[12/30] 2026-04-13 16:30Z
+[13/30] 2026-04-14 04:55Z
+[14/30] 2026-04-14 17:20Z
+[15/30] 2026-04-15 05:45Z
+[16/30] 2026-04-15 18:05Z
+[17/30] 2026-04-16 06:30Z
+[18/30] 2026-04-16 18:55Z
+[19/30] 2026-04-17 07:20Z
+[20/30] 2026-04-17 19:45Z
+[21/30] 2026-04-20 08:10Z
+[22/30] 2026-04-20 20:35Z
+[23/30] 2026-04-21 09:00Z
+[24/30] 2026-04-21 21:25Z
+[25/30] 2026-04-22 09:50Z
+[26/30] 2026-04-22 22:15Z
+[27/30] 2026-04-23 10:40Z
+[28/30] 2026-04-23 23:05Z
+[29/30] 2026-04-24 11:30Z
+[30/30] 2026-04-24 23:55Z
+
+Economic summary
+Actionable=0 positive=0 nonpositive=0 no_trade=30
+Win rate=n/a
+Expectancy=n/a
+
+Ranking summary
+Scored=28 blocked_feature=1 blocked_event=1
+spearman_p_long_vs_realized_long: +0.2178
+spearman_p_short_vs_realized_short: -0.0427
+spearman_ev_long_vs_realized_long: -0.0148
+spearman_ev_short_vs_realized_short: +0.0055
+top_20pct_p_long_mean_realized_bps: -1.1299
+top_20pct_p_short_mean_realized_bps: -2.4810
+top_20pct_ev_long_mean_realized_bps: -2.3180
+top_20pct_ev_short_mean_realized_bps: -2.4088
+Economic JSON: evidence/v22/v21_paired_results/EURUSD_F_ECONOMIC.json
+Ranking JSON: evidence/v22/v21_paired_results/EURUSD_F_RANKING.json

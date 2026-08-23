@@ -1,0 +1,23 @@
+===== V2.3 PHASE 0B ACQUISITION AUDIT =====
+coverage_semantics=America/New_York trading-date coverage for U.S. RTH sensors; first/last bars are not required at UTC midnight
+SPY  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+IWM  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+DIA  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+TLT  status=PASS bars= 20676 eligible= 20669 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=1 repeated=6
+HYG  status=PASS bars= 20676 eligible= 20334 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=1 repeated=341
+LQD  status=PASS bars= 20676 eligible= 20655 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=21
+GLD  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+SLV  status=PASS bars= 20676 eligible= 20673 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=3
+USO  status=PASS bars= 20675 eligible= 20674 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=1 repeated=0
+UUP  status=PASS bars= 19874 eligible= 17478 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=2267 repeated=308
+XLK  status=PASS bars= 20675 eligible= 20675 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+XLF  status=PASS bars= 20676 eligible= 20675 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=1
+XLE  status=PASS bars= 20675 eligible= 20674 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=1
+XLI  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+XLY  status=PASS bars= 20676 eligible= 20676 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+XLP  status=PASS bars= 20675 eligible= 20675 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+XLV  status=PASS bars= 20675 eligible= 20675 start=2025-08-01T13:30:00Z end=2026-08-21T19:55:00Z trading_dates=2025-08-01..2026-08-21 zero=0 repeated=0
+invalid_sensor_files=NONE
+PHASE0B_ACQUISITION_GATE=PASS
+decision=ALLOW_PHASE0B_SCORING
+Output: evidence/v23/phase0b/V23_PHASE0B_CANONICAL_ACQUISITION_AUDIT.json

@@ -1,0 +1,53 @@
+===== V2.3 PHASE 0B RAW OHLC DIAGNOSTIC =====
+IWM  anomalies=1
+  line=6477 ts=2025-11-28T14:35:00Z O=247.31 H=247.7796 L=247.089996 C=247.78 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.000400000000013 low_excess=0
+TLT  anomalies=12
+  line=3835 ts=2025-10-10T14:25:00Z O=90.014999 H=90.014999 L=89.9822 C=89.98 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0022
+  line=17804 ts=2026-07-01T14:30:00Z O=85.6919 H=85.745 L=85.6919 C=85.75 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=17818 ts=2026-07-01T15:40:00Z O=85.67 H=85.695 L=85.64 C=85.7 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.00500000000001 low_excess=0
+  line=17820 ts=2026-07-01T15:50:00Z O=85.715 H=85.7399 L=85.715 C=85.74 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999891e-05 low_excess=0
+  line=17822 ts=2026-07-01T16:00:00Z O=85.72 H=85.7399 L=85.7 C=85.74 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999891e-05 low_excess=0
+  line=17829 ts=2026-07-01T16:35:00Z O=85.7402 H=85.749 L=85.7 C=85.695 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.00500000000001
+  line=17835 ts=2026-07-01T17:05:00Z O=85.665 H=85.665 L=85.66 C=85.67 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=17841 ts=2026-07-01T17:35:00Z O=85.675 H=85.6899 L=85.67 C=85.69 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.000100000000003 low_excess=0
+  line=17851 ts=2026-07-01T18:25:00Z O=85.65 H=85.655 L=85.6348 C=85.631 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0038
+  line=17859 ts=2026-07-01T19:05:00Z O=85.635 H=85.655 L=85.635 C=85.66 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=17862 ts=2026-07-01T19:20:00Z O=85.625 H=85.625 L=85.6101 C=85.63 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=17865 ts=2026-07-01T19:35:00Z O=85.6401 H=85.65 L=85.62 C=85.6199 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.000100000000003
+GLD  anomalies=3
+  line=336 ts=2025-08-07T15:20:00Z O=311.89999 H=311.89999 L=311.80161 C=311.79999 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.00162
+  line=341 ts=2025-08-07T15:45:00Z O=311.75 H=311.94 L=311.75 C=311.94391 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.00391000000002 low_excess=0
+  line=390 ts=2025-08-07T19:50:00Z O=312.94 H=312.97791 L=312.76001 C=312.98001 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.00209999999998 low_excess=0
+UUP  anomalies=25
+  line=12348 ts=2026-03-31T13:40:00Z O=27.8501 H=27.855 L=27.85 C=27.86 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=12351 ts=2026-03-31T13:55:00Z O=27.8215 H=27.8274 L=27.8215 C=27.82 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0015
+  line=12352 ts=2026-03-31T14:00:00Z O=27.815 H=27.8265 L=27.81 C=27.83 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.0035 low_excess=0
+  line=12353 ts=2026-03-31T14:05:00Z O=27.83 H=27.845 L=27.83 C=27.85 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=12356 ts=2026-03-31T14:20:00Z O=27.825 H=27.8399 L=27.825 C=27.84 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12360 ts=2026-03-31T14:40:00Z O=27.845 H=27.8599 L=27.845 C=27.86 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12361 ts=2026-03-31T14:45:00Z O=27.855 H=27.8569 L=27.8401 C=27.86 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.0031 low_excess=0
+  line=12367 ts=2026-03-31T15:15:00Z O=27.8436 H=27.8499 L=27.8401 C=27.85 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12369 ts=2026-03-31T15:25:00Z O=27.8455 H=27.865 L=27.845 C=27.87 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=12371 ts=2026-03-31T15:35:00Z O=27.87 H=27.87 L=27.8634 C=27.86 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0034
+  line=12374 ts=2026-03-31T15:50:00Z O=27.865 H=27.8699 L=27.86 C=27.87 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12376 ts=2026-03-31T16:00:00Z O=27.88 H=27.88 L=27.8602 C=27.86 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0002
+  line=12377 ts=2026-03-31T16:05:00Z O=27.865 H=27.8798 L=27.865 C=27.88 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.0002 low_excess=0
+  line=12379 ts=2026-03-31T16:15:00Z O=27.87 H=27.887 L=27.87 C=27.89 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.003 low_excess=0
+  line=12387 ts=2026-03-31T16:55:00Z O=27.825 H=27.825 L=27.82 C=27.83 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.005 low_excess=0
+  line=12399 ts=2026-03-31T17:55:00Z O=27.7999 H=27.8199 L=27.7999 C=27.82 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12400 ts=2026-03-31T18:00:00Z O=27.815 H=27.8199 L=27.8099 C=27.82 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12401 ts=2026-03-31T18:05:00Z O=27.8161 H=27.8161 L=27.8003 C=27.8 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.000299999999999
+  line=12403 ts=2026-03-31T18:15:00Z O=27.7901 H=27.7999 L=27.7801 C=27.8 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12404 ts=2026-03-31T18:20:00Z O=27.7915 H=27.7999 L=27.7915 C=27.8 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12407 ts=2026-03-31T18:35:00Z O=27.805 H=27.8099 L=27.79 C=27.81 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+  line=12408 ts=2026-03-31T18:40:00Z O=27.805 H=27.8099 L=27.8001 C=27.8 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=9.99999999998e-05
+  line=12414 ts=2026-03-31T19:10:00Z O=27.815 H=27.8199 L=27.8148 C=27.81 violations=LOW_ABOVE_OPEN_OR_CLOSE high_shortfall=0 low_excess=0.0048
+  line=12416 ts=2026-03-31T19:20:00Z O=27.8107 H=27.819 L=27.8101 C=27.82 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.001 low_excess=0
+  line=12417 ts=2026-03-31T19:25:00Z O=27.815 H=27.8199 L=27.8103 C=27.82 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=9.99999999998e-05 low_excess=0
+XLI  anomalies=2
+  line=6502 ts=2025-11-28T16:40:00Z O=153.77 H=153.83501 L=153.72501 C=153.84 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.00498999999999 low_excess=0
+  line=6512 ts=2025-11-28T17:30:00Z O=153.545 H=153.63499 L=153.545 C=153.64 violations=HIGH_BELOW_OPEN_OR_CLOSE high_shortfall=0.00501 low_excess=0
+total_anomalies=43
+data_modified=NO
+predictive_scoring_performed=NO
+Output: evidence/v23/phase0b/V23_PHASE0B_RAW_OHLC_DIAGNOSTIC.json

@@ -13,5 +13,6 @@ htmlcov/
 models/
 artifacts/
 data/*.csv
+data/v23_phase0b_canonical/
 reports/
 results/

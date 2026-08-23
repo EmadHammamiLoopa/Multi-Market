@@ -1,0 +1,161 @@
+{
+  "symbol": "QQQ",
+  "manifest_json": "evidence/v22/manifests/QQQ_E_V22_TIMESTAMP_MANIFEST.json",
+  "macro_ledger": "data/macro/V22_US_MACRO_LEDGER.csv",
+  "macro_ledger_rows": 712,
+  "macro_ledger_summary": {
+    "CPIAUCSL": 90,
+    "CPILFESL": 90,
+    "PAYEMS": 160,
+    "PCEPI": 163,
+    "PCEPILFE": 164,
+    "UNRATE": 45
+  },
+  "peers": [
+    "BTCUSD",
+    "ETHUSD",
+    "EURUSD",
+    "XAUUSD"
+  ],
+  "feature_count": 86,
+  "max_peer_staleness_minutes": 15,
+  "frozen_v2_config": {
+    "horizon_bars": 6,
+    "volatility_span": 48,
+    "volatility_min_observations": 24,
+    "take_profit_vol_multiplier": 1.0,
+    "stop_loss_vol_multiplier": 1.0,
+    "round_trip_cost_bps": 2.0,
+    "min_train_rows": 5000,
+    "retrain_every": 500,
+    "validation_fraction": 0.2,
+    "min_positive_probability": 0.55,
+    "min_predicted_ev_bps": 0.0,
+    "embargo_bars": 6,
+    "random_state": 42
+  },
+  "frozen_samples": 30,
+  "version": "V2.2-MACRO-CONTEXT",
+  "gate_blocked": 22,
+  "unavailable": 8,
+  "actionable": 0,
+  "net_positive": 0,
+  "net_nonpositive": 0,
+  "no_trade": 22,
+  "selected_win_rate": null,
+  "mean_net_expectancy_bps": null,
+  "profit_factor": null,
+  "profit_factor_is_infinite": false,
+  "rows": [
+    {
+      "decision_timestamp": "2026-01-05T14:30:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-05T17:35:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-05T20:45:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FUTURE_EVENT"
+    },
+    {
+      "decision_timestamp": "2026-01-06T17:20:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-06T20:30:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FUTURE_EVENT"
+    },
+    {
+      "decision_timestamp": "2026-01-07T17:10:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-08T16:55:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-09T16:40:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-12T16:25:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-13T16:15:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-14T16:00:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-15T15:45:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-16T15:30:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-20T15:20:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-20T18:25:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-21T15:05:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-21T18:10:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-22T14:50:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-22T18:00:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-23T14:35:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-23T17:45:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FEATURE_HISTORY"
+    },
+    {
+      "decision_timestamp": "2026-01-23T20:55:00Z",
+      "prediction_direction": "NO_TRADE",
+      "gate": "BLOCK_FUTURE_EVENT"
+    }
+  ]
+}

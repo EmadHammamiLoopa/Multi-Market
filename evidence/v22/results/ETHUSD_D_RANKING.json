@@ -1,0 +1,327 @@
+{
+  "symbol": "ETHUSD",
+  "manifest_json": "evidence/v22/manifests/ETHUSD_D_V22_TIMESTAMP_MANIFEST.json",
+  "macro_ledger": "data/macro/V22_US_MACRO_LEDGER.csv",
+  "macro_ledger_rows": 712,
+  "macro_ledger_summary": {
+    "CPIAUCSL": 90,
+    "CPILFESL": 90,
+    "PAYEMS": 160,
+    "PCEPI": 163,
+    "PCEPILFE": 164,
+    "UNRATE": 45
+  },
+  "peers": [
+    "BTCUSD",
+    "EURUSD",
+    "QQQ",
+    "XAUUSD"
+  ],
+  "feature_count": 86,
+  "max_peer_staleness_minutes": 15,
+  "frozen_v2_config": {
+    "horizon_bars": 6,
+    "volatility_span": 48,
+    "volatility_min_observations": 24,
+    "take_profit_vol_multiplier": 1.0,
+    "stop_loss_vol_multiplier": 1.0,
+    "round_trip_cost_bps": 2.0,
+    "min_train_rows": 5000,
+    "retrain_every": 500,
+    "validation_fraction": 0.2,
+    "min_positive_probability": 0.55,
+    "min_predicted_ev_bps": 0.0,
+    "embargo_bars": 6,
+    "random_state": 42
+  },
+  "frozen_samples": 30,
+  "version": "V2.2-MACRO-CONTEXT-RANKING",
+  "scored_eligible_rows": 30,
+  "blocked_feature_history": 0,
+  "blocked_future_event": 0,
+  "unavailable_training": 0,
+  "unavailable_data_or_other": 0,
+  "metrics": {
+    "spearman_p_long_vs_realized_long": -0.1946607341490545,
+    "spearman_p_short_vs_realized_short": -0.16307007786429367,
+    "spearman_ev_long_vs_realized_long": -0.20489432703003338,
+    "spearman_ev_short_vs_realized_short": -0.2756395995550612,
+    "top_20pct_p_long_mean_realized_bps": -39.01004675093119,
+    "top_20pct_p_short_mean_realized_bps": 12.581116170846942,
+    "top_20pct_ev_long_mean_realized_bps": -10.150896532031902,
+    "top_20pct_ev_short_mean_realized_bps": -7.565566171110458
+  },
+  "rows": [
+    {
+      "decision_timestamp": "2025-11-03T00:00:00Z",
+      "p_long": 0.4635036496350365,
+      "p_short": 0.4779874213836478,
+      "ev_long_bps": -22.589614868164062,
+      "ev_short_bps": 12.040124893188477,
+      "realized_long_bps": -37.64915765766733,
+      "realized_short_bps": 33.64915765766733
+    },
+    {
+      "decision_timestamp": "2025-11-03T15:40:00Z",
+      "p_long": 0.5263157894736842,
+      "p_short": 0.48036253776435045,
+      "ev_long_bps": -55.19142150878906,
+      "ev_short_bps": 38.88014221191406,
+      "realized_long_bps": -99.28495543614962,
+      "realized_short_bps": 95.28495543614962
+    },
+    {
+      "decision_timestamp": "2025-11-04T07:25:00Z",
+      "p_long": 0.4636530238240684,
+      "p_short": 0.48156028368794324,
+      "ev_long_bps": 17.741146087646484,
+      "ev_short_bps": -23.86972427368164,
+      "realized_long_bps": 28.396358177595673,
+      "realized_short_bps": -32.39635817759567
+    },
+    {
+      "decision_timestamp": "2025-11-04T23:05:00Z",
+      "p_long": 0.4621131270010672,
+      "p_short": 0.4822777454968042,
+      "ev_long_bps": 54.67719268798828,
+      "ev_short_bps": -39.5020637512207,
+      "realized_long_bps": 17.42246460370667,
+      "realized_short_bps": -21.42246460370667
+    },
+    {
+      "decision_timestamp": "2025-11-05T14:50:00Z",
+      "p_long": 0.4723895582329317,
+      "p_short": 0.49697885196374625,
+      "ev_long_bps": 4.135345935821533,
+      "ev_short_bps": -15.718863487243652,
+      "realized_long_bps": -67.75191741227334,
+      "realized_short_bps": 63.75191741227334
+    },
+    {
+      "decision_timestamp": "2025-11-06T06:35:00Z",
+      "p_long": 0.4585180493983534,
+      "p_short": 0.49226804123711343,
+      "ev_long_bps": -5.0574517250061035,
+      "ev_short_bps": 7.857277870178223,
+      "realized_long_bps": 10.339119140394317,
+      "realized_short_bps": -14.339119140394317
+    },
+    {
+      "decision_timestamp": "2025-11-06T22:15:00Z",
+      "p_long": 0.4758364312267658,
+      "p_short": 0.48344370860927155,
+      "ev_long_bps": 10.01770305633545,
+      "ev_short_bps": -13.753317832946777,
+      "realized_long_bps": -59.493909084141336,
+      "realized_short_bps": 55.493909084141336
+    },
+    {
+      "decision_timestamp": "2025-11-07T14:00:00Z",
+      "p_long": 0.4676457090408444,
+      "p_short": 0.5007974481658692,
+      "ev_long_bps": 2.5997378826141357,
+      "ev_short_bps": -3.7262814044952393,
+      "realized_long_bps": -41.37299660929039,
+      "realized_short_bps": 37.37299660929039
+    },
+    {
+      "decision_timestamp": "2025-11-08T05:45:00Z",
+      "p_long": 0.4677565849227975,
+      "p_short": 0.491062039957939,
+      "ev_long_bps": -5.008708953857422,
+      "ev_short_bps": -1.7916041612625122,
+      "realized_long_bps": -44.55844124295859,
+      "realized_short_bps": 40.55844124295859
+    },
+    {
+      "decision_timestamp": "2025-11-08T21:25:00Z",
+      "p_long": 0.45977011494252873,
+      "p_short": 0.4628657164291073,
+      "ev_long_bps": 0.8690055012702942,
+      "ev_short_bps": -1.1805205345153809,
+      "realized_long_bps": 7.404047854848496,
+      "realized_short_bps": -11.404047854848496
+    },
+    {
+      "decision_timestamp": "2025-11-09T13:10:00Z",
+      "p_long": 0.46776406035665297,
+      "p_short": 0.464,
+      "ev_long_bps": -9.380499839782715,
+      "ev_short_bps": 10.812165260314941,
+      "realized_long_bps": -14.085884958565885,
+      "realized_short_bps": 10.085884958565885
+    },
+    {
+      "decision_timestamp": "2025-11-10T04:55:00Z",
+      "p_long": 0.4497560975609756,
+      "p_short": 0.5149776927979605,
+      "ev_long_bps": -7.540430068969727,
+      "ev_short_bps": 4.05767822265625,
+      "realized_long_bps": -21.13029054819937,
+      "realized_short_bps": 17.13029054819937
+    },
+    {
+      "decision_timestamp": "2025-11-10T20:35:00Z",
+      "p_long": 0.4573547589616811,
+      "p_short": 0.49953874538745385,
+      "ev_long_bps": -3.6882524490356445,
+      "ev_short_bps": -1.5653222799301147,
+      "realized_long_bps": -51.19057783962207,
+      "realized_short_bps": 47.19057783962207
+    },
+    {
+      "decision_timestamp": "2025-11-11T12:20:00Z",
+      "p_long": 0.47874601487778956,
+      "p_short": 0.5074224021592443,
+      "ev_long_bps": -2.8118181228637695,
+      "ev_short_bps": -1.4472239017486572,
+      "realized_long_bps": -46.68021007134974,
+      "realized_short_bps": 42.68021007134974
+    },
+    {
+      "decision_timestamp": "2025-11-12T04:05:00Z",
+      "p_long": 0.504,
+      "p_short": 0.4911242603550296,
+      "ev_long_bps": -11.34524154663086,
+      "ev_short_bps": 6.615742206573486,
+      "realized_long_bps": -15.945421108136902,
+      "realized_short_bps": 11.945421108136902
+    },
+    {
+      "decision_timestamp": "2025-11-12T19:45:00Z",
+      "p_long": 0.4683308494783905,
+      "p_short": 0.5031948881789138,
+      "ev_long_bps": -12.545045852661133,
+      "ev_short_bps": 12.456277847290039,
+      "realized_long_bps": 50.14943825506468,
+      "realized_short_bps": -54.14943825506468
+    },
+    {
+      "decision_timestamp": "2025-11-13T11:30:00Z",
+      "p_long": 0.48392415498763397,
+      "p_short": 0.5052208835341365,
+      "ev_long_bps": 2.3786122798919678,
+      "ev_short_bps": -4.973957538604736,
+      "realized_long_bps": 4.977548878588369,
+      "realized_short_bps": -8.977548878588369
+    },
+    {
+      "decision_timestamp": "2025-11-14T03:15:00Z",
+      "p_long": 0.4816082121471343,
+      "p_short": 0.460989010989011,
+      "ev_long_bps": -4.250885009765625,
+      "ev_short_bps": 0.6432530879974365,
+      "realized_long_bps": -22.38131991537351,
+      "realized_short_bps": 18.38131991537351
+    },
+    {
+      "decision_timestamp": "2025-11-14T18:55:00Z",
+      "p_long": 0.460562414266118,
+      "p_short": 0.4983842010771993,
+      "ev_long_bps": 13.328760147094727,
+      "ev_short_bps": -9.897025108337402,
+      "realized_long_bps": 79.59722432405,
+      "realized_short_bps": -83.59722432405
+    },
+    {
+      "decision_timestamp": "2025-11-15T10:40:00Z",
+      "p_long": 0.4409108755398508,
+      "p_short": 0.49925852694018785,
+      "ev_long_bps": -14.370867729187012,
+      "ev_short_bps": 8.632896423339844,
+      "realized_long_bps": -10.71165373070304,
+      "realized_short_bps": 6.7116537307030395
+    },
+    {
+      "decision_timestamp": "2025-11-16T02:25:00Z",
+      "p_long": 0.4662402274342573,
+      "p_short": 0.49673487157161517,
+      "ev_long_bps": -17.002582550048828,
+      "ev_short_bps": 15.52687931060791,
+      "realized_long_bps": 44.26994368444323,
+      "realized_short_bps": -48.26994368444323
+    },
+    {
+      "decision_timestamp": "2025-11-16T18:05:00Z",
+      "p_long": 0.4658595641646489,
+      "p_short": 0.5262461402734891,
+      "ev_long_bps": -17.044397354125977,
+      "ev_short_bps": 9.758808135986328,
+      "realized_long_bps": 77.99401313953767,
+      "realized_short_bps": -81.99401313953767
+    },
+    {
+      "decision_timestamp": "2025-11-17T09:50:00Z",
+      "p_long": 0.46122239342578325,
+      "p_short": 0.4626696832579186,
+      "ev_long_bps": -1.6574541330337524,
+      "ev_short_bps": -2.0685110092163086,
+      "realized_long_bps": 41.071104586102436,
+      "realized_short_bps": -45.071104586102436
+    },
+    {
+      "decision_timestamp": "2025-11-18T01:35:00Z",
+      "p_long": 0.46308243727598564,
+      "p_short": 0.45560747663551404,
+      "ev_long_bps": 0.7679760456085205,
+      "ev_short_bps": -8.24654769897461,
+      "realized_long_bps": -78.85294180234872,
+      "realized_short_bps": 74.85294180234872
+    },
+    {
+      "decision_timestamp": "2025-11-18T17:15:00Z",
+      "p_long": 0.434375,
+      "p_short": 0.4867549668874172,
+      "ev_long_bps": 17.997169494628906,
+      "ev_short_bps": -17.88149642944336,
+      "realized_long_bps": -44.20026522246512,
+      "realized_short_bps": 40.20026522246512
+    },
+    {
+      "decision_timestamp": "2025-11-19T09:00:00Z",
+      "p_long": 0.444141689373297,
+      "p_short": 0.502653159671973,
+      "ev_long_bps": -6.243136882781982,
+      "ev_short_bps": -6.893189907073975,
+      "realized_long_bps": 21.99616061430354,
+      "realized_short_bps": -25.99616061430354
+    },
+    {
+      "decision_timestamp": "2025-11-20T00:45:00Z",
+      "p_long": 0.4608947537817831,
+      "p_short": 0.48627450980392156,
+      "ev_long_bps": 0.6381931900978088,
+      "ev_short_bps": -11.913457870483398,
+      "realized_long_bps": -71.11860352315665,
+      "realized_short_bps": 67.11860352315665
+    },
+    {
+      "decision_timestamp": "2025-11-20T16:25:00Z",
+      "p_long": 0.44592663172939495,
+      "p_short": 0.5191122071516646,
+      "ev_long_bps": 26.994327545166016,
+      "ev_short_bps": -25.275537490844727,
+      "realized_long_bps": -87.37523822191294,
+      "realized_short_bps": 83.37523822191294
+    },
+    {
+      "decision_timestamp": "2025-11-21T08:10:00Z",
+      "p_long": 0.6578947368421053,
+      "p_short": 0.4516971279373368,
+      "ev_long_bps": 43.71493148803711,
+      "ev_short_bps": -29.740886688232422,
+      "realized_long_bps": -54.74592285316571,
+      "realized_short_bps": 50.74592285316571
+    },
+    {
+      "decision_timestamp": "2025-11-21T23:55:00Z",
+      "p_long": 0.47558100370495116,
+      "p_short": 0.515451174289246,
+      "ev_long_bps": 4.273864269256592,
+      "ev_short_bps": -12.267659187316895,
+      "realized_long_bps": -27.272520201745643,
+      "realized_short_bps": 23.272520201745643
+    }
+  ],
+  "note": "Single-pass diagnostic using the same frozen V2.2 predictions as the economic audit."
+}

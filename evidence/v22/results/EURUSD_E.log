@@ -1,0 +1,52 @@
+Building V2.2 predictor | EURUSD | peers=BTCUSD,ETHUSD,QQQ,XAUUSD
+Macro ledger rows=712 summary={'CPIAUCSL': 90, 'CPILFESL': 90, 'PAYEMS': 160, 'PCEPI': 163, 'PCEPILFE': 164, 'UNRATE': 45}
+Predictor ready | features=86 feature_rows=72557 training_rows=71939
+[01/30] 2026-01-05 00:00Z
+[02/30] 2026-01-05 12:20Z
+[03/30] 2026-01-06 00:45Z
+[04/30] 2026-01-06 13:10Z
+[05/30] 2026-01-07 01:35Z
+[06/30] 2026-01-07 14:00Z
+[07/30] 2026-01-08 02:25Z
+[08/30] 2026-01-08 14:50Z
+[09/30] 2026-01-09 03:15Z
+[10/30] 2026-01-09 15:40Z
+[11/30] 2026-01-12 04:05Z
+[12/30] 2026-01-12 16:30Z
+[13/30] 2026-01-13 04:55Z
+[14/30] 2026-01-13 17:20Z
+[15/30] 2026-01-14 05:45Z
+[16/30] 2026-01-14 18:05Z
+[17/30] 2026-01-15 06:30Z
+[18/30] 2026-01-15 18:55Z
+[19/30] 2026-01-16 07:20Z
+[20/30] 2026-01-16 19:45Z
+[21/30] 2026-01-19 08:10Z
+[22/30] 2026-01-19 20:35Z
+[23/30] 2026-01-20 09:00Z
+[24/30] 2026-01-20 21:25Z
+[25/30] 2026-01-21 09:50Z
+[26/30] 2026-01-21 22:15Z
+[27/30] 2026-01-22 10:40Z
+[28/30] 2026-01-22 23:05Z
+[29/30] 2026-01-23 11:30Z
+[30/30] 2026-01-23 23:55Z
+
+Economic summary
+Actionable=0 positive=0 nonpositive=0 no_trade=30
+Win rate=n/a
+Expectancy=n/a
+Profit factor=n/a
+
+Ranking summary
+Scored=28 blocked_feature=1 blocked_event=1 unavailable_training=0 unavailable_other=0
+spearman_p_long_vs_realized_long: -0.1286
+spearman_p_short_vs_realized_short: -0.2425
+spearman_ev_long_vs_realized_long: -0.1987
+spearman_ev_short_vs_realized_short: -0.2337
+top_20pct_p_long_mean_realized_bps: -2.8234
+top_20pct_p_short_mean_realized_bps: -4.1549
+top_20pct_ev_long_mean_realized_bps: -1.2576
+top_20pct_ev_short_mean_realized_bps: -4.1622
+Economic JSON: evidence/v22/results/EURUSD_E_ECONOMIC.json
+Ranking JSON: evidence/v22/results/EURUSD_E_RANKING.json

@@ -1,0 +1,52 @@
+Building V2.2 predictor | QQQ | peers=BTCUSD,ETHUSD,EURUSD,XAUUSD
+Macro ledger rows=712 summary={'CPIAUCSL': 90, 'CPILFESL': 90, 'PAYEMS': 160, 'PCEPI': 163, 'PCEPILFE': 164, 'UNRATE': 45}
+Predictor ready | features=86 feature_rows=7908 training_rows=6324
+[01/30] 2026-04-06 13:30Z
+[02/30] 2026-04-06 16:50Z
+[03/30] 2026-04-07 13:40Z
+[04/30] 2026-04-07 17:00Z
+[05/30] 2026-04-08 13:55Z
+[06/30] 2026-04-08 17:15Z
+[07/30] 2026-04-09 14:05Z
+[08/30] 2026-04-09 17:25Z
+[09/30] 2026-04-10 14:20Z
+[10/30] 2026-04-10 17:40Z
+[11/30] 2026-04-13 14:30Z
+[12/30] 2026-04-13 17:55Z
+[13/30] 2026-04-14 14:45Z
+[14/30] 2026-04-14 18:05Z
+[15/30] 2026-04-15 14:55Z
+[16/30] 2026-04-15 18:20Z
+[17/30] 2026-04-16 15:15Z
+[18/30] 2026-04-16 18:35Z
+[19/30] 2026-04-17 15:25Z
+[20/30] 2026-04-17 18:50Z
+[21/30] 2026-04-20 15:40Z
+[22/30] 2026-04-20 19:00Z
+[23/30] 2026-04-21 15:55Z
+[24/30] 2026-04-21 19:15Z
+[25/30] 2026-04-22 16:05Z
+[26/30] 2026-04-22 19:25Z
+[27/30] 2026-04-23 16:20Z
+[28/30] 2026-04-23 19:40Z
+[29/30] 2026-04-24 16:30Z
+[30/30] 2026-04-24 19:55Z
+
+Economic summary
+Actionable=0 positive=0 nonpositive=0 no_trade=21
+Win rate=n/a
+Expectancy=n/a
+Profit factor=n/a
+
+Ranking summary
+Scored=0 blocked_feature=19 blocked_event=2 unavailable_training=9 unavailable_other=0
+spearman_p_long_vs_realized_long: n/a
+spearman_p_short_vs_realized_short: n/a
+spearman_ev_long_vs_realized_long: n/a
+spearman_ev_short_vs_realized_short: n/a
+top_20pct_p_long_mean_realized_bps: n/a
+top_20pct_p_short_mean_realized_bps: n/a
+top_20pct_ev_long_mean_realized_bps: n/a
+top_20pct_ev_short_mean_realized_bps: n/a
+Economic JSON: evidence/v22/results/QQQ_F_ECONOMIC.json
+Ranking JSON: evidence/v22/results/QQQ_F_RANKING.json

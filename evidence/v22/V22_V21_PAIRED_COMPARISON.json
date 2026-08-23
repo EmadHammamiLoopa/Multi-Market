@@ -1,0 +1,84 @@
+{
+  "experiment": "V2.2 macro-context paired holdout comparison",
+  "status": "FROZEN_AFTER_FIRST_HOLDOUT_OPEN",
+  "windows": [
+    "D",
+    "E",
+    "F"
+  ],
+  "markets": [
+    "EURUSD",
+    "XAUUSD",
+    "BTCUSD",
+    "ETHUSD",
+    "QQQ"
+  ],
+  "identical_frozen_samples": 450,
+  "repository_head": "b9d06349ea464b486c617c0b7c6bbc20e9218d2d",
+  "V2.1": {
+    "samples": 450,
+    "scored": 344,
+    "actionable": 5,
+    "positive": 1,
+    "nonpositive": 4,
+    "no_trade": 418,
+    "coverage": 0.011111111111111112,
+    "aggregate_net_bps": -73.32422527409926,
+    "expectancy_bps": -14.664845054819853,
+    "win_rate": 0.2,
+    "profit_factor": 0.14008995715297626,
+    "unweighted_ranking_means": {
+      "spearman_p_long_vs_realized_long": -0.04494832475644489,
+      "spearman_p_short_vs_realized_short": -0.13698387988615923,
+      "spearman_ev_long_vs_realized_long": -0.017915770835681848,
+      "spearman_ev_short_vs_realized_short": -0.04425374392838241,
+      "top_20pct_p_long_mean_realized_bps": -5.343478328212451,
+      "top_20pct_p_short_mean_realized_bps": -4.119281808174411,
+      "top_20pct_ev_long_mean_realized_bps": -4.6004524740846655,
+      "top_20pct_ev_short_mean_realized_bps": -2.6529837684798108
+    }
+  },
+  "V2.2": {
+    "samples": 450,
+    "scored": 344,
+    "actionable": 3,
+    "positive": 0,
+    "nonpositive": 3,
+    "no_trade": 420,
+    "coverage": 0.006666666666666667,
+    "aggregate_net_bps": -119.88037872747802,
+    "expectancy_bps": -39.96012624249267,
+    "win_rate": 0.0,
+    "profit_factor": 0.0,
+    "unweighted_ranking_means": {
+      "spearman_p_long_vs_realized_long": -0.06887368862341053,
+      "spearman_p_short_vs_realized_short": -0.0169124913661493,
+      "spearman_ev_long_vs_realized_long": -0.012611002683305244,
+      "spearman_ev_short_vs_realized_short": -0.046783586474910176,
+      "top_20pct_p_long_mean_realized_bps": -9.630337908049308,
+      "top_20pct_p_short_mean_realized_bps": 0.9959733281997285,
+      "top_20pct_ev_long_mean_realized_bps": -2.804616061001853,
+      "top_20pct_ev_short_mean_realized_bps": -2.1314640640366873
+    }
+  },
+  "V2.2_minus_V2.1": {
+    "actionable": -2,
+    "coverage": -0.0044444444444444444,
+    "aggregate_net_bps": -46.556153453378755,
+    "expectancy_bps": -25.295281187672817,
+    "ranking": {
+      "spearman_p_long_vs_realized_long": -0.023925363866965643,
+      "spearman_p_short_vs_realized_short": 0.12007138852000993,
+      "spearman_ev_long_vs_realized_long": 0.005304768152376604,
+      "spearman_ev_short_vs_realized_short": -0.002529842546527765,
+      "top_20pct_p_long_mean_realized_bps": -4.2868595798368565,
+      "top_20pct_p_short_mean_realized_bps": 5.11525513637414,
+      "top_20pct_ev_long_mean_realized_bps": 1.7958364130828124,
+      "top_20pct_ev_short_mean_realized_bps": 0.5215197044431235
+    }
+  },
+  "verdict": "DEGRADED",
+  "decision": "REJECT_V2.2_AS_DEPLOYABLE_MODEL",
+  "post_hoc_tuning_performed": false,
+  "holdout_reuse_for_tuning_allowed": false
+}

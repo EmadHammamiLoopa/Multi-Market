@@ -1,0 +1,284 @@
+{
+  "symbol": "XAUUSD",
+  "version": "V2.1-CROSS-MARKET-REGIME-RANKING",
+  "baseline_json": "evidence/v22/manifests/XAUUSD_E_V22_TIMESTAMP_MANIFEST.json",
+  "peers": [
+    "BTCUSD",
+    "ETHUSD",
+    "EURUSD",
+    "QQQ"
+  ],
+  "feature_count": 62,
+  "max_peer_staleness_minutes": 15,
+  "frozen_samples": 30,
+  "scored_eligible_rows": 28,
+  "blocked_feature_history": 1,
+  "blocked_future_event": 1,
+  "unavailable_training": 0,
+  "unavailable_data_or_other": 0,
+  "metrics": {
+    "spearman_p_long_vs_realized_long": -0.34318555008210183,
+    "spearman_p_short_vs_realized_short": -0.44061302681992337,
+    "spearman_ev_long_vs_realized_long": -0.27586206896551724,
+    "spearman_ev_short_vs_realized_short": -0.2287903667214012,
+    "top_20pct_p_long_mean_realized_bps": -16.28839815325276,
+    "top_20pct_p_short_mean_realized_bps": -3.2700872478124743,
+    "top_20pct_ev_long_mean_realized_bps": -16.183315045466525,
+    "top_20pct_ev_short_mean_realized_bps": 3.649530697579074
+  },
+  "rows": [
+    {
+      "decision_timestamp": "2026-01-05T12:20:00Z",
+      "p_long": 0.5590551181102362,
+      "p_short": 0.4061907770056854,
+      "ev_long_bps": 0.8847273588180542,
+      "ev_short_bps": -5.778053283691406,
+      "realized_long_bps": -16.65403242063594,
+      "realized_short_bps": 12.65403242063594
+    },
+    {
+      "decision_timestamp": "2026-01-06T00:45:00Z",
+      "p_long": 0.5060908084163898,
+      "p_short": 0.3323529411764706,
+      "ev_long_bps": 0.4187847971916199,
+      "ev_short_bps": -4.258769512176514,
+      "realized_long_bps": -15.131281803784962,
+      "realized_short_bps": 11.131281803784962
+    },
+    {
+      "decision_timestamp": "2026-01-06T13:10:00Z",
+      "p_long": 0.46903153153153154,
+      "p_short": 0.4145616641901932,
+      "ev_long_bps": -1.7014786005020142,
+      "ev_short_bps": -2.296816110610962,
+      "realized_long_bps": -13.474175370137395,
+      "realized_short_bps": 9.474175370137395
+    },
+    {
+      "decision_timestamp": "2026-01-07T01:35:00Z",
+      "p_long": 0.5456204379562044,
+      "p_short": 0.4166101694915254,
+      "ev_long_bps": 1.1854963302612305,
+      "ev_short_bps": -3.9174387454986572,
+      "realized_long_bps": -18.244395916952673,
+      "realized_short_bps": 14.244395916952673
+    },
+    {
+      "decision_timestamp": "2026-01-07T14:00:00Z",
+      "p_long": 0.46410684474123537,
+      "p_short": 0.41478653245400904,
+      "ev_long_bps": -1.5207439661026,
+      "ev_short_bps": -3.147878646850586,
+      "realized_long_bps": -19.93439295316826,
+      "realized_short_bps": 15.93439295316826
+    },
+    {
+      "decision_timestamp": "2026-01-08T02:25:00Z",
+      "p_long": 0.5046153846153846,
+      "p_short": 0.4092373791621912,
+      "ev_long_bps": -0.978394627571106,
+      "ev_short_bps": -3.4480249881744385,
+      "realized_long_bps": -15.730973008198696,
+      "realized_short_bps": 11.730973008198696
+    },
+    {
+      "decision_timestamp": "2026-01-08T14:50:00Z",
+      "p_long": 0.4211431027073485,
+      "p_short": 0.4213903743315508,
+      "ev_long_bps": -2.4453985691070557,
+      "ev_short_bps": -0.6395778656005859,
+      "realized_long_bps": 18.4327144343456,
+      "realized_short_bps": -22.4327144343456
+    },
+    {
+      "decision_timestamp": "2026-01-09T03:15:00Z",
+      "p_long": 0.4211672473867596,
+      "p_short": 0.4260204081632653,
+      "ev_long_bps": -2.256234884262085,
+      "ev_short_bps": -1.6301202774047852,
+      "realized_long_bps": 0.7152804177910106,
+      "realized_short_bps": -4.715280417791011
+    },
+    {
+      "decision_timestamp": "2026-01-09T15:40:00Z",
+      "p_long": 0.4090601757944557,
+      "p_short": 0.38934426229508196,
+      "ev_long_bps": -5.454415798187256,
+      "ev_short_bps": 2.5299277305603027,
+      "realized_long_bps": -25.80640830817186,
+      "realized_short_bps": 21.80640830817186
+    },
+    {
+      "decision_timestamp": "2026-01-12T04:05:00Z",
+      "p_long": 0.4791762013729977,
+      "p_short": 0.40487804878048783,
+      "ev_long_bps": -1.4709633588790894,
+      "ev_short_bps": -3.0192697048187256,
+      "realized_long_bps": -4.968916419453516,
+      "realized_short_bps": 0.9689164194535156
+    },
+    {
+      "decision_timestamp": "2026-01-12T16:30:00Z",
+      "p_long": 0.5719844357976653,
+      "p_short": 0.11229946524064172,
+      "ev_long_bps": 1.8043893575668335,
+      "ev_short_bps": -4.103598594665527,
+      "realized_long_bps": -23.905837810413882,
+      "realized_short_bps": 19.905837810413882
+    },
+    {
+      "decision_timestamp": "2026-01-13T04:55:00Z",
+      "p_long": 0.4301994301994302,
+      "p_short": 0.3951781970649895,
+      "ev_long_bps": -2.343693494796753,
+      "ev_short_bps": -1.4191290140151978,
+      "realized_long_bps": -13.616620505759041,
+      "realized_short_bps": 9.616620505759041
+    },
+    {
+      "decision_timestamp": "2026-01-13T17:20:00Z",
+      "p_long": 0.4098360655737705,
+      "p_short": 0.3963254593175853,
+      "ev_long_bps": -2.5308966636657715,
+      "ev_short_bps": -0.6349906325340271,
+      "realized_long_bps": -26.401548087337147,
+      "realized_short_bps": 22.401548087337147
+    },
+    {
+      "decision_timestamp": "2026-01-14T05:45:00Z",
+      "p_long": 0.4664115646258503,
+      "p_short": 0.4248756218905473,
+      "ev_long_bps": -1.609683871269226,
+      "ev_short_bps": -2.5113918781280518,
+      "realized_long_bps": -15.058922483699071,
+      "realized_short_bps": 11.058922483699071
+    },
+    {
+      "decision_timestamp": "2026-01-14T18:05:00Z",
+      "p_long": 0.4687750200160128,
+      "p_short": 0.40206812652068125,
+      "ev_long_bps": -2.628030300140381,
+      "ev_short_bps": -1.7770721912384033,
+      "realized_long_bps": 17.74336595891913,
+      "realized_short_bps": -21.74336595891913
+    },
+    {
+      "decision_timestamp": "2026-01-15T06:30:00Z",
+      "p_long": 0.47233653406492915,
+      "p_short": 0.4217148182665424,
+      "ev_long_bps": -0.0681028664112091,
+      "ev_short_bps": -3.5010972023010254,
+      "realized_long_bps": 9.453195154340623,
+      "realized_short_bps": -13.453195154340623
+    },
+    {
+      "decision_timestamp": "2026-01-15T18:55:00Z",
+      "p_long": 0.39425587467362927,
+      "p_short": 0.4166666666666667,
+      "ev_long_bps": -2.4570844173431396,
+      "ev_short_bps": -1.1483922004699707,
+      "realized_long_bps": 1.449335255587549,
+      "realized_short_bps": -5.449335255587549
+    },
+    {
+      "decision_timestamp": "2026-01-16T07:20:00Z",
+      "p_long": 0.4463705308775731,
+      "p_short": 0.4220472440944882,
+      "ev_long_bps": -1.7534565925598145,
+      "ev_short_bps": -2.5523715019226074,
+      "realized_long_bps": 2.7910172697029907,
+      "realized_short_bps": -6.791017269702991
+    },
+    {
+      "decision_timestamp": "2026-01-16T19:45:00Z",
+      "p_long": 0.35964912280701755,
+      "p_short": 0.41823551125876707,
+      "ev_long_bps": -2.417745590209961,
+      "ev_short_bps": -1.5869183540344238,
+      "realized_long_bps": 0.045343025860457686,
+      "realized_short_bps": -4.045343025860458
+    },
+    {
+      "decision_timestamp": "2026-01-19T08:10:00Z",
+      "p_long": 0.5324858757062146,
+      "p_short": 0.4445110977804439,
+      "ev_long_bps": -0.9846949577331543,
+      "ev_short_bps": -3.148361921310425,
+      "realized_long_bps": -8.0638679595304,
+      "realized_short_bps": 4.0638679595304
+    },
+    {
+      "decision_timestamp": "2026-01-19T20:35:00Z",
+      "p_long": 0.084070796460177,
+      "p_short": 0.01,
+      "ev_long_bps": -1.012636423110962,
+      "ev_short_bps": -3.0215418338775635,
+      "realized_long_bps": -1.709477205109831,
+      "realized_short_bps": -2.290522794890169
+    },
+    {
+      "decision_timestamp": "2026-01-20T09:00:00Z",
+      "p_long": 0.4818904593639576,
+      "p_short": 0.42148499210110585,
+      "ev_long_bps": -1.5164557695388794,
+      "ev_short_bps": -2.64231014251709,
+      "realized_long_bps": -12.902565244254516,
+      "realized_short_bps": 8.902565244254516
+    },
+    {
+      "decision_timestamp": "2026-01-20T21:25:00Z",
+      "p_long": 0.2198492462311558,
+      "p_short": 0.4341854254101488,
+      "ev_long_bps": -1.981803297996521,
+      "ev_short_bps": -1.9239742755889893,
+      "realized_long_bps": 5.418598904300744,
+      "realized_short_bps": -9.418598904300744
+    },
+    {
+      "decision_timestamp": "2026-01-21T09:50:00Z",
+      "p_long": 0.5012437810945274,
+      "p_short": 0.41498881431767337,
+      "ev_long_bps": -1.500943899154663,
+      "ev_short_bps": -2.7557809352874756,
+      "realized_long_bps": -1.0836981265629468,
+      "realized_short_bps": -2.916301873437053
+    },
+    {
+      "decision_timestamp": "2026-01-21T22:15:00Z",
+      "p_long": 0.3855057876195269,
+      "p_short": 0.37768817204301075,
+      "ev_long_bps": 5.086299896240234,
+      "ev_short_bps": -6.843112468719482,
+      "realized_long_bps": -1.9296261651449136,
+      "realized_short_bps": -2.0703738348550864
+    },
+    {
+      "decision_timestamp": "2026-01-22T10:40:00Z",
+      "p_long": 0.503433703116746,
+      "p_short": 0.4110357037474181,
+      "ev_long_bps": -1.0404366254806519,
+      "ev_short_bps": -2.4280858039855957,
+      "realized_long_bps": -4.438374306024116,
+      "realized_short_bps": 0.43837430602411587
+    },
+    {
+      "decision_timestamp": "2026-01-22T23:05:00Z",
+      "p_long": 0.44510166358595193,
+      "p_short": 0.4184045018205892,
+      "ev_long_bps": 0.44245848059654236,
+      "ev_short_bps": -2.309887647628784,
+      "realized_long_bps": -21.23471615586678,
+      "realized_short_bps": 17.23471615586678
+    },
+    {
+      "decision_timestamp": "2026-01-23T11:30:00Z",
+      "p_long": 0.43083372147182114,
+      "p_short": 0.4242549668874172,
+      "ev_long_bps": -1.0658483505249023,
+      "ev_short_bps": -2.157634973526001,
+      "realized_long_bps": 9.818417338309573,
+      "realized_short_bps": -13.818417338309573
+    }
+  ],
+  "note": "Single-pass diagnostic using the same frozen V2.1 predictions as the economic audit."
+}

@@ -1,0 +1,31 @@
+{
+  "symbol": "QQQ",
+  "version": "V2.1-CROSS-MARKET-REGIME-RANKING",
+  "baseline_json": "evidence/v22/manifests/QQQ_F_V22_TIMESTAMP_MANIFEST.json",
+  "peers": [
+    "BTCUSD",
+    "ETHUSD",
+    "EURUSD",
+    "XAUUSD"
+  ],
+  "feature_count": 62,
+  "max_peer_staleness_minutes": 15,
+  "frozen_samples": 30,
+  "scored_eligible_rows": 0,
+  "blocked_feature_history": 19,
+  "blocked_future_event": 2,
+  "unavailable_training": 9,
+  "unavailable_data_or_other": 0,
+  "metrics": {
+    "spearman_p_long_vs_realized_long": null,
+    "spearman_p_short_vs_realized_short": null,
+    "spearman_ev_long_vs_realized_long": null,
+    "spearman_ev_short_vs_realized_short": null,
+    "top_20pct_p_long_mean_realized_bps": null,
+    "top_20pct_p_short_mean_realized_bps": null,
+    "top_20pct_ev_long_mean_realized_bps": null,
+    "top_20pct_ev_short_mean_realized_bps": null
+  },
+  "rows": [],
+  "note": "Single-pass diagnostic using the same frozen V2.1 predictions as the economic audit."
+}

@@ -1,0 +1,284 @@
+{
+  "symbol": "XAUUSD",
+  "version": "V2.1-CROSS-MARKET-REGIME-RANKING",
+  "baseline_json": "evidence/v22/manifests/XAUUSD_D_V22_TIMESTAMP_MANIFEST.json",
+  "peers": [
+    "BTCUSD",
+    "ETHUSD",
+    "EURUSD",
+    "QQQ"
+  ],
+  "feature_count": 62,
+  "max_peer_staleness_minutes": 15,
+  "frozen_samples": 30,
+  "scored_eligible_rows": 28,
+  "blocked_feature_history": 1,
+  "blocked_future_event": 1,
+  "unavailable_training": 0,
+  "unavailable_data_or_other": 0,
+  "metrics": {
+    "spearman_p_long_vs_realized_long": -0.028461959496442254,
+    "spearman_p_short_vs_realized_short": -0.12424740010946908,
+    "spearman_ev_long_vs_realized_long": 0.1893814997263273,
+    "spearman_ev_short_vs_realized_short": 0.2561576354679803,
+    "top_20pct_p_long_mean_realized_bps": 9.343515583215384,
+    "top_20pct_p_short_mean_realized_bps": -8.803470288671965,
+    "top_20pct_ev_long_mean_realized_bps": 10.14269386151439,
+    "top_20pct_ev_short_mean_realized_bps": -6.945310784571576
+  },
+  "rows": [
+    {
+      "decision_timestamp": "2025-11-03T12:20:00Z",
+      "p_long": 0.44668587896253603,
+      "p_short": 0.45444444444444443,
+      "ev_long_bps": -3.0499064922332764,
+      "ev_short_bps": -1.997239589691162,
+      "realized_long_bps": 10.380802220166263,
+      "realized_short_bps": -14.380802220166263
+    },
+    {
+      "decision_timestamp": "2025-11-04T00:45:00Z",
+      "p_long": 0.4397834912043302,
+      "p_short": 0.45948616600790515,
+      "ev_long_bps": 1.686660885810852,
+      "ev_short_bps": -4.443682670593262,
+      "realized_long_bps": 4.878701381514141,
+      "realized_short_bps": -8.87870138151414
+    },
+    {
+      "decision_timestamp": "2025-11-04T13:10:00Z",
+      "p_long": 0.44368600682593856,
+      "p_short": 0.454123112659698,
+      "ev_long_bps": -0.3609727919101715,
+      "ev_short_bps": -3.180372476577759,
+      "realized_long_bps": -15.561276126629188,
+      "realized_short_bps": 11.561276126629188
+    },
+    {
+      "decision_timestamp": "2025-11-05T01:35:00Z",
+      "p_long": 0.4559068219633943,
+      "p_short": 0.4581151832460733,
+      "ev_long_bps": 1.5291801691055298,
+      "ev_short_bps": -9.173377990722656,
+      "realized_long_bps": -19.995730189242973,
+      "realized_short_bps": 15.995730189242973
+    },
+    {
+      "decision_timestamp": "2025-11-05T14:00:00Z",
+      "p_long": 0.4419291338582677,
+      "p_short": 0.48338081671415006,
+      "ev_long_bps": 0.10585368424654007,
+      "ev_short_bps": -2.773453950881958,
+      "realized_long_bps": 13.12817414768719,
+      "realized_short_bps": -17.12817414768719
+    },
+    {
+      "decision_timestamp": "2025-11-06T02:25:00Z",
+      "p_long": 0.493730407523511,
+      "p_short": 0.4560723514211886,
+      "ev_long_bps": -1.7143425941467285,
+      "ev_short_bps": -1.1629951000213623,
+      "realized_long_bps": 12.571567049626962,
+      "realized_short_bps": -16.571567049626964
+    },
+    {
+      "decision_timestamp": "2025-11-06T14:50:00Z",
+      "p_long": 0.43564356435643564,
+      "p_short": 0.47463002114164904,
+      "ev_long_bps": -0.7144134044647217,
+      "ev_short_bps": -3.4660160541534424,
+      "realized_long_bps": -19.31412576212591,
+      "realized_short_bps": 15.314125762125911
+    },
+    {
+      "decision_timestamp": "2025-11-07T03:15:00Z",
+      "p_long": 0.4259789875835721,
+      "p_short": 0.4712230215827338,
+      "ev_long_bps": -1.3652399778366089,
+      "ev_short_bps": -2.7273454666137695,
+      "realized_long_bps": 7.806970724561825,
+      "realized_short_bps": -11.806970724561825
+    },
+    {
+      "decision_timestamp": "2025-11-07T15:40:00Z",
+      "p_long": 0.42574257425742573,
+      "p_short": 0.4641932700603969,
+      "ev_long_bps": 1.190071940422058,
+      "ev_short_bps": -4.601042747497559,
+      "realized_long_bps": 14.091332807417917,
+      "realized_short_bps": -18.091332807417917
+    },
+    {
+      "decision_timestamp": "2025-11-10T04:05:00Z",
+      "p_long": 0.4382284382284382,
+      "p_short": 0.4502202643171806,
+      "ev_long_bps": -0.17058677971363068,
+      "ev_short_bps": -3.4766271114349365,
+      "realized_long_bps": -3.876237452661522,
+      "realized_short_bps": -0.1237625473384778
+    },
+    {
+      "decision_timestamp": "2025-11-10T16:30:00Z",
+      "p_long": 0.44774851316907394,
+      "p_short": 0.4631474103585657,
+      "ev_long_bps": 0.3690393269062042,
+      "ev_short_bps": -4.9796247482299805,
+      "realized_long_bps": 1.7407489810736827,
+      "realized_short_bps": -5.740748981073683
+    },
+    {
+      "decision_timestamp": "2025-11-11T04:55:00Z",
+      "p_long": 0.5181236673773987,
+      "p_short": 0.4525993883792049,
+      "ev_long_bps": -1.6402307748794556,
+      "ev_short_bps": -2.2835986614227295,
+      "realized_long_bps": -13.920407621222159,
+      "realized_short_bps": 9.920407621222159
+    },
+    {
+      "decision_timestamp": "2025-11-11T17:20:00Z",
+      "p_long": 0.4315866084425036,
+      "p_short": 0.46075353218210363,
+      "ev_long_bps": 0.5718070268630981,
+      "ev_short_bps": -4.167322158813477,
+      "realized_long_bps": 0.03306152357862757,
+      "realized_short_bps": -4.033061523578628
+    },
+    {
+      "decision_timestamp": "2025-11-12T05:45:00Z",
+      "p_long": 0.5074106364428945,
+      "p_short": 0.6470588235294118,
+      "ev_long_bps": -3.3814752101898193,
+      "ev_short_bps": -0.12079382687807083,
+      "realized_long_bps": 10.55805131699983,
+      "realized_short_bps": -14.55805131699983
+    },
+    {
+      "decision_timestamp": "2025-11-12T18:05:00Z",
+      "p_long": 0.4833948339483395,
+      "p_short": 0.13044677674770355,
+      "ev_long_bps": 5.411499977111816,
+      "ev_short_bps": -12.609920501708984,
+      "realized_long_bps": 17.752213027253852,
+      "realized_short_bps": -21.752213027253852
+    },
+    {
+      "decision_timestamp": "2025-11-13T06:30:00Z",
+      "p_long": 0.4676165803108808,
+      "p_short": 0.44939965694682676,
+      "ev_long_bps": -3.5049750804901123,
+      "ev_short_bps": -0.6035003066062927,
+      "realized_long_bps": 5.965232468651884,
+      "realized_short_bps": -9.965232468651884
+    },
+    {
+      "decision_timestamp": "2025-11-13T18:55:00Z",
+      "p_long": 0.45285714285714285,
+      "p_short": 0.43313521545319467,
+      "ev_long_bps": -11.90367317199707,
+      "ev_short_bps": 5.014135360717773,
+      "realized_long_bps": 1.7707263274699976,
+      "realized_short_bps": -5.770726327469998
+    },
+    {
+      "decision_timestamp": "2025-11-14T07:20:00Z",
+      "p_long": 0.4440753045404208,
+      "p_short": 0.442753143613501,
+      "ev_long_bps": 8.733648300170898,
+      "ev_short_bps": -13.488485336303711,
+      "realized_long_bps": 17.347270174264505,
+      "realized_short_bps": -21.347270174264505
+    },
+    {
+      "decision_timestamp": "2025-11-14T19:45:00Z",
+      "p_long": 0.4800559832050385,
+      "p_short": 0.4418145956607495,
+      "ev_long_bps": 0.8589403033256531,
+      "ev_short_bps": -2.244534492492676,
+      "realized_long_bps": -15.968040373644186,
+      "realized_short_bps": 11.968040373644186
+    },
+    {
+      "decision_timestamp": "2025-11-17T08:10:00Z",
+      "p_long": 0.4610552763819096,
+      "p_short": 0.4340567612687813,
+      "ev_long_bps": -0.3427715599536896,
+      "ev_short_bps": -2.668001413345337,
+      "realized_long_bps": -18.179590133857687,
+      "realized_short_bps": 14.179590133857687
+    },
+    {
+      "decision_timestamp": "2025-11-17T20:35:00Z",
+      "p_long": 0.43727598566308246,
+      "p_short": 0.44495064540622625,
+      "ev_long_bps": 5.372879981994629,
+      "ev_short_bps": -10.439436912536621,
+      "realized_long_bps": 26.7823759678789,
+      "realized_short_bps": -30.7823759678789
+    },
+    {
+      "decision_timestamp": "2025-11-18T09:00:00Z",
+      "p_long": 0.4328571428571429,
+      "p_short": 0.4395750332005312,
+      "ev_long_bps": 0.805932879447937,
+      "ev_short_bps": -3.5136051177978516,
+      "realized_long_bps": -6.375196055392827,
+      "realized_short_bps": 2.375196055392827
+    },
+    {
+      "decision_timestamp": "2025-11-18T21:25:00Z",
+      "p_long": 0.45454545454545453,
+      "p_short": 0.48183254344391785,
+      "ev_long_bps": -0.31800419092178345,
+      "ev_short_bps": -3.9899439811706543,
+      "realized_long_bps": 2.550418497490938,
+      "realized_short_bps": -6.550418497490938
+    },
+    {
+      "decision_timestamp": "2025-11-19T09:50:00Z",
+      "p_long": 0.4828828828828829,
+      "p_short": 0.4319387153800825,
+      "ev_long_bps": -2.171689987182617,
+      "ev_short_bps": -4.538266658782959,
+      "realized_long_bps": 17.17605069220712,
+      "realized_short_bps": -21.17605069220712
+    },
+    {
+      "decision_timestamp": "2025-11-19T22:15:00Z",
+      "p_long": 0.4542314335060449,
+      "p_short": 0.4373479318734793,
+      "ev_long_bps": -2.964435338973999,
+      "ev_short_bps": -1.6096746921539307,
+      "realized_long_bps": -2.063584614079515,
+      "realized_short_bps": -1.9364153859204851
+    },
+    {
+      "decision_timestamp": "2025-11-20T10:40:00Z",
+      "p_long": 0.4753004005340454,
+      "p_short": 0.4304635761589404,
+      "ev_long_bps": -4.902069568634033,
+      "ev_short_bps": 1.1227059364318848,
+      "realized_long_bps": -25.11733148974592,
+      "realized_short_bps": 21.11733148974592
+    },
+    {
+      "decision_timestamp": "2025-11-20T23:05:00Z",
+      "p_long": 0.4862508383635144,
+      "p_short": 0.4342679127725857,
+      "ev_long_bps": -2.060459852218628,
+      "ev_short_bps": -1.202977180480957,
+      "realized_long_bps": 11.923619034426698,
+      "realized_short_bps": -15.923619034426698
+    },
+    {
+      "decision_timestamp": "2025-11-21T11:30:00Z",
+      "p_long": 0.463130659767141,
+      "p_short": 0.4153201675643327,
+      "ev_long_bps": -1.3956738710403442,
+      "ev_short_bps": -3.678663492202759,
+      "realized_long_bps": -21.706570462879107,
+      "realized_short_bps": 17.706570462879107
+    }
+  ],
+  "note": "Single-pass diagnostic using the same frozen V2.1 predictions as the economic audit."
+}

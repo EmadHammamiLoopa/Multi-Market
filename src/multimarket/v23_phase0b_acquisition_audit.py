@@ -20,8 +20,6 @@ SENSORS = (
 )
 TARGETS = ("EURUSD", "XAUUSD", "BTCUSD", "ETHUSD", "QQQ")
 
-# Frozen development span used as the structural coverage reference. Exact Phase 0B
-# scoring still applies the reserved G/H/I exclusions inside the evaluator.
 REQUIRED_START = datetime(2025, 8, 1, tzinfo=timezone.utc)
 REQUIRED_END = datetime(2026, 8, 21, 23, 59, 59, tzinfo=timezone.utc)
 MIN_RTH_BARS = 10_000
@@ -43,6 +41,7 @@ class SensorAudit:
     covers_required_end: bool
     enough_hard_eligible_bars: bool
     status: str
+    load_error: str | None = None
 
 
 def _sha256(path: Path) -> str:
@@ -60,7 +59,28 @@ def _iso(ts: datetime) -> str:
 
 
 def audit_sensor(path: Path, symbol: str) -> SensorAudit:
-    bars = load_ohlc_csv(path)
+    sha = _sha256(path)
+    try:
+        bars = load_ohlc_csv(path)
+    except (OSError, ValueError) as exc:
+        return SensorAudit(
+            symbol=symbol,
+            path=str(path),
+            sha256=sha,
+            bars=0,
+            first_timestamp="",
+            last_timestamp="",
+            hard_eligible_bars=0,
+            session_ineligible=0,
+            zero_range=0,
+            repeated_ohlc=0,
+            covers_required_start=False,
+            covers_required_end=False,
+            enough_hard_eligible_bars=False,
+            status="FAIL_INVALID_OHLC",
+            load_error=str(exc),
+        )
+
     quality = audit_bars(bars, symbol=symbol)
     hard_eligible = [
         row for row in quality
@@ -75,7 +95,7 @@ def audit_sensor(path: Path, symbol: str) -> SensorAudit:
     return SensorAudit(
         symbol=symbol,
         path=str(path),
-        sha256=_sha256(path),
+        sha256=sha,
         bars=len(bars),
         first_timestamp=_iso(first),
         last_timestamp=_iso(last),
@@ -87,6 +107,7 @@ def audit_sensor(path: Path, symbol: str) -> SensorAudit:
         covers_required_end=covers_end,
         enough_hard_eligible_bars=enough,
         status="PASS" if passed else "FAIL",
+        load_error=None,
     )
 
 
@@ -137,6 +158,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     results = [audit_sensor(data_dir / f"{symbol}_5m.csv", symbol) for symbol in SENSORS]
     gate_pass = all(result.status == "PASS" for result in results)
+    invalid = [result for result in results if result.load_error]
     payload = {
         "version": "V2.3-PHASE0B-ACQUISITION-AUDIT",
         "frozen_sensors": list(SENSORS),
@@ -144,6 +166,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "required_end": _iso(REQUIRED_END),
         "minimum_hard_eligible_bars": MIN_RTH_BARS,
         "missing_sensors": [],
+        "invalid_sensor_files": [result.symbol for result in invalid],
         "sensor_results": [asdict(result) for result in results],
         "gate_pass": gate_pass,
         "decision": "ALLOW_PHASE0B_SCORING" if gate_pass else "BLOCK_PHASE0B_SCORING",
@@ -152,12 +175,19 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     print("===== V2.3 PHASE 0B ACQUISITION AUDIT =====")
     for result in results:
+        if result.load_error:
+            print(
+                f"{result.symbol:4s} status={result.status} "
+                f"sha256={result.sha256} error={result.load_error}"
+            )
+            continue
         print(
             f"{result.symbol:4s} status={result.status} bars={result.bars:6d} "
             f"eligible={result.hard_eligible_bars:6d} "
             f"start={result.first_timestamp} end={result.last_timestamp} "
             f"zero={result.zero_range} repeated={result.repeated_ohlc}"
         )
+    print(f"invalid_sensor_files={','.join(result.symbol for result in invalid) or 'NONE'}")
     print(f"PHASE0B_ACQUISITION_GATE={'PASS' if gate_pass else 'FAIL'}")
     print(f"decision={payload['decision']}")
     print(f"Output: {output}")

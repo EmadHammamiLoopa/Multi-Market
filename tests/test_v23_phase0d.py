@@ -1,7 +1,11 @@
+import gzip
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from multimarket.v23_phase0d_book import DepthSequenceError, LocalOrderBook
-from multimarket.v23_phase0d_collect import TradeBucket
+from multimarket.v23_phase0d_collect import DailyJsonlWriter, TradeBucket, _classify_ws_event
 
 
 class V23Phase0DOrderBookTests(unittest.TestCase):
@@ -95,6 +99,37 @@ class V23Phase0DTradeTests(unittest.TestCase):
         self.assertAlmostEqual(result["trade_flow_imbalance_1s"], 1.0 / 3.0)
         self.assertEqual(bucket.buy_qty, 0.0)
         self.assertEqual(bucket.sell_qty, 0.0)
+
+    def test_aggtrade_routing_is_case_insensitive(self):
+        payload = {"e": "aggTrade", "s": "BTCUSDT", "q": "1.0", "m": False}
+        self.assertEqual(_classify_ws_event("btcusdt@aggTrade", payload), "agg_trade")
+        self.assertEqual(_classify_ws_event("btcusdt@aggtrade", payload), "agg_trade")
+
+    def test_depth_routing_prefers_payload_event_type(self):
+        payload = {"e": "depthUpdate", "s": "BTCUSDT"}
+        self.assertEqual(_classify_ws_event("unexpected-name", payload), "depth")
+
+
+class V23Phase0DRawCaptureTests(unittest.TestCase):
+    def test_raw_writer_uses_lossless_gzip_jsonl(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            writer = DailyJsonlWriter(root, "BTCUSDT")
+            record = {
+                "receive_time_utc": "2026-08-24T11:00:00+00:00",
+                "receive_time_ns": 123,
+                "stream": "btcusdt@aggTrade",
+                "symbol": "BTCUSDT",
+                "exchange_event_time_ms": 456,
+                "payload": {"e": "aggTrade", "q": "1.25", "m": False},
+            }
+            writer.write(record)
+            writer.close()
+            files = list((root / "raw" / "BTCUSDT").glob("*.jsonl.gz"))
+            self.assertEqual(len(files), 1)
+            with gzip.open(files[0], "rt", encoding="utf-8") as handle:
+                restored = json.loads(handle.readline())
+            self.assertEqual(restored, record)
 
 
 if __name__ == "__main__":

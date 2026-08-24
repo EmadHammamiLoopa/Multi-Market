@@ -104,7 +104,9 @@ For each target's exact frozen peer set, only three peer returns are used:
 - `peer_r6`
 - `peer_r24`
 
-At decision timestamp `t`, Phase 0C selects the latest hard-eligible completed peer bar with timestamp `<= t`. For horizon `k`:
+At decision timestamp `t`, Phase 0C selects the latest hard-eligible completed peer bar with timestamp `<= t`. That selected peer bar must be no more than 15 minutes older than `t`; otherwise the entire peer packet is unavailable at that decision. This freezes `MAX_PEER_STALENESS_SECONDS = 900` and prevents a U.S. regular-session close from being treated as current information overnight or through a weekend.
+
+For horizon `k`:
 
 `peer_r{k} = 10000 * log(peer_close[p] / peer_close[p-k])`
 
@@ -267,6 +269,7 @@ After any Phase 0C scoring begins, do not:
 - add GLD to XAUUSD or another apparently favorable same-asset proxy after seeing results;
 - change own-feature horizons;
 - change peer horizons;
+- change the 15-minute peer staleness ceiling;
 - add technical indicators;
 - change Ridge alpha;
 - tune HGBR parameters;

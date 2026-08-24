@@ -1,0 +1,5 @@
+Building V2.3 Phase 0C-R rows | BTCUSD | linked=ETHUSD,QQQ,HYG | alignment=ASYNC_LAST_VALID
+eligible_phase0cr_rows=93347
+signal_candidate=None
+promoted_candidate=None
+Output: evidence/v23/phase0cr_scoring/BTCUSD_PHASE0CR.json

@@ -1,0 +1,7 @@
+PHASE0C_PROMOTION=FAIL
+decision=REJECT_PRICE_ONLY_ASSET_SPECIFIC_BLOCK
+signal_candidate_targets=NONE
+promoted_targets=NONE
+inconclusive_targets=NONE
+unavailable_targets=QQQ
+Output: evidence/v23/phase0cr_scoring/V23_PHASE0CR_SUMMARY.json

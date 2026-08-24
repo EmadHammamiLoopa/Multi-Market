@@ -1,0 +1,153 @@
+{
+  "version": "V2.3-PHASE0C-SUMMARY",
+  "required_statistical_folds": 4,
+  "targets": [
+    {
+      "symbol": "EURUSD",
+      "evaluation_status": "SCORED",
+      "signal_candidate": null,
+      "promoted_candidate": null,
+      "promotion_pass": false,
+      "cost_model_status": "MISSING",
+      "scored_folds": 4,
+      "candidates": {
+        "C2": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        },
+        "C3": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "XAUUSD",
+      "evaluation_status": "SCORED",
+      "signal_candidate": null,
+      "promoted_candidate": null,
+      "promotion_pass": false,
+      "cost_model_status": "MISSING",
+      "scored_folds": 4,
+      "candidates": {
+        "C2": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        },
+        "C3": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 1,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "BTCUSD",
+      "evaluation_status": "SCORED",
+      "signal_candidate": null,
+      "promoted_candidate": null,
+      "promotion_pass": false,
+      "cost_model_status": "MISSING",
+      "scored_folds": 4,
+      "candidates": {
+        "C2": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        },
+        "C3": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "ETHUSD",
+      "evaluation_status": "SCORED",
+      "signal_candidate": null,
+      "promoted_candidate": null,
+      "promotion_pass": false,
+      "cost_model_status": "MISSING",
+      "scored_folds": 4,
+      "candidates": {
+        "C2": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        },
+        "C3": {
+          "statistical_pass": false,
+          "economic_evaluated": false,
+          "economic_pass": false,
+          "promotion_pass": false,
+          "positive_folds": 0,
+          "scored_folds": 4,
+          "economic": {
+            "status": "NOT_EVALUATED_NO_COST_MODEL"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "evaluation_status": "UNAVAILABLE_PHASE0B_NO_SCORED_FOLDS",
+      "reason": "Inherited Phase 0B boundaries contain no scored folds under frozen MIN_TRAIN_ROWS=5000"
+    }
+  ],
+  "scored_targets": 4,
+  "inconclusive_targets": [],
+  "unavailable_targets": [
+    "QQQ"
+  ],
+  "signal_candidate_targets": [],
+  "pending_cost_targets": [],
+  "promoted_targets": [],
+  "phase0c_promotion": "FAIL",
+  "decision": "REJECT_PRICE_ONLY_ASSET_SPECIFIC_BLOCK"
+}

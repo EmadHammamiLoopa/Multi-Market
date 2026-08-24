@@ -34,7 +34,9 @@ Retain all prior causal T1 features and add only longer causal trade-flow persis
 - log1p aggregate-trade count over 30 s, 60 s, 120 s, 300 s
 - last-trade log return over 30 s, 60 s, 120 s, 300 s
 
-All windows are causal and right-closed at the decision second.
+All windows are causal and right-closed at the decision second. The first 300 seconds of the development dataset are excluded because a complete 300-second trailing history is unavailable at the acquisition boundary. No future observation may be used to fill that history.
+
+The longer flow features are derived deterministically from the already-frozen one-second development dataset. Per-second total quantity/count are recovered from `log_qty1`/`log_count1`; buy/sell components are recovered algebraically from total and the corresponding one-second imbalance. This is a representation-preserving derivation and does not add a new information source.
 
 ## Candidate holding horizons
 

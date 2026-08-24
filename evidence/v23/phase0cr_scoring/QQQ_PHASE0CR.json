@@ -1,0 +1,13 @@
+{
+  "version": "V2.3-PHASE0CR-ASYNC-SENSOR-FEASIBILITY-REPAIR",
+  "symbol": "QQQ",
+  "evaluation_status": "UNAVAILABLE_PHASE0B_NO_SCORED_FOLDS",
+  "reason": "Inherited Phase 0B boundaries contain no scored folds under frozen MIN_TRAIN_ROWS=5000",
+  "phase0b_boundary_source": {
+    "path": "evidence/v23/phase0b_scoring/QQQ_PHASE0B.json",
+    "sha256": "ea196b1069b8cef12b63d63fff25b595b59e890799cadef00238ad4664708fd4"
+  },
+  "promotion_pass": false,
+  "signal_candidate": null,
+  "promoted_candidate": null
+}

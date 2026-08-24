@@ -155,6 +155,8 @@ Within each outer fold, J0 is selected independently as the trade-flow reference
 6. shorter horizon
 7. higher gate quantile
 
+“Effectively tied” for the first objective is frozen as a <=1% relative difference in `median net bps/day` at 12 bps, using `max(abs(a), abs(b), 1e-12)` as the denominator. If the relative difference exceeds 1%, the larger median net bps/day wins before simplicity is considered.
+
 J0 can never itself cause Phase 0D-J promotion; it is retained only for the frozen incremental-information comparison.
 
 ## Inner survival filters

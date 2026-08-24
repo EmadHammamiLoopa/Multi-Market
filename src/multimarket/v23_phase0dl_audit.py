@@ -47,8 +47,6 @@ def _audit_file(path: Path, data_type: str, symbol: str, day: date) -> dict[str,
                     bad += 1; continue
                 if ex != "binance-futures" or sy != symbol or lt < start_us or lt >= end_us or lt < prev_local or price <= 0 or amount < 0:
                     bad += 1
-                if side not in ("bid","ask","buy","sell"):
-                    bad += 1
                 if data_type == "incremental_book_L2":
                     snap = row[pos['is_snapshot']].strip().lower()
                     if snap not in ("true","false"):

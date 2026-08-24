@@ -1,0 +1,19 @@
+{
+  "version": "V2.3-PHASE0D-MICROSTRUCTURE-COLLECTION-FROZEN",
+  "frozen_at": "2026-08-24",
+  "venue": "BINANCE_USDM_FUTURES",
+  "symbols": ["BTCUSDT", "ETHUSDT"],
+  "websocket_base": "wss://fstream.binance.com/stream?streams=",
+  "rest_depth_url": "https://fapi.binance.com/fapi/v1/depth",
+  "depth_limit": 1000,
+  "depth_stream_interval_ms": 100,
+  "normalized_interval_seconds": 1,
+  "minimum_official_capture_days": 30,
+  "preferred_capture_days": [60, 90],
+  "streams": ["depth@100ms", "aggTrade", "bookTicker"],
+  "raw_format": "daily_jsonl",
+  "normalized_format": "daily_csv",
+  "official_scoring_enabled": false,
+  "primary_future_horizon_seconds": 10,
+  "diagnostic_future_horizons_seconds": [3, 30]
+}

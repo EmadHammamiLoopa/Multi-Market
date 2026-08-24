@@ -49,7 +49,9 @@ For each one-second bucket derive:
 - total traded quantity
 - total aggregate-trade count
 
-Causal trailing features may use 1 s, 3 s, 5 s, and 10 s windows only.
+Seconds with no trade have zero flow/count variables and carry forward only the last trade price already known from an earlier second. They never use a future trade to fill the past. Before the first known trade, price-dependent rows are unavailable.
+
+Causal trailing windows are right-closed and include only the current and preceding seconds. For a W-second quantity-flow feature, sum aggressive buy quantity and aggressive sell quantity separately over those W seconds and then compute `(sum_buy-sum_sell)/(sum_buy+sum_sell)`, using zero when total quantity is zero. Count-flow windows use the analogous summed-count definition. Five-second total quantity/count features are sums over the same causal right-closed window.
 
 ## Frozen feature sets
 
@@ -58,7 +60,7 @@ T0 baseline:
 - trailing last-trade log return 1 s
 - trailing last-trade log return 3 s
 
-T1 trade-flow linear:
+Microstructure T1/T2:
 
 - T0
 - quantity flow imbalance 1 s
@@ -78,9 +80,9 @@ No order-book, bookTicker, candle, funding, open-interest, liquidation, cross-ma
 
 Primary: future last-trade log return in bps from decision second to decision + 10 seconds using the last trade known at or before each endpoint.
 
-Diagnostics only: 3 s and 30 s.
+Diagnostics only: 3 s and 30 s. They are not promotion metrics and may not be used to choose the candidate.
 
-Rows without a causal endpoint price are unavailable; no backward use of future prices.
+Every feature observation must be known at or before the decision second. Every label endpoint is strictly later than the decision second. No backward use of future prices.
 
 ## Models
 
@@ -88,7 +90,7 @@ Rows without a causal endpoint price are unavailable; no backward use of future 
 - T1: StandardScaler + Ridge
 - T2: HistGradientBoostingRegressor
 
-Ridge alpha grid: `{0.1, 1.0, 10.0, 100.0}`, selected only inside each outer training window using chronological inner validation.
+Ridge alpha grid: `{0.1, 1.0, 10.0, 100.0}`, selected only inside each outer training window using chronological inner validation. The inner validation set is the final 20% of eligible outer-training rows after the 10-second label purge; the first 80% is inner training. Scaling is fit on inner training only for alpha selection and refit on the full eligible outer-training rows after alpha selection.
 
 T2 fixed configuration:
 
@@ -101,11 +103,20 @@ T2 fixed configuration:
 
 No tuning after observing official scores.
 
-## Development walk-forward
+## Frozen development walk-forward
 
-Five chronological outer folds are created from date boundaries inside the first 70 days. Training is strictly earlier than evaluation. Labels crossing fold boundaries are purged.
+Development begins with 20 complete days available before the first evaluation fold, followed by five fixed 10-day outer evaluation folds:
 
-No random cross-validation.
+- initial training history: 2026-05-26 through 2026-06-14
+- fold 1 evaluation: 2026-06-15 through 2026-06-24
+- fold 2 evaluation: 2026-06-25 through 2026-07-04
+- fold 3 evaluation: 2026-07-05 through 2026-07-14
+- fold 4 evaluation: 2026-07-15 through 2026-07-24
+- fold 5 evaluation: 2026-07-25 through 2026-08-03
+
+For each fold, outer training uses all eligible development rows strictly before that fold's evaluation start. Training rows whose 10-second label endpoint reaches or crosses the evaluation start are purged. Evaluation rows whose label endpoint would exceed that fold's evaluation end are excluded. No random cross-validation.
+
+The sealed historical holdout (2026-08-04 through 2026-08-23) must not be normalized for scoring, inspected for predictive metrics, or passed to the scoring command unless a development candidate first passes and is frozen.
 
 ## Statistical promotion gate
 

@@ -4,14 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multi-market-replay"
-version = "0.2.23"
+version = "0.2.24"
 description = "Point-in-time historical replay framework for multi-market trading research"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{name = "Multi-Market contributors"}]
 license = {text = "MIT"}
 classifiers = [
-  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -49,6 +48,8 @@ multimarket-v23-phase0b-canonicalize-ohlc = "multimarket.v23_phase0b_ohlc_canoni
 multimarket-v23-phase0c = "multimarket.v23_phase0c:main"
 multimarket-v23-phase0c-summary = "multimarket.v23_phase0c_summary:main"
 multimarket-v23-phase0c-batch = "multimarket.v23_phase0c_batch:main"
+multimarket-v23-phase0cr = "multimarket.v23_phase0cr:main"
+multimarket-v23-phase0cr-batch = "multimarket.v23_phase0cr_batch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

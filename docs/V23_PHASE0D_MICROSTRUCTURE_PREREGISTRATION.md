@@ -37,9 +37,11 @@ Preferred capture: 60–90 calendar days.
 
 Partial data may be used only for collector/integrity tests and engineering validation, not for promotion decisions.
 
+The engineering smoke-test capture performed before the official collection start is not part of the 30-day official dataset. Operational fixes discovered during smoke testing must be frozen before the official capture starts.
+
 ## Raw preservation
 
-Raw websocket messages must be retained as append-only JSONL with local receive timestamp. Normalized one-second snapshots are derived data and must never replace raw capture.
+Raw websocket messages must be retained append-only as losslessly compressed JSONL (`.jsonl.gz`) with local receive timestamp. Gzip is storage-only and must preserve each JSON record exactly when decompressed. Normalized one-second snapshots are derived data and must never replace raw capture.
 
 Each raw record must contain:
 
@@ -66,7 +68,7 @@ No interpolation across gaps is allowed.
 
 Primary derived sampling interval: 1 second UTC-aligned snapshots.
 
-A normalized row may be emitted only while the local depth book is valid.
+A normalized row may be emitted only while the local depth book is valid. Trade-flow buckets from intervals with an invalid local book must be discarded rather than carried into a later valid second.
 
 Frozen normalized fields include:
 
@@ -96,7 +98,7 @@ Frozen normalized fields include:
 - depth_sequence_valid
 - last_depth_update_id
 
-Buyer/seller trade classification must use only exchange-provided aggressor/maker information from the trade message; no future-price inference is permitted.
+Buyer/seller trade classification must use only exchange-provided aggressor/maker information from the trade message; no future-price inference is permitted. Websocket event routing must not depend on stream-name letter case; the exchange payload event type is authoritative when present.
 
 ## Later predictive features
 
@@ -170,6 +172,6 @@ No missing cost may be treated as zero.
 
 ## Forbidden post-hoc actions
 
-After collection begins, do not silently change venue, market type, target symbols, sampling interval, raw-message preservation, order-book continuity requirements, or the minimum 30-day official-scoring gate.
+After the official collection starts, do not silently change venue, market type, target symbols, sampling interval, raw-message preservation, order-book continuity requirements, or the minimum 30-day official-scoring gate.
 
 After scoring begins, do not tune horizons/features/models/thresholds based on the first result. Any rescue requires a new preregistered phase.

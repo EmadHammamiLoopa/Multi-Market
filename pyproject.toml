@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multi-market-replay"
-version = "0.2.34"
+version = "0.2.37"
 description = "Point-in-time historical replay framework for multi-market trading research"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -61,6 +61,8 @@ multimarket-v23-phase0di-longer-horizon-fast = "multimarket.v23_phase0di_longer_
 multimarket-v23-phase0dj-fetch = "multimarket.v23_phase0dj_fetch:main"
 multimarket-v23-phase0dj-audit = "multimarket.v23_phase0dj_audit:main"
 multimarket-v23-phase0dj-score = "multimarket.v23_phase0dj_score:main"
+multimarket-v23-phase0dk-nonlinear = "multimarket.v23_phase0dk_nonlinear:main"
+multimarket-v23-phase0dk-cuda-diag = "multimarket.v23_phase0dk_cuda_diag:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -68,4 +70,5 @@ where = ["src"]
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
 ml = ["xgboost>=2.1,<4", "scikit-learn>=1.5"]
+ml-cu12 = ["xgboost-cu12==3.4.0", "scikit-learn>=1.5"]
 all = ["matplotlib>=3.8", "xgboost>=2.1,<4", "scikit-learn>=1.5"]

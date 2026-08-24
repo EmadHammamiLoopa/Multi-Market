@@ -18,7 +18,8 @@ from .v23_phase0d_book import DepthSequenceError, LocalOrderBook
 
 
 DEFAULT_SYMBOLS = ("BTCUSDT", "ETHUSDT")
-WS_BASE = "wss://fstream.binance.com/stream?streams="
+PUBLIC_WS_BASE = "wss://fstream.binance.com/public/stream?streams="
+MARKET_WS_BASE = "wss://fstream.binance.com/market/stream?streams="
 REST_DEPTH = "https://fapi.binance.com/fapi/v1/depth"
 RAW_GZIP_COMPRESSLEVEL = 3
 NORMALIZED_FIELDS = (
@@ -39,20 +40,28 @@ def _iso_now() -> str:
     return _utc_now().isoformat(timespec="microseconds")
 
 
-def _classify_ws_event(stream: str, payload: dict[str, Any]) -> str:
-    """Classify by exchange event type first, stream-name fallback second.
+def _build_stream_urls(symbols: tuple[str, ...]) -> tuple[str, str]:
+    public_streams: list[str] = []
+    market_streams: list[str] = []
+    for symbol in symbols:
+        s = symbol.lower()
+        public_streams.extend([f"{s}@depth@100ms", f"{s}@bookTicker"])
+        market_streams.append(f"{s}@aggTrade")
+    return (
+        PUBLIC_WS_BASE + "/".join(public_streams),
+        MARKET_WS_BASE + "/".join(market_streams),
+    )
 
-    Combined-stream wrappers may normalize stream-name case. The payload event
-    type is therefore authoritative when present, while a lowercase stream-name
-    fallback keeps bookTicker (which may omit ``e``) routable.
-    """
+
+def _classify_ws_event(stream: str, payload: dict[str, Any]) -> str:
+    """Classify by exchange event type first, stream-name fallback second."""
     event_type = str(payload.get("e", ""))
     stream_lower = stream.lower()
     if event_type == "depthUpdate" or "@depth" in stream_lower:
         return "depth"
     if event_type.lower() == "aggtrade" or "@aggtrade" in stream_lower:
         return "agg_trade"
-    if "@bookticker" in stream_lower:
+    if event_type == "bookTicker" or "@bookticker" in stream_lower:
         return "book_ticker"
     return "other"
 
@@ -205,21 +214,22 @@ class Collector:
             "payload": payload,
         })
 
-    async def websocket_reader(self) -> None:
-        streams: list[str] = []
-        for symbol in self.symbols:
-            s = symbol.lower()
-            streams.extend([f"{s}@depth@100ms", f"{s}@aggTrade", f"{s}@bookTicker"])
-        url = WS_BASE + "/".join(streams)
+    async def websocket_reader(self, channel: str, url: str) -> None:
         while True:
             try:
-                async with websockets.connect(url, ping_interval=20, ping_timeout=60, max_queue=100_000) as ws:
+                async with websockets.connect(
+                    url,
+                    ping_interval=20,
+                    ping_timeout=60,
+                    max_queue=100_000,
+                    open_timeout=20,
+                ) as ws:
                     async for raw in ws:
-                        await self.queue.put(("ws", json.loads(raw)))
+                        await self.queue.put(("ws", (channel, json.loads(raw))))
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
-                await self.queue.put(("transport_error", repr(exc)))
+                await self.queue.put(("transport_error", (channel, repr(exc))))
                 await asyncio.sleep(2.0)
 
     async def _handle_depth(self, state: SymbolState, payload: dict[str, Any]) -> None:
@@ -272,11 +282,15 @@ class Collector:
         while True:
             kind, item = await self.queue.get()
             if kind == "ws":
-                envelope = item
+                channel, envelope = item
                 stream = str(envelope.get("stream", ""))
                 payload = envelope.get("data", envelope)
                 symbol = str(payload.get("s", "")).upper()
                 if symbol not in self.states:
+                    continue
+                # After the UM/CM stream migration, st=1 denotes USD-M and st=2 Coin-M.
+                stream_type = payload.get("st")
+                if stream_type is not None and int(stream_type) != 1:
                     continue
                 self._raw_record(symbol, stream, payload)
                 event_kind = _classify_ws_event(stream, payload)
@@ -297,16 +311,19 @@ class Collector:
                 await asyncio.sleep(1.0)
                 await self.request_snapshot(state)
             elif kind == "transport_error":
-                detail = item
+                channel, detail = item
                 for state in self.states.values():
                     self._raw_record(state.symbol, "integrity", {
-                        "type": "WEBSOCKET_RECONNECT", "detail": detail
+                        "type": "WEBSOCKET_RECONNECT",
+                        "channel": channel,
+                        "detail": detail,
                     })
-                    state.book.reset()
-                    state.buffered_depth.clear()
-                    state.snapshot_pending = False
                     state.trades.clear()
-                    await self.request_snapshot(state)
+                    if channel == "public":
+                        state.book.reset()
+                        state.buffered_depth.clear()
+                        state.snapshot_pending = False
+                        await self.request_snapshot(state)
 
     async def sampler(self) -> None:
         while True:
@@ -315,7 +332,6 @@ class Collector:
             stamp = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
             for symbol, state in self.states.items():
                 if not state.book.valid:
-                    # Do not carry trades across an interval where no valid book row exists.
                     state.trades.clear()
                     continue
                 trades = state.trades.consume()
@@ -325,8 +341,10 @@ class Collector:
                 self.normalized[symbol].write(row)
 
     async def run(self) -> None:
+        public_url, market_url = _build_stream_urls(self.symbols)
         tasks = [
-            asyncio.create_task(self.websocket_reader()),
+            asyncio.create_task(self.websocket_reader("public", public_url)),
+            asyncio.create_task(self.websocket_reader("market", market_url)),
             asyncio.create_task(self.processor()),
             asyncio.create_task(self.sampler()),
         ]

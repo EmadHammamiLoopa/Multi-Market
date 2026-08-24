@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -40,9 +41,13 @@ struct Book {
   }
 
   void apply(const Row& r) {
-    auto& side = r.bid ? bids : asks;
-    if (r.amount == 0.0) side.erase(r.price);
-    else side[r.price] = r.amount;
+    if (r.bid) {
+      if (r.amount == 0.0) bids.erase(r.price);
+      else bids[r.price] = r.amount;
+    } else {
+      if (r.amount == 0.0) asks.erase(r.price);
+      else asks[r.price] = r.amount;
+    }
   }
 
   bool structurally_valid() const {

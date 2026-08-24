@@ -1,0 +1,29 @@
+{
+  "version": "V2.3-PHASE0C-ASSET-SPECIFIC-REGIME-GATED",
+  "status": "FROZEN_BEFORE_FIRST_RUN",
+  "frozen_at": "2026-08-24",
+  "targets": {
+    "EURUSD": {"linked_sensors": [{"role": "USD", "symbol": "UUP"}, {"role": "RATES", "symbol": "TLT"}, {"role": "RISK", "symbol": "HYG"}]},
+    "XAUUSD": {"linked_sensors": [{"role": "USD", "symbol": "UUP"}, {"role": "RATES", "symbol": "TLT"}, {"role": "RISK", "symbol": "HYG"}]},
+    "BTCUSD": {"linked_sensors": [{"role": "CRYPTO", "symbol": "ETHUSD"}, {"role": "EQUITY", "symbol": "QQQ"}, {"role": "RISK", "symbol": "HYG"}]},
+    "ETHUSD": {"linked_sensors": [{"role": "CRYPTO", "symbol": "BTCUSD"}, {"role": "EQUITY", "symbol": "QQQ"}, {"role": "RISK", "symbol": "HYG"}]},
+    "QQQ": {"linked_sensors": [{"role": "RATES", "symbol": "TLT"}, {"role": "CREDIT", "symbol": "HYG"}, {"role": "DEFENSIVE", "symbol": "XLP"}, {"role": "USD", "symbol": "UUP"}]}
+  },
+  "horizon_bars": 6,
+  "bar_seconds": 300,
+  "phase0b_fold_boundaries": {"required": true, "source": "per-target Phase 0B JSON scored-fold eval_start timestamps"},
+  "purge": {"bars": 6, "rule": "label_end_timestamp < eval_start"},
+  "holdout": {"policy": "G/H/I remain excluded from development, including indirect feature-history use", "windows": [["2025-10-06T00:00:00+00:00", "2025-10-24T23:59:59+00:00"], ["2026-02-02T00:00:00+00:00", "2026-02-20T23:59:59+00:00"], ["2026-07-06T00:00:00+00:00", "2026-07-24T23:59:59+00:00"]]},
+  "own_features": ["r1", "r3", "r6", "r12", "r24", "rv6", "rv24", "rv72", "range_1", "zprice_24"],
+  "volume_features": {"enabled": false, "reason": "The current MarketBar schema is OHLC-only; Phase 0C must not fabricate or substitute volume."},
+  "sensor_features": ["r1", "r6", "r24"],
+  "sensor_max_staleness_seconds": 300,
+  "regime_features": ["volatility_percentile_120", "trend_strength_abs_r24_over_rv24", "recent_jump_6_over_sigma48", "utc_time_sin", "utc_time_cos"],
+  "experiments": {"C0": {"features": "own", "model": "Ridge"}, "C1": {"features": "own+linked", "model": "Ridge"}, "C2": {"features": "own+linked+regime", "model": "Ridge"}, "C3": {"features": "own+linked+regime", "model": "HistGradientBoostingRegressor"}},
+  "ridge": {"alpha_grid": [0.1, 1.0, 10.0, 100.0], "selection": "inner chronological validation inside outer training only, with six-bar completed-label purge"},
+  "hgbr": {"learning_rate": 0.05, "max_iter": 200, "max_leaf_nodes": 15, "min_samples_leaf": 50, "l2_regularization": 1.0, "random_state": 0},
+  "trade_gate": {"confidence_abs_prediction_percentile": 75, "volatility_percentile_min": 0.60, "minimum_edge_vs_round_trip_cost": 1.5, "entry": "next_bar_open", "exit": "decision_plus_6_close", "non_overlapping_positions": true},
+  "cost_policy": {"hardcoded_costs": false, "required_for_economic_promotion": true, "stress_multipliers": [1.0, 1.5, 2.0]},
+  "promotion": {"statistical": {"pooled_delta_r2_vs_c0": "> 0", "positive_scored_folds": ">= 3 of 4", "pooled_non_jump_delta_r2_vs_c0": "> 0"}, "economic": {"net_expectancy_bps": "> 0", "profit_factor": "> 1.10", "unannualized_per_trade_sharpe": "> 0.50", "stress_1_5x_net_pnl_bps": "> 0", "minimum_actionable_trades": 30, "maximum_single_fold_share_of_positive_total_net_profit": "<= 0.60"}, "model_preference": "Prefer C2 Ridge; promote C3 only when C2 does not pass and C3 does."},
+  "forbidden_post_hoc_actions": ["inspect or tune on G/H/I", "select linked sensors by Phase 0B performance", "change sensor roles after Phase 0C scoring starts", "lower MIN_TRAIN_ROWS to make QQQ available", "change the six-bar primary horizon", "change the 75th-percentile confidence gate after observing results", "change the 60th-percentile volatility gate after observing results", "hyperparameter-search HGBR after observing outer-fold results", "reuse the rejected dense 21-peer representation as Phase 0C"]
+}

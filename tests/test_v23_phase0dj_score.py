@@ -1,7 +1,8 @@
+import json
 import unittest
 import numpy as np
 
-from multimarket.v23_phase0dj_score import _prior_z, _greedy, _gross, _align_state_decisions
+from multimarket.v23_phase0dj_score import _prior_z, _greedy, _gross, _align_state_decisions, _gate
 
 
 class Phase0DJScoreTests(unittest.TestCase):
@@ -26,10 +27,7 @@ class Phase0DJScoreTests(unittest.TestCase):
         self.assertTrue(np.isnan(g[-1]))
 
     def test_alignment_trims_only_outside_trade_boundaries(self):
-        # State minute opens imply decision seconds 59,119,179,239,299.
         state_open=np.asarray([0,60,120,180,240],dtype=np.int64)
-        # Frozen DEV grid starts after the first decision and ends before the
-        # final decision; both boundary state minutes may be trimmed.
         ts=np.arange(100,260,dtype=np.int64)
         keep,idx,decision=_align_state_decisions(ts,state_open)
         self.assertEqual(keep.tolist(),[False,True,True,True,False])
@@ -39,11 +37,28 @@ class Phase0DJScoreTests(unittest.TestCase):
     def test_alignment_rejects_missing_interior_decision_second(self):
         state_open=np.asarray([0,60,120,180,240],dtype=np.int64)
         ts=np.arange(0,300,dtype=np.int64)
-        # Remove an interior required :59 decision second while keeping the
-        # surrounding DEV range present.
         ts=ts[ts!=179]
         with self.assertRaisesRegex(ValueError,'contiguous inside DEV range'):
             _align_state_decisions(ts,state_open)
+
+    def test_gate_returns_builtin_bool_and_is_json_serializable(self):
+        p12={
+            'fold_expectancies':[1.0,1.0,1.0,1.0,1.0],
+            'positive_outer_folds':5,
+            'net_bps_trade':2.0,
+            'total_net_bps':100.0,
+            'profit_factor':1.5,
+            'positive_active_day_fraction':0.8,
+            'pnl_to_drawdown':3.0,
+            'median_trades_day_active':3.0,
+        }
+        p15={
+            'net_bps_trade':1.0,
+            'total_net_bps':50.0,
+        }
+        value=_gate(p12,p15)
+        self.assertIs(type(value),bool)
+        self.assertEqual(json.dumps({'candidate_structural_gate':value}),'{"candidate_structural_gate": true}')
 
 
 if __name__=='__main__':

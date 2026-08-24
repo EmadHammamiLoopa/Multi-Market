@@ -68,9 +68,11 @@ Using completed 1-minute state candles only:
 - index return 1m, 5m, 15m
 - basis change 1m, 5m, 15m
 - premium change 1m, 5m, 15m
-- basis rolling z-score over prior 60 completed minutes
-- premium rolling z-score over prior 60 completed minutes
+- basis rolling z-score over the 60 completed minutes immediately preceding the current minute
+- premium rolling z-score over the 60 completed minutes immediately preceding the current minute
 - mark-minus-index return differential over 1m, 5m, 15m
+
+For `basis_z60` and `premium_z60`, the current minute is excluded from the rolling mean and standard deviation. At minute t, compute mean/std from minutes `t-60 ... t-1`, then score the current value t against that prior-only distribution. Population standard deviation (`ddof=0`) is frozen. Rows lacking all 60 prior completed minutes are unavailable. If the prior-window standard deviation is zero, the z-score is defined as 0.0.
 
 ### F2 — combined block
 

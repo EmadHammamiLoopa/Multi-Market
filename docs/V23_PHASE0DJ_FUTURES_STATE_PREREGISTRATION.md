@@ -35,6 +35,16 @@ For minute M, the decision timestamp is immediately after the complete 1-minute 
 
 Rows with incomplete state-source alignment are unavailable; no future backfill.
 
+### Frozen target and execution-price semantics
+
+The predictive target and simulated entry/exit prices use the frozen `aggTrades`-derived one-second last-trade price grid, not mark/index/premium prices.
+
+For minute M, the entry decision row uses the last-trade price at the final second of M (UTC second `:59`), after the completed state candles for M are available. For holding horizon H minutes, the gross signed future return is based on the last-trade price exactly `60*H` seconds later on the same contiguous frozen grid:
+
+`r_H(t) = 10000 * log(P_trade(t + 60H) / P_trade(t))`
+
+The state series are predictors only. They are never substituted as fill/execution prices. Round-trip cost deductions below are applied to the resulting trade-price return. Labels crossing an inner/outer boundary are purged by the corresponding `60*H` seconds.
+
 ## Feature blocks
 
 ### F0 — frozen trade-flow reference block
@@ -133,15 +143,17 @@ Training is strictly earlier than evaluation. Labels reaching/crossing evaluatio
 
 ## Selection objective
 
-Within each outer fold, search only the frozen `(feature_block, H, alpha, gate_quantile)` grid and select lexicographically:
+Within each outer fold, J0 is selected independently as the trade-flow reference using the same frozen `(H, alpha, gate_quantile)` grid. The Phase 0D-J candidate search considers only J1/J2 configurations, again over the frozen `(feature_block, H, alpha, gate_quantile)` grid, and selects lexicographically:
 
 1. higher median net bps/day at 12 bps cost
 2. higher worst 5-day rolling net PnL
 3. higher median independent trades/day
 4. lower maximum drawdown
-5. simpler feature block (J1 before J2 only when performance is effectively tied; J0 is reference only)
+5. simpler feature block (J1 before J2 only when performance is effectively tied)
 6. shorter horizon
 7. higher gate quantile
+
+J0 can never itself cause Phase 0D-J promotion; it is retained only for the frozen incremental-information comparison.
 
 ## Inner survival filters
 

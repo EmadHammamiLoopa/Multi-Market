@@ -219,9 +219,33 @@ def build_symbol_dataset(raw_root: Path, symbol: str, output: Path) -> dict[str,
     return {"symbol": symbol, "rows": rows_written, "first_timestamp": first_ts, "last_timestamp": last_ts}
 
 
-def _load_dataset(path: Path):
-    data = np.genfromtxt(path, delimiter=",", names=True, dtype=None, encoding="utf-8")
-    return data
+def _load_dataset(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Load only numeric scoring columns from the development CSV.
+
+    The date and raw price columns are deliberately skipped. This is an I/O and
+    memory optimization only; the frozen rows, feature values, labels, folds,
+    models, and promotion gates are unchanged.
+    """
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        header = next(csv.reader(handle))
+    positions = {name: idx for idx, name in enumerate(header)}
+    required = ("timestamp", *T1_FEATURES, "label10")
+    missing = [name for name in required if name not in positions]
+    if missing:
+        raise ValueError(f"development dataset missing required columns: {missing}")
+    usecols = tuple(positions[name] for name in required)
+    matrix = np.loadtxt(
+        path,
+        delimiter=",",
+        skiprows=1,
+        usecols=usecols,
+        dtype=np.float64,
+        ndmin=2,
+    )
+    timestamps = matrix[:, 0].astype(np.int64, copy=False)
+    X = matrix[:, 1:1 + len(T1_FEATURES)]
+    y = matrix[:, -1]
+    return timestamps, X, y
 
 
 def _select_alpha(X: np.ndarray, y: np.ndarray) -> float:
@@ -249,10 +273,7 @@ def _metrics(y: np.ndarray, pred: np.ndarray) -> dict[str, float]:
 
 
 def score_symbol(dataset: Path, symbol: str) -> dict[str, object]:
-    data = _load_dataset(dataset)
-    timestamps = np.asarray(data["timestamp"], dtype=np.int64)
-    y_all = np.asarray(data["label10"], dtype=float)
-    features = {name: np.asarray(data[name], dtype=float) for name in T1_FEATURES}
+    timestamps, X_all, y_all = _load_dataset(dataset)
 
     fold_results = []
     pooled = {"T0": [[], []], "T1": [[], []], "T2": [[], []]}
@@ -261,18 +282,23 @@ def score_symbol(dataset: Path, symbol: str) -> dict[str, object]:
     for idx, (eval_start_d, eval_end_d) in enumerate(FOLDS, 1):
         eval_start = int(datetime(eval_start_d.year, eval_start_d.month, eval_start_d.day, tzinfo=timezone.utc).timestamp())
         eval_end_exclusive = int((datetime(eval_end_d.year, eval_end_d.month, eval_end_d.day, tzinfo=timezone.utc) + timedelta(days=1)).timestamp())
-        train_mask = timestamps + HORIZON_SECONDS < eval_start
-        eval_mask = (timestamps >= eval_start) & (timestamps + HORIZON_SECONDS < eval_end_exclusive)
-        if train_mask.sum() < 10000 or eval_mask.sum() < 1000:
+
+        # Frozen rules: train label endpoint must be strictly before eval start;
+        # eval label endpoint must be strictly before eval end-exclusive.
+        train_end = int(np.searchsorted(timestamps, eval_start - HORIZON_SECONDS, side="left"))
+        eval_begin = int(np.searchsorted(timestamps, eval_start, side="left"))
+        eval_end = int(np.searchsorted(timestamps, eval_end_exclusive - HORIZON_SECONDS, side="left"))
+        if train_end < 10000 or eval_end - eval_begin < 1000:
             continue
 
-        ytr, yev = y_all[train_mask], y_all[eval_mask]
+        ytr = y_all[:train_end]
+        yev = y_all[eval_begin:eval_end]
         fold_models = {}
         fold_metrics = {}
 
-        for name, feat_names in (("T0", T0_FEATURES), ("T1", T1_FEATURES)):
-            X = np.column_stack([features[f] for f in feat_names])
-            Xtr, Xev = X[train_mask], X[eval_mask]
+        for name, n_features in (("T0", len(T0_FEATURES)), ("T1", len(T1_FEATURES))):
+            Xtr = X_all[:train_end, :n_features]
+            Xev = X_all[eval_begin:eval_end, :n_features]
             alpha = _select_alpha(Xtr, ytr)
             scaler = StandardScaler().fit(Xtr)
             model = Ridge(alpha=alpha).fit(scaler.transform(Xtr), ytr)
@@ -282,12 +308,11 @@ def score_symbol(dataset: Path, symbol: str) -> dict[str, object]:
             pooled[name][0].append(yev)
             pooled[name][1].append(pred)
 
-        X2 = np.column_stack([features[f] for f in T1_FEATURES])
         model2 = HistGradientBoostingRegressor(
             learning_rate=0.05, max_iter=200, max_leaf_nodes=15,
             min_samples_leaf=100, l2_regularization=1.0, random_state=0,
-        ).fit(X2[train_mask], ytr)
-        pred2 = model2.predict(X2[eval_mask])
+        ).fit(X_all[:train_end], ytr)
+        pred2 = model2.predict(X_all[eval_begin:eval_end])
         fold_metrics["T2"] = _metrics(yev, pred2)
         pooled["T2"][0].append(yev)
         pooled["T2"][1].append(pred2)
@@ -303,8 +328,8 @@ def score_symbol(dataset: Path, symbol: str) -> dict[str, object]:
             "fold": idx,
             "eval_start": eval_start_d.isoformat(),
             "eval_end": eval_end_d.isoformat(),
-            "train_rows": int(train_mask.sum()),
-            "eval_rows": int(eval_mask.sum()),
+            "train_rows": train_end,
+            "eval_rows": eval_end - eval_begin,
             "models": fold_models,
             "metrics": fold_metrics,
         })
@@ -351,7 +376,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--raw-dir", default="data/v23_phase0dh_tf_raw")
     p.add_argument("--work-dir", default="evidence/v23/phase0dh_tf")
     p.add_argument("--build-only", action="store_true")
+    p.add_argument("--score-only", action="store_true")
     args = p.parse_args(argv)
+    if args.build_only and args.score_only:
+        raise SystemExit("choose only one of --build-only or --score-only")
+
     raw = Path(args.raw_dir)
     work = Path(args.work_dir)
     work.mkdir(parents=True, exist_ok=True)
@@ -360,17 +389,24 @@ def main(argv: list[str] | None = None) -> int:
     if not manifest.get("official_acquisition_complete"):
         raise SystemExit("acquisition manifest is not complete")
 
-    builds = []
-    for symbol in SYMBOLS:
-        dataset = work / f"{symbol}_DEV.csv"
-        print(f"[{symbol}] building causal development dataset", flush=True)
-        builds.append(build_symbol_dataset(raw, symbol, dataset))
-        print(f"[{symbol}] rows={builds[-1]['rows']}", flush=True)
-
-    (work / "BUILD_SUMMARY.json").write_text(json.dumps(builds, indent=2) + "\n")
-    if args.build_only:
-        print("PHASE0DH_TF_BUILD=PASS")
-        return 0
+    if not args.score_only:
+        builds = []
+        for symbol in SYMBOLS:
+            dataset = work / f"{symbol}_DEV.csv"
+            print(f"[{symbol}] building causal development dataset", flush=True)
+            builds.append(build_symbol_dataset(raw, symbol, dataset))
+            print(f"[{symbol}] rows={builds[-1]['rows']}", flush=True)
+        (work / "BUILD_SUMMARY.json").write_text(json.dumps(builds, indent=2) + "\n")
+        if args.build_only:
+            print("PHASE0DH_TF_BUILD=PASS")
+            return 0
+    else:
+        if not (work / "BUILD_SUMMARY.json").exists():
+            raise SystemExit("--score-only requires an existing BUILD_SUMMARY.json")
+        for symbol in SYMBOLS:
+            dataset = work / f"{symbol}_DEV.csv"
+            if not dataset.exists() or dataset.stat().st_size == 0:
+                raise SystemExit(f"--score-only missing development dataset: {dataset}")
 
     results = []
     for symbol in SYMBOLS:

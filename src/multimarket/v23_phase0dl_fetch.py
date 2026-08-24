@@ -4,6 +4,8 @@ import argparse
 import gzip
 import hashlib
 import json
+import random
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import date
@@ -16,6 +18,7 @@ SYMBOLS = ("BTCUSDT", "ETHUSDT")
 DATA_TYPES = ("incremental_book_L2", "trades")
 SAMPLE_DAYS = tuple(date(2026, m, 1) for m in range(1, 9))
 BASE = "https://datasets.tardis.dev/v1"
+RETRYABLE_STATUS = {408, 425, 429, 500, 502, 503, 504}
 
 
 @dataclass(frozen=True)
@@ -46,7 +49,29 @@ def _gzip_header(path: Path) -> str:
         return fh.readline().strip()
 
 
-def _download(item: Item, root: Path, timeout: float) -> dict[str, object]:
+def _attempt_download(item: Item, path: Path, tmp: Path, timeout: float) -> tuple[str, int]:
+    with httpx.Client(timeout=httpx.Timeout(timeout, connect=20.0), follow_redirects=True) as client:
+        with client.stream("GET", item.url) as r:
+            if r.status_code in RETRYABLE_STATUS:
+                raise httpx.HTTPStatusError(
+                    f"retryable status {r.status_code}", request=r.request, response=r
+                )
+            r.raise_for_status()
+            with tmp.open("wb") as fh:
+                for chunk in r.iter_bytes(1024 * 1024):
+                    if chunk:
+                        fh.write(chunk)
+    if not tmp.exists() or tmp.stat().st_size == 0:
+        raise RuntimeError("empty download")
+    header = _gzip_header(tmp)
+    if not header:
+        raise RuntimeError("empty gzip dataset")
+    size = tmp.stat().st_size
+    tmp.replace(path)
+    return header, size
+
+
+def _download(item: Item, root: Path, timeout: float, retries: int) -> dict[str, object]:
     path = item.path(root)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".part")
@@ -59,39 +84,41 @@ def _download(item: Item, root: Path, timeout: float) -> dict[str, object]:
                     "data_type": item.data_type, "url": item.url,
                     "path": str(path), "bytes": path.stat().st_size,
                     "sha256": _sha256(path), "header": header,
-                    "status": "VALID_EXISTING",
+                    "status": "VALID_EXISTING", "attempts": 0,
                 }
         except Exception:
             pass
-    try:
-        with httpx.Client(timeout=httpx.Timeout(timeout, connect=20.0), follow_redirects=True) as client:
-            with client.stream("GET", item.url) as r:
-                r.raise_for_status()
-                with tmp.open("wb") as fh:
-                    for chunk in r.iter_bytes(1024 * 1024):
-                        if chunk:
-                            fh.write(chunk)
-        if not tmp.exists() or tmp.stat().st_size == 0:
-            raise RuntimeError("empty download")
-        header = _gzip_header(tmp)
-        if not header:
-            raise RuntimeError("empty gzip dataset")
-        tmp.replace(path)
-        return {
-            "day": item.day.isoformat(), "symbol": item.symbol,
-            "data_type": item.data_type, "url": item.url,
-            "path": str(path), "bytes": path.stat().st_size,
-            "sha256": _sha256(path), "header": header,
-            "status": "DOWNLOADED",
-        }
-    except Exception as exc:
-        if tmp.exists():
-            tmp.unlink()
-        return {
-            "day": item.day.isoformat(), "symbol": item.symbol,
-            "data_type": item.data_type, "url": item.url,
-            "path": str(path), "status": "FAIL", "error": repr(exc),
-        }
+
+    errors: list[str] = []
+    max_attempts = max(1, int(retries) + 1)
+    for attempt in range(1, max_attempts + 1):
+        try:
+            if tmp.exists():
+                tmp.unlink()
+            header, size = _attempt_download(item, path, tmp, timeout)
+            return {
+                "day": item.day.isoformat(), "symbol": item.symbol,
+                "data_type": item.data_type, "url": item.url,
+                "path": str(path), "bytes": size,
+                "sha256": _sha256(path), "header": header,
+                "status": "DOWNLOADED", "attempts": attempt,
+            }
+        except Exception as exc:
+            if tmp.exists():
+                tmp.unlink()
+            errors.append(repr(exc))
+            if attempt >= max_attempts:
+                break
+            # Deterministic exponential envelope plus small jitter prevents synchronized retries.
+            delay = min(30.0, 2.0 ** (attempt - 1)) + random.uniform(0.0, 0.5)
+            time.sleep(delay)
+
+    return {
+        "day": item.day.isoformat(), "symbol": item.symbol,
+        "data_type": item.data_type, "url": item.url,
+        "path": str(path), "status": "FAIL", "attempts": max_attempts,
+        "error": errors[-1] if errors else "unknown failure", "errors": errors,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -99,6 +126,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--output-dir", default="data/v23_phase0dl_l2_raw")
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--timeout", type=float, default=600.0)
+    p.add_argument("--retries", type=int, default=4)
     a = p.parse_args(argv)
     root = Path(a.output_dir)
     root.mkdir(parents=True, exist_ok=True)
@@ -106,10 +134,11 @@ def main(argv: list[str] | None = None) -> int:
     results: list[dict[str, object]] = []
     workers = max(1, min(int(a.workers), 8))
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_download, item, root, a.timeout): item for item in items}
+        futs = {ex.submit(_download, item, root, a.timeout, a.retries): item for item in items}
         for fut in as_completed(futs):
             r = fut.result(); results.append(r)
-            print(f"{r['day']} {r['symbol']} {r['data_type']} {r['status']}", flush=True)
+            suffix = f" attempts={r.get('attempts')}" if r.get("attempts") else ""
+            print(f"{r['day']} {r['symbol']} {r['data_type']} {r['status']}{suffix}", flush=True)
     results.sort(key=lambda x: (str(x['day']), str(x['symbol']), str(x['data_type'])))
     failures = [r for r in results if r["status"] == "FAIL"]
     manifest = {

@@ -6,11 +6,30 @@ from pathlib import Path
 from typing import Sequence
 
 
+REQUIRED_STATISTICAL_FOLDS = 4
+
+
+def _candidate_scored_folds(payload: dict[str, object]) -> int:
+    candidates = payload.get("candidates", {})
+    if not isinstance(candidates, dict):
+        return 0
+    counts: list[int] = []
+    for name in ("C2", "C3"):
+        block = candidates.get(name, {})
+        if isinstance(block, dict):
+            try:
+                counts.append(int(block.get("scored_folds", 0)))
+            except (TypeError, ValueError):
+                counts.append(0)
+    return max(counts, default=0)
+
+
 def summarize(payloads: Sequence[dict[str, object]]) -> dict[str, object]:
     targets: list[dict[str, object]] = []
     promoted: list[str] = []
     signal_candidates: list[str] = []
     unavailable: list[str] = []
+    inconclusive: list[str] = []
 
     for payload in payloads:
         symbol = str(payload.get("symbol", "UNKNOWN")).upper()
@@ -22,6 +41,25 @@ def summarize(payloads: Sequence[dict[str, object]]) -> dict[str, object]:
                     "symbol": symbol,
                     "evaluation_status": status,
                     "reason": payload.get("reason"),
+                }
+            )
+            continue
+
+        scored_folds = _candidate_scored_folds(payload)
+        if scored_folds < REQUIRED_STATISTICAL_FOLDS:
+            inconclusive.append(symbol)
+            targets.append(
+                {
+                    "symbol": symbol,
+                    "evaluation_status": "INCONCLUSIVE_INSUFFICIENT_FOLDS",
+                    "reason": (
+                        f"Phase 0C statistical promotion requires at least "
+                        f"{REQUIRED_STATISTICAL_FOLDS} scored folds; observed {scored_folds}"
+                    ),
+                    "scored_folds": scored_folds,
+                    "required_scored_folds": REQUIRED_STATISTICAL_FOLDS,
+                    "row_count": payload.get("row_count"),
+                    "candidates": payload.get("candidates", {}),
                 }
             )
             continue
@@ -42,6 +80,7 @@ def summarize(payloads: Sequence[dict[str, object]]) -> dict[str, object]:
                 "promoted_candidate": promoted_candidate,
                 "promotion_pass": bool(payload.get("promotion_pass")),
                 "cost_model_status": cost_status,
+                "scored_folds": scored_folds,
                 "candidates": payload.get("candidates", {}),
             }
         )
@@ -61,14 +100,22 @@ def summarize(payloads: Sequence[dict[str, object]]) -> dict[str, object]:
     elif pending_cost_targets:
         promotion = "PENDING_COST_MODEL"
         decision = "SIGNAL_CANDIDATES_REQUIRE_COST_MODEL"
-    else:
+    elif scored_count > 0 and inconclusive:
+        promotion = "PARTIAL_INCONCLUSIVE"
+        decision = "NO_BLOCK_DECISION_MIXED_FEASIBILITY"
+    elif scored_count > 0:
         promotion = "FAIL"
         decision = "REJECT_PRICE_ONLY_ASSET_SPECIFIC_BLOCK"
+    else:
+        promotion = "INCONCLUSIVE"
+        decision = "REQUIRES_FEASIBILITY_REPAIR"
 
     return {
         "version": "V2.3-PHASE0C-SUMMARY",
+        "required_statistical_folds": REQUIRED_STATISTICAL_FOLDS,
         "targets": targets,
         "scored_targets": scored_count,
+        "inconclusive_targets": inconclusive,
         "unavailable_targets": unavailable,
         "signal_candidate_targets": signal_candidates,
         "pending_cost_targets": pending_cost_targets,
@@ -96,6 +143,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"decision={result['decision']}")
     print(f"signal_candidate_targets={','.join(result['signal_candidate_targets']) or 'NONE'}")
     print(f"promoted_targets={','.join(result['promoted_targets']) or 'NONE'}")
+    print(f"inconclusive_targets={','.join(result['inconclusive_targets']) or 'NONE'}")
     print(f"unavailable_targets={','.join(result['unavailable_targets']) or 'NONE'}")
     print(f"Output: {output}")
     return 0

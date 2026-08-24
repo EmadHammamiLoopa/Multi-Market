@@ -205,8 +205,8 @@ def _pool(folds:list[dict],key:str,cost='12')->dict:
     return {'trades':int(len(a)),'net_bps_trade':float(a.mean()) if len(a) else 0.0,'total_net_bps':total,'profit_factor':float(pf),'max_drawdown_bps':dd,'pnl_to_drawdown':float(total/dd) if dd>0 else (float('inf') if total>0 else 0.0),'positive_outer_folds':pos,'fold_expectancies':foldexp,'median_trades_day_active':float(np.median(dca[active])) if np.any(active) else 0.0,'positive_active_day_fraction':float(np.mean(dpa[active]>0)) if np.any(active) else 0.0}
 
 def _gate(p12,p15)->bool:
-    scored=sum(np.isfinite(float(x)) for x in p12['fold_expectancies'])
-    return scored==5 and int(p12['positive_outer_folds'])>=4 and float(p12['net_bps_trade'])>=1 and float(p12['total_net_bps'])>0 and float(p15['net_bps_trade'])>0 and float(p15['total_net_bps'])>0 and float(p12['profit_factor'])>=1.15 and float(p12['positive_active_day_fraction'])>=0.55 and float(p12['pnl_to_drawdown'])>=2 and min(float(x) for x in p12['fold_expectancies'])>=-2 and float(p12['median_trades_day_active'])>=2
+    scored=sum(bool(np.isfinite(float(x))) for x in p12['fold_expectancies'])
+    return bool(scored==5 and int(p12['positive_outer_folds'])>=4 and float(p12['net_bps_trade'])>=1 and float(p12['total_net_bps'])>0 and float(p15['net_bps_trade'])>0 and float(p15['total_net_bps'])>0 and float(p12['profit_factor'])>=1.15 and float(p12['positive_active_day_fraction'])>=0.55 and float(p12['pnl_to_drawdown'])>=2 and min(float(x) for x in p12['fold_expectancies'])>=-2 and float(p12['median_trades_day_active'])>=2)
 
 def score_symbol(raw:Path,work:Path,symbol:str)->dict:
     state_open,mark,index,premium=_load_state(raw,symbol)
@@ -220,7 +220,7 @@ def score_symbol(raw:Path,work:Path,symbol:str)->dict:
         if r_cfg: rec['reference_outer']=_outer(decision,blocks,gross,r_cfg,sd,ed)
         if c_cfg: rec['candidate_outer']=_outer(decision,blocks,gross,c_cfg,sd,ed)
         folds.append(rec)
-    r12=_pool(folds,'reference_outer','12'); c12=_pool(folds,'candidate_outer','12'); c15=_pool(folds,'candidate_outer','15'); structural=_gate(c12,c15); incremental=float(c12['net_bps_trade'])>float(r12['net_bps_trade']) and float(c12['total_net_bps'])>float(r12['total_net_bps']); passed=structural and incremental
+    r12=_pool(folds,'reference_outer','12'); c12=_pool(folds,'candidate_outer','12'); c15=_pool(folds,'candidate_outer','15'); structural=bool(_gate(c12,c15)); incremental=bool(float(c12['net_bps_trade'])>float(r12['net_bps_trade']) and float(c12['total_net_bps'])>float(r12['total_net_bps'])); passed=bool(structural and incremental)
     return {'phase':'V2.3-PHASE0DJ-FUTURES-STATE','symbol':symbol,'development_only':True,'historical_holdout_opened':False,'boundary_state_minutes_trimmed':int(len(state_open)-np.count_nonzero(state_keep)),'folds':folds,'pooled_reference_12bps':r12,'pooled_candidate_12bps':c12,'pooled_candidate_15bps':c15,'candidate_structural_gate':structural,'incremental_vs_J0':incremental,'development_pass':passed,'decision':'CANDIDATE_FREEZE_BEFORE_CONFIRMATION' if passed else 'FAIL_KEEP_HOLDOUT_SEALED'}
 
 def main(argv=None)->int:

@@ -47,6 +47,7 @@ multimarket-v23-phase0b-acquisition-audit = "multimarket.v23_phase0b_acquisition
 multimarket-v23-phase0b-ohlc-diagnostic = "multimarket.v23_phase0b_raw_ohlc_diagnostic:main"
 multimarket-v23-phase0b-canonicalize-ohlc = "multimarket.v23_phase0b_ohlc_canonicalize:main"
 multimarket-v23-phase0c = "multimarket.v23_phase0c:main"
+multimarket-v23-phase0c-summary = "multimarket.v23_phase0c_summary:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

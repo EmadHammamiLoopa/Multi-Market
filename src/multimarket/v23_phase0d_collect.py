@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
+import gzip
 import json
 import time
 from dataclasses import dataclass, field
@@ -19,6 +20,7 @@ from .v23_phase0d_book import DepthSequenceError, LocalOrderBook
 DEFAULT_SYMBOLS = ("BTCUSDT", "ETHUSDT")
 WS_BASE = "wss://fstream.binance.com/stream?streams="
 REST_DEPTH = "https://fapi.binance.com/fapi/v1/depth"
+RAW_GZIP_COMPRESSLEVEL = 3
 NORMALIZED_FIELDS = (
     "timestamp_utc", "symbol", "best_bid", "best_ask", "bid_qty_l1", "ask_qty_l1",
     "mid", "spread_bps", "microprice", "microprice_minus_mid_bps",
@@ -37,7 +39,27 @@ def _iso_now() -> str:
     return _utc_now().isoformat(timespec="microseconds")
 
 
+def _classify_ws_event(stream: str, payload: dict[str, Any]) -> str:
+    """Classify by exchange event type first, stream-name fallback second.
+
+    Combined-stream wrappers may normalize stream-name case. The payload event
+    type is therefore authoritative when present, while a lowercase stream-name
+    fallback keeps bookTicker (which may omit ``e``) routable.
+    """
+    event_type = str(payload.get("e", ""))
+    stream_lower = stream.lower()
+    if event_type == "depthUpdate" or "@depth" in stream_lower:
+        return "depth"
+    if event_type.lower() == "aggtrade" or "@aggtrade" in stream_lower:
+        return "agg_trade"
+    if "@bookticker" in stream_lower:
+        return "book_ticker"
+    return "other"
+
+
 class DailyJsonlWriter:
+    """Append-only raw JSONL stored with lossless gzip compression."""
+
     def __init__(self, root: Path, symbol: str):
         self.root = root
         self.symbol = symbol
@@ -51,7 +73,13 @@ class DailyJsonlWriter:
                 self.handle.close()
             path = self.root / "raw" / self.symbol
             path.mkdir(parents=True, exist_ok=True)
-            self.handle = (path / f"{day}.jsonl").open("a", encoding="utf-8", buffering=1)
+            file = path / f"{day}.jsonl.gz"
+            self.handle = gzip.open(
+                file,
+                mode="at",
+                encoding="utf-8",
+                compresslevel=RAW_GZIP_COMPRESSLEVEL,
+            )
             self.day = day
         assert self.handle is not None
         self.handle.write(json.dumps(record, separators=(",", ":"), allow_nan=False) + "\n")
@@ -108,6 +136,10 @@ class TradeBucket:
             self.buy_qty += qty
             self.buy_count += 1
 
+    def clear(self) -> None:
+        self.buy_qty = self.sell_qty = 0.0
+        self.buy_count = self.sell_count = 0
+
     def consume(self) -> dict[str, float | int]:
         qty_total = self.buy_qty + self.sell_qty
         count_total = self.buy_count + self.sell_count
@@ -123,8 +155,7 @@ class TradeBucket:
                 (self.buy_count - self.sell_count) / count_total if count_total > 0 else 0.0
             ),
         }
-        self.buy_qty = self.sell_qty = 0.0
-        self.buy_count = self.sell_count = 0
+        self.clear()
         return result
 
 
@@ -206,6 +237,7 @@ class Collector:
             })
             state.book.reset()
             state.buffered_depth = [payload]
+            state.trades.clear()
             await self.request_snapshot(state)
 
     async def _handle_snapshot(self, symbol: str, snapshot: dict[str, Any]) -> None:
@@ -226,10 +258,12 @@ class Collector:
             except DepthSequenceError:
                 state.book.reset()
                 state.buffered_depth = [event]
+                state.trades.clear()
                 await self.request_snapshot(state)
                 return
         if not bridged:
             state.book.reset()
+            state.trades.clear()
             await self.request_snapshot(state)
 
     async def processor(self) -> None:
@@ -245,9 +279,10 @@ class Collector:
                 if symbol not in self.states:
                     continue
                 self._raw_record(symbol, stream, payload)
-                if "@depth" in stream:
+                event_kind = _classify_ws_event(stream, payload)
+                if event_kind == "depth":
                     await self._handle_depth(self.states[symbol], payload)
-                elif "@aggTrade" in stream:
+                elif event_kind == "agg_trade":
                     self.states[symbol].trades.add_agg_trade(payload)
                 # bookTicker is intentionally preserved raw; reconstructed depth is authoritative.
             elif kind == "snapshot":
@@ -257,6 +292,7 @@ class Collector:
                 symbol, detail = item
                 state = self.states[symbol]
                 state.snapshot_pending = False
+                state.trades.clear()
                 self._raw_record(symbol, "integrity", {"type": "SNAPSHOT_ERROR", "detail": detail})
                 await asyncio.sleep(1.0)
                 await self.request_snapshot(state)
@@ -269,6 +305,7 @@ class Collector:
                     state.book.reset()
                     state.buffered_depth.clear()
                     state.snapshot_pending = False
+                    state.trades.clear()
                     await self.request_snapshot(state)
 
     async def sampler(self) -> None:
@@ -277,9 +314,11 @@ class Collector:
             await asyncio.sleep(max(0.0, 1.0 - (now % 1.0)))
             stamp = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
             for symbol, state in self.states.items():
-                trades = state.trades.consume()
                 if not state.book.valid:
+                    # Do not carry trades across an interval where no valid book row exists.
+                    state.trades.clear()
                     continue
+                trades = state.trades.consume()
                 row = {"timestamp_utc": stamp, "symbol": symbol}
                 row.update(state.book.snapshot_metrics())
                 row.update(trades)

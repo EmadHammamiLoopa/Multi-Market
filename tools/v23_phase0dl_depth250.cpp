@@ -45,12 +45,14 @@ struct Book {
     else side[r.price] = r.amount;
   }
 
-  bool valid() const {
-    if (!ready || bids.empty() || asks.empty()) return false;
+  bool structurally_valid() const {
+    if (bids.empty() || asks.empty()) return false;
     const double b = bids.begin()->first;
     const double a = asks.begin()->first;
     return std::isfinite(b) && std::isfinite(a) && b > 0.0 && a > b;
   }
+
+  bool valid() const { return ready && structurally_valid(); }
 };
 
 bool parse_bool(const char* s, size_t n) {
@@ -58,7 +60,6 @@ bool parse_bool(const char* s, size_t n) {
 }
 
 bool parse_row(const std::string& line, Row& out) {
-  // exchange,symbol,timestamp,local_timestamp,is_snapshot,side,price,amount
   std::array<std::pair<const char*, size_t>, 8> f{};
   size_t field = 0, start = 0;
   for (size_t i = 0; i <= line.size(); ++i) {
@@ -199,26 +200,32 @@ int main(int argc, char** argv) {
   if (line != expected) throw std::runtime_error("unexpected header: " + line);
 
   Book book;
-  Row row;
   int64_t current_group = std::numeric_limits<int64_t>::min();
   int64_t last_exchange_ts = 0;
   bool group_snapshot = false;
   std::vector<Row> group;
   group.reserve(4096);
   int64_t next_grid = day_start;
-  uint64_t parsed = 0, bad = 0, groups = 0, snapshots = 0, emitted = 0;
+  uint64_t parsed = 0, bad = 0, groups = 0, snapshots = 0, integrity_latches = 0, emitted = 0;
 
   auto flush_group = [&]() {
     if (group.empty()) return;
-    // Emit states strictly before this arriving atomic group using the previous complete book.
     while (next_grid < current_group && next_grid < day_end) {
       emit(out, next_grid, last_exchange_ts, book); ++emitted; next_grid += GRID_US;
     }
     if (group_snapshot) { book.clear(); ++snapshots; }
-    for (const Row& x : group) { book.apply(x); last_exchange_ts = std::max(last_exchange_ts, x.exchange_ts); }
-    if (group_snapshot) book.ready = true;
+    for (const Row& x : group) {
+      book.apply(x);
+      last_exchange_ts = std::max(last_exchange_ts, x.exchange_ts);
+    }
+    if (group_snapshot) {
+      book.ready = book.structurally_valid();
+      if (!book.ready) ++integrity_latches;
+    } else if (book.ready && !book.structurally_valid()) {
+      book.ready = false;
+      ++integrity_latches;
+    }
     ++groups;
-    // The full equal-local_timestamp group is now visible atomically at its timestamp.
     while (next_grid <= current_group && next_grid < day_end) {
       emit(out, next_grid, last_exchange_ts, book); ++emitted; next_grid += GRID_US;
     }
@@ -248,7 +255,8 @@ int main(int argc, char** argv) {
   while (next_grid < day_end) { emit(out, next_grid, last_exchange_ts, book); ++emitted; next_grid += GRID_US; }
 
   std::cerr << "parsed_rows=" << parsed << " bad_rows=" << bad << " groups=" << groups
-            << " snapshots=" << snapshots << " emitted=" << emitted << "\n";
+            << " snapshots=" << snapshots << " integrity_latches=" << integrity_latches
+            << " emitted=" << emitted << "\n";
   if (bad != 0 || emitted != 345600) return 4;
   return 0;
 }

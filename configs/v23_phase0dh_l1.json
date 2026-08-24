@@ -1,0 +1,34 @@
+{
+  "version": "V2.3-PHASE0DH-L1-HISTORICAL",
+  "venue": "Binance USD-M perpetual futures",
+  "symbols": ["BTCUSDT", "ETHUSDT"],
+  "source": "https://data.binance.vision/data/futures/um/daily",
+  "streams": ["bookTicker", "aggTrades"],
+  "start_date_utc": "2026-05-26",
+  "development_end_exclusive_utc": "2026-08-04",
+  "historical_holdout_start_utc": "2026-08-04",
+  "end_date_inclusive_utc": "2026-08-23",
+  "development_days": 70,
+  "historical_holdout_days": 20,
+  "sampling_seconds": 1,
+  "primary_horizon_seconds": 10,
+  "diagnostic_horizons_seconds": [3, 30],
+  "official_scoring_scope": "development_only_until_candidate",
+  "holdout_open_rule": "open_once_only_after_development_candidate",
+  "smoke_or_live_phase0d_data_allowed": false,
+  "models": {
+    "H0": "Ridge trailing-mid-return baseline",
+    "H1": "Ridge L1 microstructure",
+    "H2": "HistGradientBoostingRegressor L1 microstructure"
+  },
+  "ridge_alphas": [0.1, 1.0, 10.0, 100.0],
+  "minimum_scored_folds": 4,
+  "required_positive_delta_folds": 3,
+  "promotion": {
+    "pooled_delta_r2_vs_h0_gt": 0.0,
+    "pooled_spearman_gt": 0.0,
+    "minimum_scored_folds": 4,
+    "minimum_positive_delta_folds": 3
+  },
+  "economic_evaluation_before_statistical_candidate": false
+}

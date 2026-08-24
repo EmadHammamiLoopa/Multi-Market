@@ -1,5 +1,8 @@
+import shutil
+import tempfile
 import unittest
 from datetime import date
+from pathlib import Path
 
 from multimarket import v23_phase0dl_prepare as p
 
@@ -18,6 +21,13 @@ class Phase0DLPrepareTests(unittest.TestCase):
     def test_grid_row_count_is_frozen(self):
         self.assertEqual(p.EXPECTED_ROWS, 345_600)
         self.assertEqual(86_400 * 4, p.EXPECTED_ROWS)
+
+    @unittest.skipUnless(shutil.which("g++"), "g++ not installed")
+    def test_native_reconstructor_compiles(self):
+        with tempfile.TemporaryDirectory() as td:
+            exe = p._build(p._repo_root(), Path(td))
+            self.assertTrue(exe.exists())
+            self.assertTrue(exe.is_file())
 
 
 if __name__ == "__main__":

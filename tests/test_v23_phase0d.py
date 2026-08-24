@@ -5,7 +5,12 @@ import unittest
 from pathlib import Path
 
 from multimarket.v23_phase0d_book import DepthSequenceError, LocalOrderBook
-from multimarket.v23_phase0d_collect import DailyJsonlWriter, TradeBucket, _classify_ws_event
+from multimarket.v23_phase0d_collect import (
+    DailyJsonlWriter,
+    TradeBucket,
+    _build_stream_urls,
+    _classify_ws_event,
+)
 
 
 class V23Phase0DOrderBookTests(unittest.TestCase):
@@ -108,6 +113,17 @@ class V23Phase0DTradeTests(unittest.TestCase):
     def test_depth_routing_prefers_payload_event_type(self):
         payload = {"e": "depthUpdate", "s": "BTCUSDT"}
         self.assertEqual(_classify_ws_event("unexpected-name", payload), "depth")
+
+    def test_stream_namespaces_follow_binance_migration(self):
+        public_url, market_url = _build_stream_urls(("BTCUSDT", "ETHUSDT"))
+        self.assertIn("/public/stream?streams=", public_url)
+        self.assertIn("btcusdt@depth@100ms", public_url)
+        self.assertIn("btcusdt@bookTicker", public_url)
+        self.assertNotIn("aggTrade", public_url)
+        self.assertIn("/market/stream?streams=", market_url)
+        self.assertIn("btcusdt@aggTrade", market_url)
+        self.assertIn("ethusdt@aggTrade", market_url)
+        self.assertNotIn("@depth", market_url)
 
 
 class V23Phase0DRawCaptureTests(unittest.TestCase):

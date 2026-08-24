@@ -60,17 +60,40 @@ def _load_state(raw:Path,symbol:str)->tuple[np.ndarray,np.ndarray,np.ndarray,np.
     t=np.concatenate(times)
     return t,np.concatenate(data['markPriceKlines']),np.concatenate(data['indexPriceKlines']),np.concatenate(data['premiumIndexKlines'])
 
-def _load_trade_minute(dev:Path,state_open:np.ndarray)->tuple[np.ndarray,np.ndarray,np.ndarray]:
+def _align_state_decisions(ts:np.ndarray,state_open:np.ndarray)->tuple[np.ndarray,np.ndarray,np.ndarray]:
+    """Align completed state minutes to the frozen DEV second grid.
+
+    The Phase 0D-H DEV CSV is label10-complete, so a few acquisition-boundary
+    seconds can be absent even though its interior grid is contiguous.  We may
+    trim state minutes whose :59 decision second lies strictly before the first
+    or after the last DEV timestamp.  Any missing :59 decision second inside
+    the DEV timestamp range is an integrity failure and must never be filled.
+    """
+    if len(ts)==0: raise ValueError('empty trade grid')
+    if np.any(np.diff(ts)!=1): raise ValueError('trade grid must be contiguous inside DEV range')
+    desired=state_open+59
+    keep=(desired>=ts[0]) & (desired<=ts[-1])
+    aligned=desired[keep]
+    if len(aligned)==0: raise ValueError('no state minute overlaps trade grid')
+    idx=np.searchsorted(ts,aligned,side='left')
+    if np.any(idx>=len(ts)) or not np.array_equal(ts[idx],aligned):
+        good=(idx<len(ts))
+        observed=np.full(len(aligned),-1,dtype=np.int64)
+        observed[good]=ts[idx[good]]
+        bad=np.flatnonzero(observed!=aligned)
+        first=int(aligned[bad[0]]) if len(bad) else None
+        raise ValueError(f'trade grid missing interior minute decision second: {first}')
+    return keep,idx,aligned
+
+def _load_trade_minute(dev:Path,state_open:np.ndarray)->tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
     with dev.open('r',encoding='utf-8',newline='') as fh: header=next(csv.reader(fh))
     pos={n:i for i,n in enumerate(header)}
     req=('timestamp','price',*F0_NAMES)
     use=tuple(pos[n] for n in req)
     m=np.loadtxt(dev,delimiter=',',skiprows=1,usecols=use,dtype=np.float64,ndmin=2)
     ts=m[:,0].astype(np.int64,copy=False)
-    decision=state_open+59
-    idx=np.searchsorted(ts,decision,side='left')
-    if np.any(idx>=len(ts)) or not np.array_equal(ts[idx],decision): raise ValueError('trade grid missing minute decision second')
-    return decision,m[idx,1],m[idx,2:]
+    keep,idx,decision=_align_state_decisions(ts,state_open)
+    return keep,decision,m[idx,1],m[idx,2:]
 
 def _lag_ret(x:np.ndarray,k:int)->np.ndarray:
     out=np.full(len(x),np.nan); out[k:]=np.log(x[k:]/x[:-k])*10000.0; return out
@@ -186,7 +209,10 @@ def _gate(p12,p15)->bool:
     return scored==5 and int(p12['positive_outer_folds'])>=4 and float(p12['net_bps_trade'])>=1 and float(p12['total_net_bps'])>0 and float(p15['net_bps_trade'])>0 and float(p15['total_net_bps'])>0 and float(p12['profit_factor'])>=1.15 and float(p12['positive_active_day_fraction'])>=0.55 and float(p12['pnl_to_drawdown'])>=2 and min(float(x) for x in p12['fold_expectancies'])>=-2 and float(p12['median_trades_day_active'])>=2
 
 def score_symbol(raw:Path,work:Path,symbol:str)->dict:
-    state_open,mark,index,premium=_load_state(raw,symbol); decision,trade_price,f0=_load_trade_minute(work/f'{symbol}_DEV.csv',state_open); blocks=_build_blocks(mark,index,premium,f0)
+    state_open,mark,index,premium=_load_state(raw,symbol)
+    state_keep,decision,trade_price,f0=_load_trade_minute(work/f'{symbol}_DEV.csv',state_open)
+    mark=mark[state_keep]; index=index[state_keep]; premium=premium[state_keep]
+    blocks=_build_blocks(mark,index,premium,f0)
     if not all(np.all(np.isfinite(v[WARMUP:])) for v in blocks.values()): raise ValueError('non-finite features after warmup')
     gross={h:_gross(trade_price,h) for h in HORIZONS}; folds=[]
     for i,(sd,ed) in enumerate(FOLDS,1):
@@ -195,7 +221,7 @@ def score_symbol(raw:Path,work:Path,symbol:str)->dict:
         if c_cfg: rec['candidate_outer']=_outer(decision,blocks,gross,c_cfg,sd,ed)
         folds.append(rec)
     r12=_pool(folds,'reference_outer','12'); c12=_pool(folds,'candidate_outer','12'); c15=_pool(folds,'candidate_outer','15'); structural=_gate(c12,c15); incremental=float(c12['net_bps_trade'])>float(r12['net_bps_trade']) and float(c12['total_net_bps'])>float(r12['total_net_bps']); passed=structural and incremental
-    return {'phase':'V2.3-PHASE0DJ-FUTURES-STATE','symbol':symbol,'development_only':True,'historical_holdout_opened':False,'folds':folds,'pooled_reference_12bps':r12,'pooled_candidate_12bps':c12,'pooled_candidate_15bps':c15,'candidate_structural_gate':structural,'incremental_vs_J0':incremental,'development_pass':passed,'decision':'CANDIDATE_FREEZE_BEFORE_CONFIRMATION' if passed else 'FAIL_KEEP_HOLDOUT_SEALED'}
+    return {'phase':'V2.3-PHASE0DJ-FUTURES-STATE','symbol':symbol,'development_only':True,'historical_holdout_opened':False,'boundary_state_minutes_trimmed':int(len(state_open)-np.count_nonzero(state_keep)),'folds':folds,'pooled_reference_12bps':r12,'pooled_candidate_12bps':c12,'pooled_candidate_15bps':c15,'candidate_structural_gate':structural,'incremental_vs_J0':incremental,'development_pass':passed,'decision':'CANDIDATE_FREEZE_BEFORE_CONFIRMATION' if passed else 'FAIL_KEEP_HOLDOUT_SEALED'}
 
 def main(argv=None)->int:
     p=argparse.ArgumentParser(); p.add_argument('--raw-dir',default='data/v23_phase0dj_state_raw'); p.add_argument('--work-dir',default='evidence/v23/phase0dh_tf'); p.add_argument('--output-dir',default='evidence/v23/phase0dj_score'); a=p.parse_args(argv); raw=Path(a.raw_dir); work=Path(a.work_dir); out=Path(a.output_dir); out.mkdir(parents=True,exist_ok=True); results=[]

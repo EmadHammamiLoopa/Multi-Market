@@ -18,7 +18,6 @@ from multimarket.v23_phase0c import (
     _window_return_bps,
     load_phase0b_fold_windows,
     load_phase0c_manifest,
-    validate_linked_peers,
 )
 from multimarket.v23_phase0c_summary import summarize
 
@@ -56,6 +55,13 @@ def _row(timestamp: datetime, *, executable_bps: float = 10.0, vol_pct: float = 
         executable_forward_6_bps=executable_bps,
         jump_state=0,
     )
+
+
+def _candidate_block(*, scored_folds: int = 4):
+    return {
+        "C2": {"scored_folds": scored_folds},
+        "C3": {"scored_folds": scored_folds},
+    }
 
 
 class V23Phase0CCausalityTests(unittest.TestCase):
@@ -98,7 +104,7 @@ class V23Phase0CCausalityTests(unittest.TestCase):
         start = datetime(2025, 10, 24, 22, 0, tzinfo=timezone.utc)
         bars = _bars(60, start=start)
         eligible = set(range(60))
-        index = 40  # after G ends, but a 24-bar return still reaches into G
+        index = 40
         self.assertGreater(bars[index].timestamp, datetime(2025, 10, 24, 23, 59, 59, tzinfo=timezone.utc))
         self.assertIsNone(_window_return_bps(bars, index, 24, eligible))
 
@@ -179,6 +185,24 @@ class V23Phase0CEconomicTests(unittest.TestCase):
 
 
 class V23Phase0CSummaryTests(unittest.TestCase):
+    def test_insufficient_folds_are_inconclusive_not_rejected(self):
+        result = summarize([
+            {
+                "symbol": "BTCUSD",
+                "evaluation_status": "SCORED",
+                "row_count": 8684,
+                "signal_candidate": None,
+                "promoted_candidate": None,
+                "promotion_pass": False,
+                "cost_model_status": "MISSING",
+                "candidates": _candidate_block(scored_folds=2),
+            }
+        ])
+        self.assertEqual(result["phase0c_promotion"], "INCONCLUSIVE")
+        self.assertEqual(result["decision"], "REQUIRES_FEASIBILITY_REPAIR")
+        self.assertEqual(result["inconclusive_targets"], ["BTCUSD"])
+        self.assertEqual(result["scored_targets"], 0)
+
     def test_statistical_candidate_without_cost_is_pending(self):
         result = summarize([
             {
@@ -188,7 +212,7 @@ class V23Phase0CSummaryTests(unittest.TestCase):
                 "promoted_candidate": None,
                 "promotion_pass": False,
                 "cost_model_status": "MISSING",
-                "candidates": {},
+                "candidates": _candidate_block(),
             }
         ])
         self.assertEqual(result["phase0c_promotion"], "PENDING_COST_MODEL")
@@ -203,7 +227,7 @@ class V23Phase0CSummaryTests(unittest.TestCase):
                 "promoted_candidate": None,
                 "promotion_pass": False,
                 "cost_model_status": "SUPPLIED",
-                "candidates": {},
+                "candidates": _candidate_block(),
             }
         ])
         self.assertEqual(result["phase0c_promotion"], "FAIL")
@@ -217,7 +241,7 @@ class V23Phase0CSummaryTests(unittest.TestCase):
                 "promoted_candidate": "C2",
                 "promotion_pass": True,
                 "cost_model_status": "SUPPLIED",
-                "candidates": {},
+                "candidates": _candidate_block(),
             },
             {
                 "symbol": "EURUSD",
@@ -226,7 +250,7 @@ class V23Phase0CSummaryTests(unittest.TestCase):
                 "promoted_candidate": None,
                 "promotion_pass": False,
                 "cost_model_status": "SUPPLIED",
-                "candidates": {},
+                "candidates": _candidate_block(),
             },
         ])
         self.assertEqual(result["phase0c_promotion"], "PARTIAL_PASS")
